@@ -22,7 +22,7 @@ pacman::p_load(sf, tidyverse)
 
     -   read simple features form file/database, or retrieve layer names and their geometry types(s)
 
-    -   imports `MP14_SUBZONE_WEB_PL` shapefile into R as polygon feature data frame
+    -   imports `MP14_SUBZONE_WEB_PL` shapefile into R as [polygon]{.underline} feature data frame
 
     -   `dsn` = defines data path; `layer` = provide the shapefile name
 
@@ -41,11 +41,65 @@ mpsz = st_read(dsn = "data/geospatial",
 
     -   Bounding box provides x extend and y extend of the data
 
-## Importing polyline feature data in shapefile form
+### Importing polyline feature data in shapefile form
 
 -   Imports CyclingPath shapefile into R as line feature data frame
 
 ```{r}
 cyclingpath = st_read(dsn = "data/geospatial", 
                          layer = "CyclingPathGazette")
+```
+
+-   Interpretation:
+
+    -   1625 features and 2 fields in `cyclingpath` [linestring]{.underline} feature data
+
+    -   **svy21** projected coordinates system
+
+### Importing GIS data in kml format
+
+-   pre-schoolslocation is in kml format
+
+-   Below code chunk used to important kml into R
+
+```{r}
+preschool = st_read("data/geospatial/PreSchoolsLocation.kml")
+```
+
+-   Interpretation:
+
+    -   preschool = [point]{.underline} feature data frame
+
+## Checking the Content of a Simple Feature Data Frame
+
+### Working with *st_geometry()*
+
+-   Column in sf data.frame that contains geometries is a list, of class `sfc`
+
+-   Can be retrieved by mpsz\$geom or mpsz\[\[1\]\], else *st_geometry()* can also be used
+
+```{r}
+st_geometry(mpsz)
+```
+
+-   Prints out basic info of feature class, eg type of geometry, geographic extent of feature and coordinate system of the data
+
+### Working with glimpse()
+
+-   *glimpse()* report shows data types of each field
+
+-   `FMEL-UPD_D` field = date; `X_ADDR`, `Y_ADDR`, `SHAPE_L`, `SHAPE_AREA` = double-precision values
+
+```{r}
+glimpse(mpsz)
+```
+
+### Working with head()
+
+-   *head()* used to display complete information of a feature object
+
+-   *n = 5* shows the selected number of records to display
+
+```{r}
+head(mpsz, n=5)
 ```

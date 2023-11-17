@@ -160,3 +160,17 @@ Two approaches can be used to prepare thematic map using *tmap*, they are:
 -   Plotting highly customisable thematic map by using tmap elements.
 
 ### Plotting a choropleth map quickly by using *qtm()*
+
+-   *qtm()*:
+
+    -   Easiest and quickest to draw a choropleth map using **tmap**
+
+    -   Concise and provides a good default visualisation in many cases.
+
+The code chunk below will draw a cartographic standard choropleth map as shown below.
+
+```{r}
+tmap_mode("plot")
+qtm(mpsz_pop2020,
+    fill="DEPENDENCY")
+```

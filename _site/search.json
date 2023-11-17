@@ -116,6 +116,20 @@
     "href": "Hands-on_Ex1/Hands-on_Ex1_2.html",
     "title": "Hands-on Exercise 1.2: Choropleth Mapping with R",
     "section": "",
-    "text": "Overview"
+    "text": "Choropleth mapping involves the symbolisation of enumeration units, such as countries, provinces, states, counties or census units, using area patterns or graduated colors. For example, a social scientist may need to use a choropleth map to portray the spatial distribution of aged population of Singapore by Master Plan 2014 Subzone Boundary.\nIn this chapter, you will learn how to plot functional and truthful choropleth maps by using an R package called tmap package."
+  },
+  {
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_2.html#overview",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_2.html#overview",
+    "title": "Hands-on Exercise 1.2: Choropleth Mapping with R",
+    "section": "",
+    "text": "Choropleth mapping involves the symbolisation of enumeration units, such as countries, provinces, states, counties or census units, using area patterns or graduated colors. For example, a social scientist may need to use a choropleth map to portray the spatial distribution of aged population of Singapore by Master Plan 2014 Subzone Boundary.\nIn this chapter, you will learn how to plot functional and truthful choropleth maps by using an R package called tmap package."
+  },
+  {
+    "objectID": "Hands-on_Ex1/Hands-on_Ex1_2.html#getting-started",
+    "href": "Hands-on_Ex1/Hands-on_Ex1_2.html#getting-started",
+    "title": "Hands-on Exercise 1.2: Choropleth Mapping with R",
+    "section": "Getting Started",
+    "text": "Getting Started\nIn this hands-on exercise, the key R package use is tmap package in R. Beside tmap package, four other R packages will be used. They are:\n\nreadr for importing delimited text file\ntidyr for tidying data\ndplyr for wrangling data\nsf for handling geospatial data\n\nAmong the four packages, readr, tidyr and dplyr are part of tidyverse package.\nThe code chunk below will be used to install and load these packages in RStudio.\n\npacman::p_load(sf, tmap, tidyverse)\n\n\nNotice that, we only need to install tidyverse instead of readr, tidyr and dplyr individually."
   }
 ]

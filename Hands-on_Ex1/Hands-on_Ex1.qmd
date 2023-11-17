@@ -1,10 +1,10 @@
 ---
-title: "Hands-on Exercise 1: Geospatial Data Wrangling with R"
+title: "Hands-on Exercise 1.1: Geospatial Data Wrangling with R"
 ---
 
 ## Overview
 
-In this hands-on exercise, I learn how to import and wrangle geospatial data using appropriate R packages.
+In this hands-on exercise, we learn how to import and wrangle geospatial data using appropriate R packages.
 
 ## Getting Started
 
@@ -234,7 +234,7 @@ listings_sf <- st_as_sf(listings,
 
     -   *coords*: requires you to provide the column name of the x-coordinates first then followed by the column name of the y-coordinates.
 
-    -   *crs*: requires you to provide the coordinates system in epsg format. [EPSG: 4326](https://epsg.io/4326) is wgs84 Geographic Coordinate System and [EPSG: 3414](https://epsg.io/3414) is Singapore SVY21 Projected Coordinate System. You can search for other country\'s epsg code by referring to [epsg.io](https://epsg.io/).
+    -   *crs*: requires you to provide the coordinates system in epsg format. [EPSG: 4326](https://epsg.io/4326) is wgs84 Geographic Coordinate System and [EPSG: 3414](https://epsg.io/3414) is Singapore SVY21 Projected Coordinate System. You can search for other country's epsg code by referring to [epsg.io](https://epsg.io/).
 
     -   *%\>%*: nests *st_transform()* to transform the newly created simple feature data frame into svy21 projected coordinates system.
 

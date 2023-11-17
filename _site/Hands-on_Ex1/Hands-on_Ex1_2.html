@@ -167,7 +167,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#choropleth-mapping-geospatial-data-using-tmap" id="toc-choropleth-mapping-geospatial-data-using-tmap" class="nav-link" data-scroll-target="#choropleth-mapping-geospatial-data-using-tmap">Choropleth Mapping Geospatial Data Using <em>tmap</em></a>
   <ul class="collapse">
   <li><a href="#plotting-a-choropleth-map-quickly-by-using-qtm" id="toc-plotting-a-choropleth-map-quickly-by-using-qtm" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-quickly-by-using-qtm">Plotting a choropleth map quickly by using <em>qtm()</em></a></li>
-  <li><a href="#creating-a-choropleth-map-by-using-tmaps-elements" id="toc-creating-a-choropleth-map-by-using-tmaps-elements" class="nav-link" data-scroll-target="#creating-a-choropleth-map-by-using-tmaps-elements"><strong>Creating a choropleth map by using <em>tmap</em>'s elements</strong></a></li>
+  <li><a href="#creating-a-choropleth-map-by-using-tmaps-elements" id="toc-creating-a-choropleth-map-by-using-tmaps-elements" class="nav-link" data-scroll-target="#creating-a-choropleth-map-by-using-tmaps-elements"><strong>Creating a choropleth map by using <em>tmap</em>’s elements</strong></a></li>
   <li><a href="#data-classification-methods-of-tmap" id="toc-data-classification-methods-of-tmap" class="nav-link" data-scroll-target="#data-classification-methods-of-tmap"><strong>Data classification methods of tmap</strong></a></li>
   <li><a href="#colour-scheme" id="toc-colour-scheme" class="nav-link" data-scroll-target="#colour-scheme">Colour Scheme</a></li>
   <li><a href="#map-layouts" id="toc-map-layouts" class="nav-link" data-scroll-target="#map-layouts">Map Layouts</a></li>
@@ -241,7 +241,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><p>Aspatial data fie.</p></li>
 <li><p>Downloaded at <a href="https://www.singstat.gov.sg/">Department of Statistics, Singapore</a></p></li>
-<li><p>Although it does not contain any coordinates values, but it's PA and SZ fields can be used as unique identifiers to geocode to <code>MP14_SUBZONE_WEB_PL</code> shapefile.</p></li>
+<li><p>Although it does not contain any coordinates values, but it’s PA and SZ fields can be used as unique identifiers to geocode to <code>MP14_SUBZONE_WEB_PL</code> shapefile.</p></li>
 </ul></li>
 </ul>
 </section>
@@ -448,16 +448,16 @@ dbl (2): Pop, Time
 <ul>
 <li><p>Note:</p>
 <ul>
-<li><p><em>tmap_mode()</em> with "plot" option: used to produce a static map. For interactive mode, "view" option should be used.</p></li>
+<li><p><em>tmap_mode()</em> with “plot” option: used to produce a static map. For interactive mode, “view” option should be used.</p></li>
 <li><p><em>fill</em> argument: is used to map the attribute (i.e.&nbsp;DEPENDENCY)</p></li>
 </ul></li>
 </ul>
 </section>
 <section id="creating-a-choropleth-map-by-using-tmaps-elements" class="level3">
-<h3 class="anchored" data-anchor-id="creating-a-choropleth-map-by-using-tmaps-elements"><strong>Creating a choropleth map by using <em>tmap</em>'s elements</strong></h3>
+<h3 class="anchored" data-anchor-id="creating-a-choropleth-map-by-using-tmaps-elements"><strong>Creating a choropleth map by using <em>tmap</em>’s elements</strong></h3>
 <ul>
 <li><p>Despite its usefulness of drawing a choropleth map quickly and easily, the disadvantge of <em>qtm()</em> is that it makes aesthetics of individual layers harder to control.</p></li>
-<li><p>To draw a high quality cartographic choropleth map as shown in the figure below,&nbsp;<strong>tmap</strong>'s drawing elements should be used.</p></li>
+<li><p>To draw a high quality cartographic choropleth map as shown in the figure below,&nbsp;<strong>tmap</strong>’s drawing elements should be used.</p></li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
@@ -510,7 +510,7 @@ dbl (2): Pop, Time
 </div>
 <p>Things to learn from <em>tm_polygons()</em>:</p>
 <ul>
-<li><p>The default interval binning used to draw the choropleth map is called "pretty". A detailed discussion of the data classification methods supported by <strong>tmap</strong> will be provided in sub-section 4.3.</p></li>
+<li><p>The default interval binning used to draw the choropleth map is called “pretty”. A detailed discussion of the data classification methods supported by <strong>tmap</strong> will be provided in sub-section 4.3.</p></li>
 <li><p>The default colour scheme used is <code>YlOrRd</code> of ColorBrewer. You will learn more about the color scheme in sub-section 4.4.</p></li>
 <li><p>By default, Missing value will be shaded in grey.</p></li>
 </ul>
@@ -548,7 +548,7 @@ dbl (2): Pop, Time
 <ul>
 <li><p><em>col</em>: border colour,</p></li>
 <li><p><em>lwd</em>: border line width. The default is 1, and</p></li>
-<li><p><em>lty</em>: border line type. The default is "solid".</p></li>
+<li><p><em>lty</em>: border line type. The default is “solid”.</p></li>
 </ul>
 </section>
 </section>
@@ -728,7 +728,7 @@ dbl (2): Pop, Time
 </div>
 <ul>
 <li><p>Notice that the choropleth map is shaded in green.</p></li>
-<li><p>To reverse the colour shading, add a "-" prefix.</p></li>
+<li><p>To reverse the colour shading, add a “-” prefix.</p></li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>

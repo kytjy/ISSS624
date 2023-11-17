@@ -603,3 +603,26 @@ tm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N=="CENTRAL REGION", ])+
             frame = FALSE) +
   tm_borders(alpha = 0.5)
 ```
+
+## Reference
+
+### **2.5.1 All about tmap package**
+
+-   [tmap: Thematic Maps in R](https://www.jstatsoft.org/article/view/v084i06)
+-   [tmap](https://cran.r-project.org/web/packages/tmap/)
+-   [tmap: get started!](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)
+-   [tmap: changes in version 2.0](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-changes-v2.html)
+-   [tmap: creating thematic maps in a flexible way (useR!2015)](http://von-tijn.nl/tijn/research/presentations/tmap_user2015.pdf)
+-   [Exploring and presenting maps with tmap (useR!2017)](http://von-tijn.nl/tijn/research/presentations/tmap_user2017.pdf)
+
+### **2.5.2 Geospatial data wrangling**
+
+-   [sf: Simple Features for R](https://cran.r-project.org/web/packages/sf/)
+-   [Simple Features for R: StandardizedSupport for Spatial Vector Data](https://journal.r-project.org/archive/2018/RJ-2018-009/RJ-2018-009.pdf)
+-   [Reading, Writing and Converting Simple Features](https://cran.r-project.org/web/packages/sf/vignettes/sf2.html)
+
+### **2.5.3 Data wrangling**
+
+-   [dplyr](https://dplyr.tidyverse.org/)
+-   [Tidy data](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html)
+-   [tidyr: Easily Tidy Data with 'spread()' and 'gather()' Functions](https://cran.r-project.org/web/packages/tidyr/tidyr.pdf)

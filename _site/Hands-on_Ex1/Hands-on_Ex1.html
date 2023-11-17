@@ -155,8 +155,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
   <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">Importing Geospatial Data</a>
   <ul class="collapse">
-  <li><a href="#importing-polygon-feature-data" id="toc-importing-polygon-feature-data" class="nav-link" data-scroll-target="#importing-polygon-feature-data">Importing polygon feature data</a></li>
+  <li><a href="#importing-polygon-feature-data-in-shapefile-format" id="toc-importing-polygon-feature-data-in-shapefile-format" class="nav-link" data-scroll-target="#importing-polygon-feature-data-in-shapefile-format">Importing polygon feature data in shapefile format</a></li>
   </ul></li>
+  <li><a href="#importing-polyline-feature-data-in-shapefile-form" id="toc-importing-polyline-feature-data-in-shapefile-form" class="nav-link" data-scroll-target="#importing-polyline-feature-data-in-shapefile-form">Importing polyline feature data in shapefile form</a></li>
   </ul>
 </nav>
     </div>
@@ -193,8 +194,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="importing-geospatial-data" class="level2">
 <h2 class="anchored" data-anchor-id="importing-geospatial-data">Importing Geospatial Data</h2>
-<section id="importing-polygon-feature-data" class="level3">
-<h3 class="anchored" data-anchor-id="importing-polygon-feature-data">Importing polygon feature data</h3>
+<section id="importing-polygon-feature-data-in-shapefile-format" class="level3">
+<h3 class="anchored" data-anchor-id="importing-polygon-feature-data-in-shapefile-format">Importing polygon feature data in shapefile format</h3>
+<ul>
+<li><p><em>st_read()</em> function of sf package:</p>
+<ul>
+<li><p>read simple features form file/database, or retrieve layer names and their geometry types(s)</p></li>
+<li><p>imports <code>MP14_SUBZONE_WEB_PL</code> shapefile into R as polygon feature data frame</p></li>
+<li><p><code>dsn</code> = defines data path; <code>layer</code> = provide the shapefile name</p></li>
+</ul></li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mpsz <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>, </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">layer =</span> <span class="st">"MP14_SUBZONE_WEB_PL"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -208,9 +217,37 @@ Bounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33
 Projected CRS: SVY21</code></pre>
 </div>
 </div>
-
-
+<ul>
+<li><p>Interpretation:</p>
+<ul>
+<li><p>Geospatial objects = multipolygon features</p></li>
+<li><p>323 multipolygon features and 15 fields in <code>mpsz</code> simple feature data frame</p></li>
+<li><p><code>mpsz</code> in svy21 projected coordinates systems</p></li>
+<li><p>Bounding box provides x extend and y extend of the data</p></li>
+</ul></li>
+</ul>
 </section>
+</section>
+<section id="importing-polyline-feature-data-in-shapefile-form" class="level2">
+<h2 class="anchored" data-anchor-id="importing-polyline-feature-data-in-shapefile-form">Importing polyline feature data in shapefile form</h2>
+<ul>
+<li>Imports CyclingPath shapefile into R as line feature data frame</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cyclingpath <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">layer =</span> <span class="st">"CyclingPathGazette"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `CyclingPathGazette' from data source 
+  `C:\kytjy\ISSS624\Hands-on_Ex1\data\geospatial' using driver `ESRI Shapefile'
+Simple feature collection with 2558 features and 2 fields
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: 11854.32 ymin: 28347.98 xmax: 42626.09 ymax: 48948.15
+Projected CRS: SVY21</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->

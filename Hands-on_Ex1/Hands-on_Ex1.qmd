@@ -16,9 +16,36 @@ pacman::p_load(sf, tidyverse)
 
 ## Importing Geospatial Data
 
-### Importing polygon feature data
+### Importing polygon feature data in shapefile format
+
+-   *st_read()* function of sf package:
+
+    -   read simple features form file/database, or retrieve layer names and their geometry types(s)
+
+    -   imports `MP14_SUBZONE_WEB_PL` shapefile into R as polygon feature data frame
+
+    -   `dsn` = defines data path; `layer` = provide the shapefile name
 
 ```{r}
 mpsz = st_read(dsn = "data/geospatial", 
                   layer = "MP14_SUBZONE_WEB_PL")
+```
+
+-   Interpretation:
+
+    -   Geospatial objects = multipolygon features
+
+    -   323 multipolygon features and 15 fields in `mpsz` simple feature data frame
+
+    -   `mpsz` in svy21 projected coordinates systems
+
+    -   Bounding box provides x extend and y extend of the data
+
+## Importing polyline feature data in shapefile form
+
+-   Imports CyclingPath shapefile into R as line feature data frame
+
+```{r}
+cyclingpath = st_read(dsn = "data/geospatial", 
+                         layer = "CyclingPathGazette")
 ```

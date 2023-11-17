@@ -58,7 +58,7 @@ cyclingpath = st_read(dsn = "data/geospatial",
 
 ### Importing GIS data in kml format
 
--   pre-schoolslocation is in kml format
+-   PreSchoolsLocation is in kml format
 
 -   Below code chunk used to important kml into R
 
@@ -103,3 +103,88 @@ glimpse(mpsz)
 ```{r}
 head(mpsz, n=5)
 ```
+
+## Plotting the Geospatial Data
+
+-   plot() visualises geospatial features
+
+-   Default plot is a multi-plot of all attributes
+
+```{r}
+plot(mpsz)
+```
+
+-   Can choose to plot only the geometry
+
+```{r}
+plot(st_geometry(mpsz))
+```
+
+-   Alternatively can also choose to plot the sf object by using specific attribute
+
+```{r}
+plot(mpsz["PLN_AREA_N"])
+```
+
+## Working with Projection
+
+-   To perform geoprocessing using two geospatial data, we need to ensure that both geospatial data are projected using similar coordinate system
+
+-   **Projection Transformation** refers to projecting a simple feature data from one coordinate system to another coordinate system
+
+### Assigning EPSG code to a simple feature data frame
+
+-   A common issue during importing geospatial data into R is that the coordinate system of the source data was either missing (such as due to missing .proj for ESRI shapefile) or wrongly assigned during the importing process
+
+-   Below example shows the coordinate system of `mpsz` simple feature data frame by using *st_crs()* of *sf* package
+
+```{r}
+st_crs(mpsz)
+```
+
+-   Interpretation:
+
+    -   Although mpsz data frame is projected in svy21 but EPSG is indicated as 9001. Correct EPSG code should be 3414.
+
+-   To assign correct EPS code to mpsz data frame, *st_set_crs()* of **sf** package can be used
+
+```{r}
+mpsz3414 <- st_set_crs(mpsz, 3414)
+```
+
+-   Check CSR again. Notice that EPSG code is now 3414.
+
+```{r}
+st_crs(mpsz3414)
+```
+
+### Transforming the projection of preschool from wgs84 to svy21
+
+-   In geospatial analytics, it is common to transform original data from geographic coordinate system to projected coordinate system, as geographic coordinate system is not appropriate if the analysis need to use distance and/or area measurement
+
+-   Let us take preschool simple feature data frame as an example. The print below reveals that it is in wgs84 coordinate system.
+
+```{r}
+preschool = st_read("data/geospatial/PreSchoolsLocation.kml")
+```
+
+-   This is a scenario that *st_set_crs()* is not appropriate and *st_transform()* of sf package should be used. This is because we need to reproject `preschool` from one coordinate system to another coordinate system mathematically
+
+-   Perform the projection transformation by using the code chunk below
+
+```{r}
+preschool3414 <- st_transform(preschool, 
+                              crs = 3414)
+```
+
+> Note: In practice, we need find out the appropriate project coordinate system to use before performing the projection transformation.
+
+```{r}
+head(preschool3414, n=5)
+```
+
+-   Interpretation:
+
+    -   Notice that it is in svy21 projected coordinate system now
+
+    -   In *Bounding box:*, the values are greater than 0-360 range of decimal degree commonly used by most of the geographic coordinate systems.

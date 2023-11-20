@@ -4,7 +4,7 @@ project:
 website:
   title: "ISSS624"
   navbar:
-    background: primary
+    background: dark
     search: true
     left: 
       - text: Hands-on Exercises
@@ -30,7 +30,11 @@ website:
 
 format:
   html:
-    theme: minty
+    theme: sandstone
+    mainfont: arial
+    fontcolor: "#444444"
+    linkcolor: "#716D64"
+    monofont: courier new
     css: styles.css
     toc: true
 

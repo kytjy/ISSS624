@@ -41,7 +41,7 @@ pacman::p_load(sf,tmap,tidyverse)
 ```
 :::
 
-## **Importing the OD data**
+## Importing the OD data
 
 Firstly, we will import the *Passenger Volume by Origin Destination Bus Stops* dataset downloaded from LTA DataMall by using `read_csv()` or **readr** package.
 
@@ -119,14 +119,14 @@ The code chunk below will be used to import the save origin7_9.rds into R enviro
 origin7_9 <- read_rds("data/rds/origin7_9.rds")
 ```
 
-## **Working with Geospatial Data**
+## Working with Geospatial Data
 
 In this section, you are required to import two shapefile into RStudio, they are:
 
 -   BusStop: This data provides the location of bus stop as at last quarter of 2022.
 -   MPSZ-2019: This data provides the sub-zone boundary of URA Master Plan 2019.
 
-### **Importing geospatial data**
+### Importing geospatial data
 
 Two geospatial data will be used in this exercise.
 

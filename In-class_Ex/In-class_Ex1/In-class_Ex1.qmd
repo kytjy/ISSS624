@@ -203,6 +203,7 @@ write_rds(busstop_mpsz, "data/rds/busstop_mpsz.csv")
 
 ::: panel-tabset
 ## Task
+
 Next, we are going to append the planning subzone code from busstop_mpsz data frame onto odbus7_9 data frame.
 
 ## Solution
@@ -225,6 +226,7 @@ duplicate <- origin_data %>%
 
 duplicate
 ```
+
 If duplicated records are found, the code chunk below will be used to retain the unique records.
 
 ```{r}
@@ -235,6 +237,7 @@ It will be a good practice to confirm if the duplicating records issue has been 
 
 ::: panel-tabset
 ## Task
+
 Next, write a code chunk to update od_data data frame with the planning subzone codes.
 
 ## Solution
@@ -247,8 +250,10 @@ mpsz_origtrip <- left_join(mpsz,
 :::
 
 ## Choropleth Visualisation
+
 ::: panel-tabset
 ## Task
+
 Prepare a choropleth map showing the distribution of passenger trips at planning sub-zone level.
 
 ## Solution
@@ -273,4 +278,3 @@ tm_shape(mpsz_origtrip)+
              position = c("left", "bottom"))
 ```
 :::
-

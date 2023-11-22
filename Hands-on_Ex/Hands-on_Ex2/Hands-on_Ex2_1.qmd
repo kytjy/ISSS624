@@ -1,0 +1,167 @@
+---
+title: "Hands-on Exercise 2.1: Spatial Weights and Applications"
+date: "22 November 2023"
+date-modified: "last-modified"
+format: html
+execute:
+  echo: true #all the codes will appear
+  eval: true #all the codes will run
+  warning: false #dont display if there are any warnings
+editor: visual
+---
+
+## **Overview**
+
+In this hands-on exercise, you will learn how to compute spatial weights using R. By the end to this hands-on exercise, you will be able to:
+
+-   import geospatial data using appropriate function(s) of **sf** package,
+-   import csv file using appropriate function of **readr** package,
+-   perform relational join using appropriate join function of **dplyr** package,
+-   compute spatial weights using appropriate functions of **spdep** package, and
+-   calculate spatially lagged variables using appropriate functions of **spdep** package.
+
+## **Study Area and Data**
+
+Two data sets will be used in this hands-on exercise, they are:
+
+-   Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.
+-   Hunan_2012.csv: This csv file contains selected Hunan's local development indicators in 2012.
+
+### **Getting Started**
+
+::: panel-tabset
+## Task
+
+Ensure that **spdep**, **sf**, **tmap** and **tidyverse** packages of R are currently installed in your R.
+
+## Solution
+
+```{r}
+pacman::p_load(sf, spdep, tmap, tidyverse, knitr)
+```
+:::
+
+## **Loading Data Into R Environment**
+
+In this section, you will learn how to bring a geospatial data and its associated attribute table into R environment. The geospatial data is in ESRI shapefile format and the attribute table is in csv fomat.
+
+::: panel-tabset
+## Import shapefile
+
+The code chunk below uses [*st_read()*](https://r-spatial.github.io/sf/reference/st_read.html) of **sf** package to import Hunan shapefile into R. The imported shapefile will be **simple features** Object of **sf**.
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+## Import csv file
+
+Next, we will import *Hunan_2012.csv* into R by using *read_csv()* of **readr** package. The output is R dataframe class.
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+## Perform relational join
+
+The code chunk below will be used to update the attribute table of *hunan*'s SpatialPolygonsDataFrame with the attribute fields of *hunan2012* dataframe. This is performed by using *left_join()* of **dplyr** package.
+
+```{r}
+hunan <- left_join(hunan,hunan2012)%>%
+  select(1:4, 7, 15)
+```
+:::
+
+## **Visualising Regional Development Indicator**
+
+Now, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using *qtm()* of **tmap** package.
+
+```{r}
+basemap <- tm_shape(hunan) +
+  tm_polygons() +
+  tm_text("NAME_3", size=0.3)
+
+gdppc <- qtm(hunan, "GDPPC")
+tmap_arrange(basemap, gdppc, asp=1, ncol=2)
+```
+
+## **Computing Contiguity Spatial Weights**
+
+-   *poly2nb()* of **spdep** package to compute contiguity weight matrices for the study area.
+
+-   This function builds a neighbours list based on regions with contiguous boundaries. If you look at the documentation you will see that you can pass a "queen" argument that takes TRUE or FALSE as options. If you do not specify this argument the default is set to TRUE, that is, if you don't specify queen = FALSE this function will return a list of first order neighbours using the Queen criteria.
+
+### **Computing contiguity based neighbours**
+
+::: panel-tabset
+## Queen
+
+The code chunk below is used to compute Queen contiguity weight matrix.
+
+```{r}
+wm_q <- poly2nb(hunan, queen=TRUE)
+summary(wm_q)
+```
+
+Interpretation:
+
+-   There are 88 area units in Hunan.
+-   Most connected area unit has 11 neighbours.
+-   There are two area units with only one neighbour.
+
+## Rook
+
+The code chunk below is used to compute Rook contiguity weight matrix.
+
+```{r}
+wm_r <- poly2nb(hunan, queen=FALSE)
+summary(wm_r)
+```
+
+Interpretation:
+
+-   There are 88 area units in Hunan.
+-   Most connect area unit has 10 neighbours.
+-   There are two area units with only one neighbours.
+:::
+
+For each polygon in our polygon object, *wm_q* lists all neighboring polygons. For example, to see the neighbors for the first polygon in the object, type:
+
+```{r}
+wm_q[[1]]
+```
+
+-   Polygon 1 has 5 neighbors. The numbers represent the polygon IDs as stored in Hunan SpatialPolygonsDataFrame class.
+
+We can retrive the county name of Polygon ID=1 by using the code chunk below:
+
+```{r}
+hunan$County[1]
+```
+
+Interpretation:
+
+-   The output reveals that Polygon ID=1 is Anxiang county.
+
+To reveal the county names of the five neighboring polygons, the code chunk will be used:
+
+```{r}
+hunan$NAME_3[c(2,3,4,57,85)]
+```
+
+We can retrieve the GDPPC of these five countries by using the code chunk below.
+
+```{r}
+nb1 <- wm_q[[1]]
+nb1 <- hunan$GDPPC[nb1]
+nb1
+```
+
+The printed output above shows that the GDPPC of the five nearest neighbours based on Queen's method are 20981, 34592, 24473, 21311 and 22879 respectively.
+
+You can display the complete weight matrix by using *str()*.
+
+```{r}
+str(wm_q)
+```

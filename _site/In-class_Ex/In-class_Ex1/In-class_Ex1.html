@@ -128,6 +128,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex1/Hands-on_Ex1_2.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 1.2</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex2/Hands-on_Ex2_1.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 2.1</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -180,13 +184,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#task" id="toc-task" class="nav-link active" data-scroll-target="#task">Task</a></li>
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
-  <li><a href="#importing-the-od-data" id="toc-importing-the-od-data" class="nav-link" data-scroll-target="#importing-the-od-data"><strong>Importing the OD data</strong></a>
+  <li><a href="#importing-the-od-data" id="toc-importing-the-od-data" class="nav-link" data-scroll-target="#importing-the-od-data">Importing the OD data</a>
   <ul class="collapse">
   <li><a href="#extracting-the-study-data" id="toc-extracting-the-study-data" class="nav-link" data-scroll-target="#extracting-the-study-data">Extracting the study data</a></li>
   </ul></li>
-  <li><a href="#working-with-geospatial-data" id="toc-working-with-geospatial-data" class="nav-link" data-scroll-target="#working-with-geospatial-data"><strong>Working with Geospatial Data</strong></a>
+  <li><a href="#working-with-geospatial-data" id="toc-working-with-geospatial-data" class="nav-link" data-scroll-target="#working-with-geospatial-data">Working with Geospatial Data</a>
   <ul class="collapse">
-  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data"><strong>Importing geospatial data</strong></a></li>
+  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">Importing geospatial data</a></li>
   </ul></li>
   <li><a href="#geospatial-data-wrangling" id="toc-geospatial-data-wrangling" class="nav-link" data-scroll-target="#geospatial-data-wrangling"><strong>Geospatial Data Wrangling</strong></a>
   <ul class="collapse">
@@ -219,7 +223,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 20, 2023</p>
+      <p class="date-modified">November 22, 2023</p>
     </div>
   </div>
     
@@ -264,7 +268,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="importing-the-od-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-the-od-data"><strong>Importing the OD data</strong></h2>
+<h2 class="anchored" data-anchor-id="importing-the-od-data">Importing the OD data</h2>
 <p>Firstly, we will import the <em>Passenger Volume by Origin Destination Bus Stops</em> dataset downloaded from LTA DataMall by using <code>read_csv()</code> or <strong>readr</strong> package.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Task</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Solution</a></li></ul>
@@ -394,14 +398,14 @@ $ TOTAL_TRIPS         &lt;dbl&gt; 7, 2, 3, 10, 5, 4, 3, 22, 3, 3, 7, 1, 3, 1, 3,
 </section>
 </section>
 <section id="working-with-geospatial-data" class="level2">
-<h2 class="anchored" data-anchor-id="working-with-geospatial-data"><strong>Working with Geospatial Data</strong></h2>
+<h2 class="anchored" data-anchor-id="working-with-geospatial-data">Working with Geospatial Data</h2>
 <p>In this section, you are required to import two shapefile into RStudio, they are:</p>
 <ul>
 <li>BusStop: This data provides the location of bus stop as at last quarter of 2022.</li>
 <li>MPSZ-2019: This data provides the sub-zone boundary of URA Master Plan 2019.</li>
 </ul>
 <section id="importing-geospatial-data" class="level3">
-<h3 class="anchored" data-anchor-id="importing-geospatial-data"><strong>Importing geospatial data</strong></h3>
+<h3 class="anchored" data-anchor-id="importing-geospatial-data">Importing geospatial data</h3>
 <p>Two geospatial data will be used in this exercise.</p>
 <p>Note that both geometry formats are different, we will need to transform the coordinates to 3414 in order to have the same projection system.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">

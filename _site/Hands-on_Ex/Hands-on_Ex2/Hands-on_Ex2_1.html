@@ -1151,10 +1151,7 @@ nbdists(nb = k1, coords = coords, longlat = TRUE)</code></pre>
 </div>
 </div>
 </div>
-<p>Interpretation:</p>
-<ul>
-<li>The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.</li>
-</ul>
+<p>Interpretation: - The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.</p>
 </section>
 <section id="computing-fixed-distance-weight-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="computing-fixed-distance-weight-matrix">Computing fixed distance weight matrix</h3>
@@ -1170,7 +1167,6 @@ Percentage nonzero weights: 4.183884
 Average number of links: 3.681818 </code></pre>
 </div>
 </div>
-<p><strong>Quiz:</strong> What is the meaning of “Average number of links: 3.681818” shown above?</p>
 <p>Next, we will use <em>str()</em> to display the content of wm_d62 weight matrix.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(wm_d62)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1273,7 +1269,7 @@ Average number of links: 3.681818 </code></pre>
  - attr(*, "sym")= logi TRUE</code></pre>
 </div>
 </div>
-<p>Another way to display the structure of the weight matrix is to combine <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table"><em>table()</em></a> and <a href="https://r-spatial.github.io/spdep/reference/card.html"><em>card()</em></a> of spdep.</p>
+<p>Another way to display the structure of the weight matrix is to combine <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table"><em>table()</em></a> and <a href="https://r-spatial.github.io/spdep/reference/card.html"><em>card()</em></a> of <strong>spdep</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(hunan<span class="sc">$</span>County, <span class="fu">card</span>(wm_d62))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">

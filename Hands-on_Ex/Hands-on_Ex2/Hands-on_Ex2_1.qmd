@@ -245,14 +245,13 @@ summary(k1dists)
 ```{r}
 knearneigh(coords)
 ```
-## KNN2NB
 
+## KNN2NB
 ```{r}
 k1 <- knn2nb(knearneigh(coords))
 k1
 ```
 ## NBDISTS
-
 ```{r}
 nbdists(k1, coords, longlat = TRUE)
 ```
@@ -261,10 +260,9 @@ nbdists(k1, coords, longlat = TRUE)
 ```{r}
 unlist(nbdists(k1, coords, longlat = TRUE))
 ```
-
 :::
-Interpretation:
 
+Interpretation:
 -   The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.
 
 ### Computing fixed distance weight matrix
@@ -276,15 +274,13 @@ wm_d62 <- dnearneigh(coords, 0, 62, longlat = TRUE)
 wm_d62
 ```
 
-**Quiz:** What is the meaning of "Average number of links: 3.681818" shown above?
-
 Next, we will use *str()* to display the content of wm_d62 weight matrix.
 
 ```{r}
 str(wm_d62)
 ```
 
-Another way to display the structure of the weight matrix is to combine [*table()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table) and [*card()*](https://r-spatial.github.io/spdep/reference/card.html) of spdep.
+Another way to display the structure of the weight matrix is to combine [*table()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table) and [*card()*](https://r-spatial.github.io/spdep/reference/card.html) of **spdep**.
 
 ```{r}
 table(hunan$County, card(wm_d62))

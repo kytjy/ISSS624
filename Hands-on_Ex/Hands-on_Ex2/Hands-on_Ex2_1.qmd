@@ -408,29 +408,27 @@ summary(unlist(rswm_ids$weights))
 
 ## Application of Spatial Weight Matrix
 
-In this section, you will learn how to create four different spatial lagged variables, they are:
--   spatial lag with row-standardized weights,
--   spatial lag as a sum of neighbouring values,
--   spatial window average, and
--   spatial window sum.
+In this section, you will learn how to create four different spatial lagged variables, they are: - spatial lag with row-standardized weights, - spatial lag as a sum of neighbouring values, - spatial window average, and - spatial window sum.
 
 ### Spatial lag with row-standardized weights
 
 #### Step 1: Compute the average neighbor GDPPC value for each polygon
-- These values are often referred to as **spatially lagged values**.
+
+-   These values are often referred to as **spatially lagged values**.
 
 ```{r}
 GDPPC.lag <- lag.listw(rswm_q, hunan$GDPPC)
 GDPPC.lag
 ```
 
-- In the previous section, we retrieved the GDPPC of these five countries by using the code chunk below.
+-   In the previous section, we retrieved the GDPPC of these five countries by using the code chunk below.
 
 ```{r}
 nb1 <- wm_q[[1]]
 nb1 <- hunan$GDPPC[nb1]
 nb1
 ```
+
 #### Step 2: Append the spatially lag GDPPC values onto hunan sf data frame by using the code chunk below.
 
 ```{r}
@@ -440,11 +438,12 @@ colnames(lag.res) <- c("NAME_3", "lag GDPPC")
 hunan <- left_join(hunan,lag.res)
 ```
 
-_ The following table shows the average neighboring income values (stored in the Inc.lag object) for each county.
+\_ The following table shows the average neighboring income values (stored in the Inc.lag object) for each county.
 
 ```{r}
 head(hunan)
 ```
+
 #### Step 3: Plot both the GDPPC and spatial lag GDPPC for comparison
 
 ```{r fig.width=12, fig.height=8}
@@ -455,14 +454,15 @@ tmap_arrange(gdppc, lag_gdppc, asp=1, ncol=2)
 
 ### Spatial lag as a sum of neighboring values
 
-- We can calculate spatial lag as a sum of neighboring values by assigning binary weights. 
-- This requires us to go back to our neighbors list, then apply a function that will assign binary weights, then we use glist = in the nb2listw function to explicitly assign these weights.
+-   We can calculate spatial lag as a sum of neighboring values by assigning binary weights.
+-   This requires us to go back to our neighbors list, then apply a function that will assign binary weights, then we use glist = in the nb2listw function to explicitly assign these weights.
 
 ::: panel-tabset
 ## Assign value
-- We start by applying a function that will assign a value of 1 per each neighbor. 
-- This is done with lapply, which we have been using to manipulate the neighbors structure throughout the past notebooks.
-- Basically it applies a function across each value in the neighbors structure.
+
+-   We start by applying a function that will assign a value of 1 per each neighbor.
+-   This is done with lapply, which we have been using to manipulate the neighbors structure throughout the past notebooks.
+-   Basically it applies a function across each value in the neighbors structure.
 
 ```{r}
 b_weights <- lapply(wm_q, function(x) 0*x + 1)
@@ -473,6 +473,7 @@ b_weights2
 ```
 
 ## Compute lag variable
+
 With the proper weights assigned, we can use lag.listw to compute a lag variable from our weight and GDPPC.
 
 ```{r}
@@ -481,12 +482,12 @@ lag.res <- as.data.frame(lag_sum)
 colnames(lag.res) <- c("NAME_3", "lag_sum GDPPC")
 ```
 
-
 ```{r}
 lag_sum
 ```
 
 ## Append lag_sum GDPPC into hunan
+
 Next, we will append the *lag_sum GDPPC* field into `hunan` sf data frame by using the code chunk below.
 
 ```{r}
@@ -494,6 +495,7 @@ hunan <- left_join(hunan, lag.res)
 ```
 
 ## Plot
+
 Now, We can plot both the *GDPPC* and *Spatial Lag Sum GDPPC* for comparison using the code chunk below.
 
 ```{r fig.width=12, fig.height=8}
@@ -509,6 +511,7 @@ The spatial window average uses row-standardized weights and includes the diagon
 
 ::: panel-tabset
 ## Add diagonal element
+
 To add the diagonal element to the neighbour list, we just need to use *include.self()* from **spdep**.
 
 ```{r}
@@ -526,6 +529,7 @@ wm_qs[[1]]
 Notice that now \[1\] has six neighbours instead of five.
 
 ## Obtain weights
+
 Now we obtain weights with *nb2listw()*
 
 ```{r}
@@ -536,6 +540,7 @@ wm_qs
 Again, we use *nb2listw()* and *glist()* to explicitly assign weight values.
 
 ## Create lag variable
+
 Lastly, we just need to create the lag variable from our weight structure and GDPPC variable.
 
 ```{r}
@@ -543,7 +548,9 @@ lag_w_avg_gpdpc <- lag.listw(wm_qs,
                              hunan$GDPPC)
 lag_w_avg_gpdpc
 ```
+
 ## Convert to data frame
+
 Next, we will convert the lag variable listw object into a data.frame by using *as.data.frame()*.
 
 ```{r}
@@ -555,12 +562,15 @@ colnames(lag_wm_qs.res) <- c("NAME_3", "lag_window_avg GDPPC")
 Note: The third command line on the code chunk above renames the field names of *lag_wm_q1.res* object into *NAME_3* and *lag_window_avg GDPPC* respectively.
 
 ## Left join
+
 Next, the code chunk below will be used to append *lag_window_avg GDPPC* values onto *hunan* sf data.frame by using *left_join()* of **dplyr** package.
 
 ```{r}
 hunan <- left_join(hunan, lag_wm_qs.res)
 ```
+
 ## Compare
+
 To compare the values of lag GDPPC and Spatial window average, `kable()` of Knitr package is used to prepare a table using the code chunk below.
 
 ```{r}
@@ -572,6 +582,7 @@ hunan %>%
 ```
 
 ## Plot
+
 Lastly, *qtm()* of **tmap** package is used to plot the lag_gdppc and w_ave_gdppc maps next to each other for quick comparison.
 
 ```{r fig.width=12, fig.height=8}
@@ -588,13 +599,16 @@ The spatial window sum is the counter part of the window average, but without us
 
 ::: panel-tabset
 ## Add diagonal element
+
 To add the diagonal element to the neighbour list, we just need to use *include.self()* from **spdep**.
 
 ```{r}
 wm_qs <- include.self(wm_q)
 wm_qs
 ```
+
 ## Assign weights
+
 Next, we will assign **binary** weights to the neighbour structure that includes the diagonal element.
 
 ```{r}
@@ -612,7 +626,9 @@ b_weights2 <- nb2listw(wm_qs,
                        style = "B")
 b_weights2
 ```
+
 ## Compute lag variable
+
 With our new weight structure, we can compute the lag variable with *lag.listw()*.
 
 ```{r}
@@ -621,6 +637,7 @@ w_sum_gdppc
 ```
 
 ## Convert to data frame
+
 Next, we will convert the lag variable listw object into a data.frame by using *as.data.frame()*.
 
 ```{r}
@@ -631,12 +648,15 @@ colnames(w_sum_gdppc.res) <- c("NAME_3", "w_sum GDPPC")
 Note: The second command line on the code chunk above renames the field names of *w_sum_gdppc.res* object into *NAME_3* and *w_sum GDPPC* respectively.
 
 ## Left join
+
 Next, the code chunk below will be used to append *w_sum GDPPC* values onto *hunan* sf data.frame by using *left_join()* of **dplyr** package.
 
 ```{r}
 hunan <- left_join(hunan, w_sum_gdppc.res)
 ```
+
 ## Compare
+
 To compare the values of lag GDPPC and Spatial window average, `kable()` of Knitr package is used to prepare a table using the code chunk below.
 
 ```{r}
@@ -646,6 +666,7 @@ hunan %>%
 ```
 
 ## Plot
+
 Lastly, *qtm()* of **tmap** package is used to plot the lag_sum GDPPC and w_sum_gdppc maps next to each other for quick comparison.
 
 ```{r fig.width=12, fig.height=8}
@@ -655,5 +676,10 @@ tmap_arrange(lag_sum_gdppc, w_sum_gdppc, asp=1, ncol=2)
 :::
 
 :::{.note}
-For more effective comparison, it is advisible to use the core tmap mapping functions.
+::::{.note.header}
+Note
+::::
+::::{.notes-container}
+For more effective comparison, it is advisable to use the core tmap mapping functions.
+::::
 :::

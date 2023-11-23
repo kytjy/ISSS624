@@ -24,7 +24,8 @@ pacman::p_load(sf, tidyverse)
 
 ## Importing Geospatial Data
 
-### Importing polygon feature data in shapefile format
+::: panel-tabset
+## Importing polygon feature data in shapefile format
 
 -   *st_read()* function of sf package:
 
@@ -49,7 +50,7 @@ mpsz = st_read(dsn = "data/geospatial",
 
     -   Bounding box provides x extend and y extend of the data
 
-### Importing polyline feature data in shapefile form
+## Importing polyline feature data in shapefile form
 
 -   Imports CyclingPath shapefile into R as line feature data frame
 
@@ -64,7 +65,7 @@ cyclingpath = st_read(dsn = "data/geospatial",
 
     -   **svy21** projected coordinates system
 
-### Importing GIS data in kml format
+## Importing GIS data in kml format
 
 -   PreSchoolsLocation is in kml format
 
@@ -78,9 +79,11 @@ preschool = st_read("data/geospatial/PreSchoolsLocation.kml")
 
     -   preschool = [point]{.underline} feature data frame
 
+:::
 ## Checking the Content of a Simple Feature Data Frame
 
-### Working with *st_geometry()*
+::: panel-tabset
+## Working with *st_geometry()*
 
 -   Column in sf data.frame that contains geometries is a list, of class `sfc`
 
@@ -92,7 +95,7 @@ st_geometry(mpsz)
 
 -   Prints out basic info of feature class, eg type of geometry, geographic extent of feature and coordinate system of the data
 
-### Working with glimpse()
+## Working with glimpse()
 
 -   *glimpse()* report shows data types of each field
 
@@ -102,7 +105,7 @@ st_geometry(mpsz)
 glimpse(mpsz)
 ```
 
-### Working with head()
+## Working with head()
 
 -   *head()* used to display complete information of a feature object
 
@@ -111,6 +114,7 @@ glimpse(mpsz)
 ```{r}
 head(mpsz, n=5)
 ```
+:::
 
 ## Plotting the Geospatial Data
 

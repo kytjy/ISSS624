@@ -203,25 +203,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#cluster-and-outlier-analysis" id="toc-cluster-and-outlier-analysis" class="nav-link" data-scroll-target="#cluster-and-outlier-analysis">6. Cluster and Outlier Analysis</a>
   <ul class="collapse">
   <li><a href="#computing-local-morans-i" id="toc-computing-local-morans-i" class="nav-link" data-scroll-target="#computing-local-morans-i">Computing Local Moran’s I</a></li>
+  </ul></li>
   <li><a href="#creating-a-lisa-cluster-map" id="toc-creating-a-lisa-cluster-map" class="nav-link" data-scroll-target="#creating-a-lisa-cluster-map">7. Creating a LISA Cluster Map</a>
   <ul class="collapse">
   <li><a href="#plotting-moran-scatterplot" id="toc-plotting-moran-scatterplot" class="nav-link" data-scroll-target="#plotting-moran-scatterplot">Plotting Moran scatterplot</a></li>
   <li><a href="#plotting-moran-scatterplot-with-standardised-variable" id="toc-plotting-moran-scatterplot-with-standardised-variable" class="nav-link" data-scroll-target="#plotting-moran-scatterplot-with-standardised-variable">Plotting Moran scatterplot with standardised variable</a></li>
   <li><a href="#preparing-lisa-map-classes" id="toc-preparing-lisa-map-classes" class="nav-link" data-scroll-target="#preparing-lisa-map-classes">Preparing LISA map classes</a></li>
   <li><a href="#plotting-lisa-map" id="toc-plotting-lisa-map" class="nav-link" data-scroll-target="#plotting-lisa-map">Plotting LISA map</a></li>
-  </ul></li>
   <li><a href="#hot-spot-and-cold-spot-area-analysis" id="toc-hot-spot-and-cold-spot-area-analysis" class="nav-link" data-scroll-target="#hot-spot-and-cold-spot-area-analysis">Hot Spot and Cold Spot Area Analysis</a>
   <ul class="collapse">
   <li><a href="#getis-and-ords-g-statistics" id="toc-getis-and-ords-g-statistics" class="nav-link" data-scroll-target="#getis-and-ords-g-statistics">Getis and Ord’s G-Statistics</a></li>
-  <li><a href="#deriving-distance-based-weight-matrix" id="toc-deriving-distance-based-weight-matrix" class="nav-link" data-scroll-target="#deriving-distance-based-weight-matrix">Deriving distance-based weight matrix</a></li>
-  <li><a href="#computing-adaptive-distance-weight-matrix" id="toc-computing-adaptive-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-adaptive-distance-weight-matrix">Computing adaptive distance weight matrix</a></li>
-  </ul></li>
-  <li><a href="#computing-gi-statistics" id="toc-computing-gi-statistics" class="nav-link" data-scroll-target="#computing-gi-statistics">Computing Gi statistics</a>
-  <ul class="collapse">
-  <li><a href="#gi-statistics-using-fixed-distance" id="toc-gi-statistics-using-fixed-distance" class="nav-link" data-scroll-target="#gi-statistics-using-fixed-distance">Gi statistics using fixed distance</a></li>
-  <li><a href="#mapping-gi-values-with-fixed-distance-weights" id="toc-mapping-gi-values-with-fixed-distance-weights" class="nav-link" data-scroll-target="#mapping-gi-values-with-fixed-distance-weights">Mapping Gi values with fixed distance weights</a></li>
-  <li><a href="#gi-statistics-using-adaptive-distance" id="toc-gi-statistics-using-adaptive-distance" class="nav-link" data-scroll-target="#gi-statistics-using-adaptive-distance">Gi statistics using adaptive distance</a></li>
-  <li><a href="#mapping-gi-values-with-adaptive-distance-weights" id="toc-mapping-gi-values-with-adaptive-distance-weights" class="nav-link" data-scroll-target="#mapping-gi-values-with-adaptive-distance-weights">Mapping Gi values with adaptive distance weights</a></li>
+  <li><a href="#deriving-distance-based-weight-matrix" id="toc-deriving-distance-based-weight-matrix" class="nav-link" data-scroll-target="#deriving-distance-based-weight-matrix">1. Deriving distance-based weight matrix</a></li>
+  <li><a href="#computing-gi-statistics" id="toc-computing-gi-statistics" class="nav-link" data-scroll-target="#computing-gi-statistics">2. Computing Gi statistics</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -830,7 +823,7 @@ Zixing        -7.6849e-01 -8.8210e-02  9.4057e-01 -7.0144e-01         0.4830</co
 </div>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Mapping the local Moran’s I</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Mapping local Moran’s I values</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-3" role="tab" aria-controls="tabset-6-3" aria-selected="false">Mapping local Moran’s I p-values</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-4" role="tab" aria-controls="tabset-6-4" aria-selected="false">Mapping both local Moran’s I values and p-values</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Mapping the Local Moran’s I</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Mapping local Moran’s I values</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-3" role="tab" aria-controls="tabset-6-3" aria-selected="false">Mapping Local Moran’s I p-values</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-4" role="tab" aria-controls="tabset-6-4" aria-selected="false">Mapping both Local Moran’s I values and p-values</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <p>Before mapping the local Moran’s I map, it is wise to append the local Moran’s I dataframe (i.e.&nbsp;localMI) onto hunan SpatialPolygonDataFrame.</p>
@@ -935,8 +928,9 @@ First 10 features:
 </div>
 </div>
 </section>
-<section id="creating-a-lisa-cluster-map" class="level2">
-<h2 class="anchored" data-anchor-id="creating-a-lisa-cluster-map">7. Creating a LISA Cluster Map</h2>
+</section>
+<section id="creating-a-lisa-cluster-map" class="level1">
+<h1>7. Creating a LISA Cluster Map</h1>
 <p>The LISA Cluster Map shows the significant locations color coded by type of spatial autocorrelation. The first step before we can generate the LISA cluster map is to plot the Moran scatterplot.</p>
 <section id="plotting-moran-scatterplot" class="level3">
 <h3 class="anchored" data-anchor-id="plotting-moran-scatterplot">Plotting Moran scatterplot</h3>
@@ -944,18 +938,31 @@ First 10 features:
 <p>The code chunk below plots the Moran scatterplot of GDPPC 2012 by using <a href="https://r-spatial.github.io/spdep/reference/moran.plot.html"><em>moran.plot()</em></a> of <strong>spdep</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>nci <span class="ot">&lt;-</span> <span class="fu">moran.plot</span>(hunan<span class="sc">$</span>GDPPC, rswm_q,</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">labels=</span><span class="fu">as.character</span>(hunan<span class="sc">$</span>County), </span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">labels=</span><span class="fu">as.character</span>(hunan<span class="sc">$</span>County), <span class="co">#seems like no difference if as.character is removed</span></span>
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">xlab=</span><span class="st">"GDPPC 2012"</span>, </span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylab=</span><span class="st">"Spatially Lag GDPPC 2012"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="576"></p>
 </div>
 </div>
-<p>Notice that the plot is split in 4 quadrants. The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC. This are the high-high locations in the lesson slide.</p>
+<p>Notice that the plot is split in 4 quadrants. The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is high-high locations in the lesson slide. HH Autocorrelation: Positive Cluster: “I’m high and my neighbours are high.”</p>
+</div>
+</div>
 </section>
 <section id="plotting-moran-scatterplot-with-standardised-variable" class="level3">
 <h3 class="anchored" data-anchor-id="plotting-moran-scatterplot-with-standardised-variable">Plotting Moran scatterplot with standardised variable</h3>
-<p>First we will use <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/scale"><em>scale()</em></a> to centers and scales the variable. Here centering is done by subtracting the mean (omitting NAs) the corresponding columns, and scaling is done by dividing the (centered) variable by their standard deviations.</p>
+<p>First, use <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/scale"><em>scale()</em></a> to center and scale the variable. Here centering is done by subtracting the mean (omitting NAs) the corresponding columns, and scaling is done by dividing the (centered) variable by their standard deviations.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>hunan<span class="sc">$</span>Z.GDPPC <span class="ot">&lt;-</span> <span class="fu">scale</span>(hunan<span class="sc">$</span>GDPPC) <span class="sc">%&gt;%</span> </span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  as.vector </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -974,23 +981,35 @@ First 10 features:
 </section>
 <section id="preparing-lisa-map-classes" class="level3">
 <h3 class="anchored" data-anchor-id="preparing-lisa-map-classes">Preparing LISA map classes</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Conver to Vector</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Derive spatially lagged GDPPC</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Center variable around mean</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">Set alpha value</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-5" role="tab" aria-controls="tabset-7-5" aria-selected="false">Define quadrants</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-6" role="tab" aria-controls="tabset-7-6" aria-selected="false">Place Moran</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-7" role="tab" aria-controls="tabset-7-7" aria-selected="false">Summarised Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <p>The code chunks below show the steps to prepare a LISA cluster map.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>quadrant <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">"numeric"</span>,<span class="at">length=</span><span class="fu">nrow</span>(localMI))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Next, derives the spatially lagged variable of interest (i.e.&nbsp;GDPPC) and centers the spatially lagged variable around its mean.</p>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<p>Next, derive the spatially lagged variable of interest (i.e.&nbsp;GDPPC) and centers the spatially lagged variable around its mean.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>hunan<span class="sc">$</span>lag_GDPPC <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC)</span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>DV <span class="ot">&lt;-</span> hunan<span class="sc">$</span>lag_GDPPC <span class="sc">-</span> <span class="fu">mean</span>(hunan<span class="sc">$</span>lag_GDPPC)     </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+<div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
 <p>This is follow by centering the local Moran’s around the mean.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>LM_I <span class="ot">&lt;-</span> localMI[,<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">mean</span>(localMI[,<span class="dv">1</span>])    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+<div id="tabset-7-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-4-tab">
 <p>Next, we will set a statistical significance level for the local Moran.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>signif <span class="ot">&lt;-</span> <span class="fl">0.05</span>       </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+<div id="tabset-7-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-5-tab">
 <p>These four command lines define the low-low (1), low-high (2), high-low (3) and high-high (4) categories.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
@@ -998,10 +1017,14 @@ First 10 features:
 <span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&lt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&lt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">3</span>  </span>
 <span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">4</span>      </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Lastly, places non-significant Moran in the category 0.</p>
+</div>
+<div id="tabset-7-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-6-tab">
+<p>Lastly, place non-significant Moran in the category 0.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>quadrant[localMI[,<span class="dv">5</span>]<span class="sc">&gt;</span>signif] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+<div id="tabset-7-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-7-tab">
 <p>In fact, we can combined all the steps into one single code chunk as shown below:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>quadrant <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">"numeric"</span>,<span class="at">length=</span><span class="fu">nrow</span>(localMI))</span>
@@ -1015,9 +1038,16 @@ First 10 features:
 <span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>quadrant[DV <span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> LM_I<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">4</span>    </span>
 <span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>quadrant[localMI[,<span class="dv">5</span>]<span class="sc">&gt;</span>signif] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+</div>
+</div>
 </section>
 <section id="plotting-lisa-map" class="level3">
 <h3 class="anchored" data-anchor-id="plotting-lisa-map">Plotting LISA map</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">LISA Map</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Local Moran’s I and p-values</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-3" role="tab" aria-controls="tabset-8-3" aria-selected="false">Local Moran’s I and p-values with colour gradient</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <p>Now, we can build the LISA map by using the code chunks below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>hunan.localMI<span class="sc">$</span>quadrant <span class="ot">&lt;-</span> quadrant</span>
@@ -1036,7 +1066,9 @@ First 10 features:
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>For effective interpretation, it is better to plot both the local Moran’s I values map and its corresponding p-values map next to each other.</p>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<p>Plot both the local Moran’s I values map and its corresponding p-values map next to each other for easier comparison.</p>
 <p>The code chunk below will be used to create such visualisation.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
@@ -1060,41 +1092,47 @@ First 10 features:
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
+</div>
+<div id="tabset-8-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-3-tab">
 <p>We can also include the local Moran’s I map and p-value map as shown below for easy comparison.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
-<blockquote class="blockquote">
-<p>Question: What statistical observations can you draw from the LISA map above?</p>
-</blockquote>
-</section>
+</div>
+</div>
+</div>
 </section>
 <section id="hot-spot-and-cold-spot-area-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="hot-spot-and-cold-spot-area-analysis">Hot Spot and Cold Spot Area Analysis</h2>
-<p>Beside detecting cluster and outliers, localised spatial statistics can be also used to detect hot spot and/or cold spot areas.</p>
-<p>The term ‘hot spot’ has been used generically across disciplines to describe a region or value that is higher relative to its surroundings (Lepers et al 2005, Aben et al 2012, Isobe et al 2015).</p>
+<p>Localised spatial statistics can be also used to detect hot spot and/or cold spot areas.</p>
 <section id="getis-and-ords-g-statistics" class="level3">
 <h3 class="anchored" data-anchor-id="getis-and-ords-g-statistics">Getis and Ord’s G-Statistics</h3>
-<p>An alternative spatial statistics to detect spatial anomalies is the Getis and Ord’s G-statistics (Getis and Ord, 1972; Ord and Getis, 1995). It looks at neighbours within a defined proximity to identify where either high or low values clutser spatially. Here, statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.</p>
-<p>The analysis consists of three steps:</p>
 <ul>
+<li><p>Used to to detect spatial anomalies is the Getis and Ord’s G-statistics .</p></li>
+<li><p>Looks at neighbours within a defined proximity to identify where either high or low values clutser spatially.</p></li>
+<li><p>Here, statistically significant hot-spots are recognised as areas of high values where other areas within a neighbourhood range also share high values too.</p></li>
+</ul>
+<p>The analysis consists of three steps:</p>
+<ol type="1">
 <li>Deriving spatial weight matrix</li>
 <li>Computing Gi statistics</li>
 <li>Mapping Gi statistics</li>
-</ul>
+</ol>
 </section>
 <section id="deriving-distance-based-weight-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="deriving-distance-based-weight-matrix">Deriving distance-based weight matrix</h3>
-<p>First, we need to define a new set of neighbours. Whist the spatial autocorrelation considered units which shared borders, for Getis-Ord we are defining neighbours based on distance.</p>
+<h3 class="anchored" data-anchor-id="deriving-distance-based-weight-matrix">1. Deriving distance-based weight matrix</h3>
+<p>First, we need to define a new set of neighbours. While the spatial autocorrelation considered units which shared borders, for Getis-Ord we are defining neighbours based on distance.</p>
 <p>There are two type of distance-based proximity matrix, they are:</p>
 <ul>
 <li>fixed distance weight matrix; and</li>
 <li>adaptive distance weight matrix.</li>
 </ul>
-<section id="deriving-the-centroid" class="level4">
-<h4 class="anchored" data-anchor-id="deriving-the-centroid">Deriving the centroid</h4>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Deriving the centroid</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Determine the cut-off distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">Computing fixed distance weight matrix</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-4" role="tab" aria-controls="tabset-9-4" aria-selected="false">Computing adaptive distance weight matrix</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <p>We will need points to associate with each polygon before we can make our connectivity graph. It will be a little more complicated than just running <em>st_centroid()</em> on the sf object: <strong>us.bound</strong>. We need the coordinates in a separate data frame for this to work. To do this we will use a mapping function. The mapping function applies a given function to each element of a vector and returns a vector of the same length. Our input vector will be the geometry column of us.bound. Our function will be <em>st_centroid()</em>. We will be using map_dbl variation of map from the purrr package. For more documentation, check out map documentation</p>
 <p>To get our longitude values we map the <em>st_centroid()</em> function over the geometry column of us.bound and access the longitude value through double bracket notation [[]] and 1. This allows us to get only the longitude, which is the first value in each centroid.</p>
 <div class="cell">
@@ -1108,9 +1146,8 @@ First 10 features:
 <div class="cell">
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">cbind</span>(longitude, latitude)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="determine-the-cut-off-distance" class="level4">
-<h4 class="anchored" data-anchor-id="determine-the-cut-off-distance">Determine the cut-off distance</h4>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <p>Firstly, we need to determine the upper limit for distance band by using the steps below:</p>
 <ul>
 <li>Return a matrix with the indices of points belonging to the set of the k nearest neighbours of each other by using <a href="https://r-spatial.github.io/spdep/reference/knearneigh.html"><em>knearneigh()</em></a> of <strong>spdep</strong>.</li>
@@ -1129,9 +1166,8 @@ First 10 features:
 </div>
 </div>
 <p>The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.</p>
-</section>
-<section id="computing-fixed-distance-weight-matrix" class="level4">
-<h4 class="anchored" data-anchor-id="computing-fixed-distance-weight-matrix">Computing fixed distance weight matrix</h4>
+</div>
+<div id="tabset-9-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-3-tab">
 <p>Now, we will compute the distance weight matrix by using <a href="https://r-spatial.github.io/spdep/reference/dnearneigh.html"><em>dnearneigh()</em></a> as shown in the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>wm_d62 <span class="ot">&lt;-</span> <span class="fu">dnearneigh</span>(coords, <span class="dv">0</span>, <span class="dv">62</span>, <span class="at">longlat =</span> <span class="cn">TRUE</span>)</span>
@@ -1145,6 +1181,7 @@ Average number of links: 3.681818 </code></pre>
 </div>
 </div>
 <p>Next, <em>nb2listw()</em> is used to convert the nb object into spatial weights object.</p>
+<p>The output spatial weights object is called <code>wm62_lw</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>wm62_lw <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_d62, <span class="at">style =</span> <span class="st">'B'</span>)</span>
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(wm62_lw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1170,11 +1207,8 @@ Weights constants summary:
 B 88 7744 324 648 5440</code></pre>
 </div>
 </div>
-<p>The output spatial weights object is called <code>wm62_lw</code>.</p>
-</section>
-</section>
-<section id="computing-adaptive-distance-weight-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="computing-adaptive-distance-weight-matrix">Computing adaptive distance weight matrix</h3>
+</div>
+<div id="tabset-9-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-4-tab">
 <p>One of the characteristics of fixed distance weight matrix is that more densely settled areas (usually the urban areas) tend to have more neighbours and the less densely settled areas (usually the rural counties) tend to have lesser neighbours. Having many neighbours smoothes the neighbour relationship across more neighbours.</p>
 <p>It is possible to control the numbers of neighbours directly using k-nearest neighbours, either accepting asymmetric neighbours or imposing symmetry as shown in the code chunk below.</p>
 <div class="cell">
@@ -1216,12 +1250,16 @@ Weights constants summary:
 B 88 7744 704 1300 23014</code></pre>
 </div>
 </div>
+</div>
+</div>
+</div>
 </section>
-</section>
-<section id="computing-gi-statistics" class="level2">
-<h2 class="anchored" data-anchor-id="computing-gi-statistics">Computing Gi statistics</h2>
-<section id="gi-statistics-using-fixed-distance" class="level3">
-<h3 class="anchored" data-anchor-id="gi-statistics-using-fixed-distance">Gi statistics using fixed distance</h3>
+<section id="computing-gi-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="computing-gi-statistics">2. Computing Gi statistics</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Gi statistics using fixed distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Mapping Gi values with fixed distance weights</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">Gi statistics using adaptive distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-4" role="tab" aria-controls="tabset-10-4" aria-selected="false">Mapping Gi values with adaptive distance weights</a></li></ul>
+<div class="tab-content">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>fips <span class="ot">&lt;-</span> <span class="fu">order</span>(hunan<span class="sc">$</span>County)</span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>gi.fixed <span class="ot">&lt;-</span> <span class="fu">localG</span>(hunan<span class="sc">$</span>GDPPC, wm62_lw)</span>
@@ -1356,62 +1394,91 @@ attr(,"class")
 <p>Next, we will join the Gi values to their corresponding hunan sf data frame by using the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>hunan.gi <span class="ot">&lt;-</span> <span class="fu">cbind</span>(hunan, <span class="fu">as.matrix</span>(gi.fixed)) <span class="sc">%&gt;%</span></span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">gstat_fixed =</span> as.matrix.gi.fixed.)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">gstat_fixed =</span> as.matrix.gi.fixed.)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>hunan.gi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 88 features and 9 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812
+Geodetic CRS:  WGS 84
+First 10 features:
+     NAME_2  ID_3    NAME_3   ENGTYPE_3    County GDPPC      Z.GDPPC lag_GDPPC
+1   Changde 21098   Anxiang      County   Anxiang 23667 -0.049205949  24847.20
+2   Changde 21100   Hanshou      County   Hanshou 20981 -0.228341158  22724.80
+3   Changde 21101    Jinshi County City    Jinshi 34592  0.679406172  24143.25
+4   Changde 21102        Li      County        Li 24473  0.004547952  27737.50
+5   Changde 21103     Linli      County     Linli 25554  0.076642204  27270.25
+6   Changde 21104    Shimen      County    Shimen 27137  0.182215933  21248.80
+7  Changsha 21109   Liuyang County City   Liuyang 63118  2.581867439  43747.00
+8  Changsha 21110 Ningxiang      County Ningxiang 62202  2.520777398  33582.71
+9  Changsha 21111 Wangcheng      County Wangcheng 70666  3.085260051  45651.17
+10 Chenzhou 21112     Anren      County     Anren 12761 -0.776550918  32027.62
+   gstat_fixed                       geometry
+1   0.43607584 POLYGON ((112.0625 29.75523...
+2  -0.26550565 POLYGON ((112.2288 29.11684...
+3  -0.07303367 POLYGON ((111.8927 29.6013,...
+4   0.41301703 POLYGON ((111.3731 29.94649...
+5   0.27307058 POLYGON ((111.6324 29.76288...
+6  -0.37751078 POLYGON ((110.8825 30.11675...
+7   2.86389882 POLYGON ((113.9905 28.5682,...
+8   2.79435042 POLYGON ((112.7181 28.38299...
+9   5.21612540 POLYGON ((112.7914 28.52688...
+10  0.22823660 POLYGON ((113.1757 26.82734...</code></pre>
+</div>
 </div>
 <p>In fact, the code chunk above performs three tasks. First, it convert the output vector (i.e.&nbsp;<em>gi.fixed</em>) into r matrix object by using <em>as.matrix()</em>. Next, <em>cbind()</em> is used to join hunan@data and <em>gi.fixed</em> matrix to produce a new SpatialPolygonDataFrame called <em>hunan.gi</em>. Lastly, the field name of the gi values is renamed to <em>gstat_fixed</em> by using <em>rename()</em>.</p>
-</section>
-<section id="mapping-gi-values-with-fixed-distance-weights" class="level3">
-<h3 class="anchored" data-anchor-id="mapping-gi-values-with-fixed-distance-weights">Mapping Gi values with fixed distance weights</h3>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <p>The code chunk below shows the functions used to map the Gi values derived using fixed distance weight matrix.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>Gimap <span class="ot">&lt;-</span><span class="fu">tm_shape</span>(hunan.gi) <span class="sc">+</span></span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"gstat_fixed"</span>, </span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"pretty"</span>,</span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette=</span><span class="st">"-RdBu"</span>,</span>
-<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"local Gi"</span>) <span class="sc">+</span></span>
-<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
-<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(gdppc, Gimap, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>Gimap <span class="ot">&lt;-</span><span class="fu">tm_shape</span>(hunan.gi) <span class="sc">+</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"gstat_fixed"</span>, </span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"pretty"</span>,</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette=</span><span class="st">"-RdBu"</span>,</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"local Gi"</span>) <span class="sc">+</span></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(gdppc, Gimap, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
-<blockquote class="blockquote">
-<p>Question: What statistical observation can you draw from the Gi map above?</p>
-</blockquote>
-</section>
-<section id="gi-statistics-using-adaptive-distance" class="level3">
-<h3 class="anchored" data-anchor-id="gi-statistics-using-adaptive-distance">Gi statistics using adaptive distance</h3>
+</div>
+<div id="tabset-10-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-3-tab">
 <p>The code chunk below are used to compute the Gi values for GDPPC2012 by using an adaptive distance weight matrix (i.e <em>knb_lw</em>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>fips <span class="ot">&lt;-</span> <span class="fu">order</span>(hunan<span class="sc">$</span>County)</span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>gi.adaptive <span class="ot">&lt;-</span> <span class="fu">localG</span>(hunan<span class="sc">$</span>GDPPC, knn_lw)</span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>hunan.gi <span class="ot">&lt;-</span> <span class="fu">cbind</span>(hunan, <span class="fu">as.matrix</span>(gi.adaptive)) <span class="sc">%&gt;%</span></span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">gstat_adaptive =</span> as.matrix.gi.adaptive.)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>fips <span class="ot">&lt;-</span> <span class="fu">order</span>(hunan<span class="sc">$</span>County)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>gi.adaptive <span class="ot">&lt;-</span> <span class="fu">localG</span>(hunan<span class="sc">$</span>GDPPC, knn_lw)</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>hunan.gi <span class="ot">&lt;-</span> <span class="fu">cbind</span>(hunan, <span class="fu">as.matrix</span>(gi.adaptive)) <span class="sc">%&gt;%</span></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">gstat_adaptive =</span> as.matrix.gi.adaptive.)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="mapping-gi-values-with-adaptive-distance-weights" class="level3">
-<h3 class="anchored" data-anchor-id="mapping-gi-values-with-adaptive-distance-weights">Mapping Gi values with adaptive distance weights</h3>
+</div>
+<div id="tabset-10-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-4-tab">
 <p>It is time for us to visualise the locations of hot spot and cold spot areas. The choropleth mapping functions of <strong>tmap</strong> package will be used to map the Gi values.</p>
 <p>The code chunk below shows the functions used to map the Gi values derived using fixed distance weight matrix.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>gdppc<span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>Gimap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.gi) <span class="sc">+</span> </span>
-<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"gstat_adaptive"</span>, </span>
-<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"pretty"</span>, </span>
-<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette=</span><span class="st">"-RdBu"</span>, </span>
-<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"local Gi"</span>) <span class="sc">+</span> </span>
-<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
-<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(gdppc, </span>
-<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>             Gimap, </span>
-<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">asp=</span><span class="dv">1</span>, </span>
-<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>gdppc<span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>Gimap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan.gi) <span class="sc">+</span> </span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">"gstat_adaptive"</span>, </span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"pretty"</span>, </span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette=</span><span class="st">"-RdBu"</span>, </span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"local Gi"</span>) <span class="sc">+</span> </span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(gdppc, </span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>             Gimap, </span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">asp=</span><span class="dv">1</span>, </span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_2_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+</div>
 </div>
 </div>
 

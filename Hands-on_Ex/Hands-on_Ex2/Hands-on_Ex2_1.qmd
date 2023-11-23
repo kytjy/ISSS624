@@ -654,4 +654,6 @@ tmap_arrange(lag_sum_gdppc, w_sum_gdppc, asp=1, ncol=2)
 ```
 :::
 
-Note: For more effective comparison, it is advicible to use the core tmap mapping functions.
+:::{.note}
+For more effective comparison, it is advisible to use the core tmap mapping functions.
+:::

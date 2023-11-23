@@ -40,7 +40,7 @@ pacman::p_load(sf, spdep, tmap, tidyverse)
 ## Import & Preparation
 
 :::panel-tabset
-##Aspatial
+## Aspatial
 
 Firstly, we will import the *Passenger Volume by Origin Destination Bus Stops* dataset downloaded from LTA DataMall by using `read_csv()` or **readr** package.
 

@@ -544,5 +544,26 @@
     "title": "Geospatial Data Analytics",
     "section": "",
     "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
+  },
+  {
+    "objectID": "Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html#the-data",
+    "href": "Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html#the-data",
+    "title": "Take-home Exercise 1: Geospatial Analytics for Public Good",
+    "section": "The Data",
+    "text": "The Data"
+  },
+  {
+    "objectID": "Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html#import-preparation",
+    "href": "Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html#import-preparation",
+    "title": "Take-home Exercise 1: Geospatial Analytics for Public Good",
+    "section": "Import & Preparation",
+    "text": "Import & Preparation\n:::panel-tabset ##Aspatial\nFirstly, we will import the Passenger Volume by Origin Destination Bus Stops dataset downloaded from LTA DataMall by using read_csv() or readr package.\n\nodbus &lt;- read_csv(\"data/aspatial/origin_destination_bus_202308.csv\")"
+  },
+  {
+    "objectID": "Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html#geospatial",
+    "href": "Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html#geospatial",
+    "title": "Take-home Exercise 1: Geospatial Analytics for Public Good",
+    "section": "Geospatial",
+    "text": "Geospatial"
   }
 ]

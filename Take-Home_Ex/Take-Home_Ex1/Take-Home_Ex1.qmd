@@ -9,3 +9,44 @@ execute:
   warning: false #dont display if there are any warnings
 editor: visual
 ---
+
+# 1 Overview
+
+## Context
+
+## Objectives
+
+# 2 Getting Started
+
+Ensure that **spdep**, **sf**, **tmap** and **tidyverse** packages are installed:
+
+-   sf is use for importing and handling geospatial data in R,
+-   tidyverse is mainly use for wrangling attribute data in R,
+-   spdep will be used to compute spatial weights, global and local spatial autocorrelation statistics, and
+-   tmap will be used to prepare cartographic quality chropleth map.
+
+```{r}
+pacman::p_load(sf, spdep, tmap, tidyverse)
+
+# -   Creates a package list containing the necessary R packages
+# -   Checks if the R packages in the package list have been installed
+# -   If not installed, will install the missing packages & launch into R environment.
+```
+
+# 3 **Data Preparation**
+
+## The Data
+
+## Import & Preparation
+
+:::panel-tabset
+##Aspatial
+
+Firstly, we will import the *Passenger Volume by Origin Destination Bus Stops* dataset downloaded from LTA DataMall by using `read_csv()` or **readr** package.
+
+```{r}
+odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
+```
+## Geospatial
+
+

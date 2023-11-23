@@ -193,7 +193,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#loading-data-into-r-environment" id="toc-loading-data-into-r-environment" class="nav-link" data-scroll-target="#loading-data-into-r-environment">Loading Data Into R Environment</a></li>
   <li><a href="#visualising-regional-development-indicator" id="toc-visualising-regional-development-indicator" class="nav-link" data-scroll-target="#visualising-regional-development-indicator">Visualising Regional Development Indicator</a></li>
-  <li><a href="#computing-contiguity-spatial-weights" id="toc-computing-contiguity-spatial-weights" class="nav-link" data-scroll-target="#computing-contiguity-spatial-weights">Computing Contiguity Spatial Weights</a>
+  <li><a href="#computing-contiguityadjacency-spatial-weights" id="toc-computing-contiguityadjacency-spatial-weights" class="nav-link" data-scroll-target="#computing-contiguityadjacency-spatial-weights">Computing Contiguity/Adjacency Spatial Weights</a>
   <ul class="collapse">
   <li><a href="#computing-contiguity-based-neighbours" id="toc-computing-contiguity-based-neighbours" class="nav-link" data-scroll-target="#computing-contiguity-based-neighbours">Computing contiguity based neighbours</a></li>
   <li><a href="#visualising-contiguity-weights" id="toc-visualising-contiguity-weights" class="nav-link" data-scroll-target="#visualising-contiguity-weights">Visualising contiguity weights</a></li>
@@ -214,10 +214,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#application-of-spatial-weight-matrix" id="toc-application-of-spatial-weight-matrix" class="nav-link" data-scroll-target="#application-of-spatial-weight-matrix">Application of Spatial Weight Matrix</a>
   <ul class="collapse">
-  <li><a href="#spatial-lag-with-row-standardized-weights" id="toc-spatial-lag-with-row-standardized-weights" class="nav-link" data-scroll-target="#spatial-lag-with-row-standardized-weights">Spatial lag with row-standardized weights</a></li>
-  <li><a href="#spatial-lag-as-a-sum-of-neighboring-values" id="toc-spatial-lag-as-a-sum-of-neighboring-values" class="nav-link" data-scroll-target="#spatial-lag-as-a-sum-of-neighboring-values">Spatial lag as a sum of neighboring values</a></li>
-  <li><a href="#spatial-window-average" id="toc-spatial-window-average" class="nav-link" data-scroll-target="#spatial-window-average">Spatial window average</a></li>
-  <li><a href="#spatial-window-sum" id="toc-spatial-window-sum" class="nav-link" data-scroll-target="#spatial-window-sum">Spatial window sum</a></li>
+  <li><a href="#a-spatial-lag-with-row-standardized-weights" id="toc-a-spatial-lag-with-row-standardized-weights" class="nav-link" data-scroll-target="#a-spatial-lag-with-row-standardized-weights">(a) Spatial lag with row-standardized weights</a></li>
+  <li><a href="#b-spatial-lag-as-a-sum-of-neighboring-values" id="toc-b-spatial-lag-as-a-sum-of-neighboring-values" class="nav-link" data-scroll-target="#b-spatial-lag-as-a-sum-of-neighboring-values">(b) Spatial lag as a sum of neighboring values</a></li>
+  <li><a href="#c-spatial-window-average" id="toc-c-spatial-window-average" class="nav-link" data-scroll-target="#c-spatial-window-average">(c) Spatial window average</a></li>
+  <li><a href="#d-spatial-window-sum" id="toc-d-spatial-window-sum" class="nav-link" data-scroll-target="#d-spatial-window-sum">(d) Spatial window sum</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -245,7 +245,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 23, 2023</p>
+      <p class="date-modified">November 24, 2023</p>
     </div>
   </div>
     
@@ -343,8 +343,8 @@ Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
 </section>
-<section id="computing-contiguity-spatial-weights" class="level2">
-<h2 class="anchored" data-anchor-id="computing-contiguity-spatial-weights">Computing Contiguity Spatial Weights</h2>
+<section id="computing-contiguityadjacency-spatial-weights" class="level2">
+<h2 class="anchored" data-anchor-id="computing-contiguityadjacency-spatial-weights">Computing Contiguity/Adjacency Spatial Weights</h2>
 <ul>
 <li><p><em>poly2nb()</em> of <strong>spdep</strong> package to compute contiguity weight matrices for the study area.</p></li>
 <li><p>This function builds a neighbours list based on regions with contiguous boundaries. If you look at the documentation you will see that you can pass a “queen” argument that takes TRUE or FALSE as options. If you do not specify this argument the default is set to TRUE, that is, if you don’t specify queen = FALSE this function will return a list of first order neighbours using the Queen criteria.</p></li>
@@ -1373,8 +1373,8 @@ Non-symmetric neighbours list</code></pre>
 <section id="step-2-row-standardised-weights-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="step-2-row-standardised-weights-matrix">Step 2: Row-standardised weights matrix</h3>
 <ul>
-<li>Assign weights to each neighboring polygon. In our case, each neighboring polygon will be assigned equal weight (style=“W”).</li>
-<li>This is accomplished by assigning the fraction 1/(# of neighbors) to each neighboring county then summing the weighted income values.</li>
+<li>Assign weights to each neighboring polygon. Recall in lecture slides, it is calculated using the inverse of number of neigbours; total of each row in matrix adds to 1, which makes it a row-standardized.</li>
+<li>In our case study, each neighboring polygon will be assigned equal weight (style=“W”). This is accomplished by assigning the fraction 1/(# of neighbors) to each neighboring county then summing the weighted income values.</li>
 <li>While this is the most intuitive way to summaries the neighbors’ values it has one drawback in that polygons along the edges of the study area will base their lagged values on fewer polygons thus potentially over- or under-estimating the true nature of the spatial autocorrelation in the data.</li>
 <li>Style=“W” option used for this example for simplicity’s sake but more robust options are available, notably style=“B”.</li>
 <li>Styles:
@@ -1386,7 +1386,6 @@ Non-symmetric neighbours list</code></pre>
 <li>S: variance-stabilizing coding scheme (sums over all links to n)</li>
 <li>minmax: divides the weights by min of the max row sums and max column sums of the input weights; similar to C/U</li>
 </ul></li>
-<li>The input of&nbsp;<em>nb2listw()</em>&nbsp;must be an object of class&nbsp;<strong>nb</strong>. The syntax of the function has two major arguments, namely style and zero.poly.</li>
 </ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">W</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">B</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-3" role="tab" aria-controls="tabset-6-3" aria-selected="false">Zero.Policy = FALSE</a></li></ul>
@@ -1504,9 +1503,15 @@ B 88 7744 8.786867 0.3776535 3.8137</code></pre>
 </section>
 <section id="application-of-spatial-weight-matrix" class="level2">
 <h2 class="anchored" data-anchor-id="application-of-spatial-weight-matrix">Application of Spatial Weight Matrix</h2>
-<p>In this section, you will learn how to create four different spatial lagged variables, they are: - spatial lag with row-standardized weights, - spatial lag as a sum of neighbouring values, - spatial window average, and - spatial window sum.</p>
-<section id="spatial-lag-with-row-standardized-weights" class="level3">
-<h3 class="anchored" data-anchor-id="spatial-lag-with-row-standardized-weights">Spatial lag with row-standardized weights</h3>
+<ul>
+<li>Apatially lagged variable: the weighted sum or a weighted average of the neighboring values for that variable.</li>
+<li>4 methods</li>
+</ul>
+<section id="a-spatial-lag-with-row-standardized-weights" class="level3">
+<h3 class="anchored" data-anchor-id="a-spatial-lag-with-row-standardized-weights">(a) Spatial lag with row-standardized weights</h3>
+<ul>
+<li>Sums up GDPPC of all the neighbours, except the taget location itself</li>
+</ul>
 <section id="step-1-compute-the-average-neighbor-gdppc-value-for-each-polygon" class="level4">
 <h4 class="anchored" data-anchor-id="step-1-compute-the-average-neighbor-gdppc-value-for-each-polygon">Step 1: Compute the average neighbor GDPPC value for each polygon</h4>
 <ul>
@@ -1587,14 +1592,14 @@ Geodetic CRS:  WGS 84
 </div>
 </section>
 </section>
-<section id="spatial-lag-as-a-sum-of-neighboring-values" class="level3">
-<h3 class="anchored" data-anchor-id="spatial-lag-as-a-sum-of-neighboring-values">Spatial lag as a sum of neighboring values</h3>
+<section id="b-spatial-lag-as-a-sum-of-neighboring-values" class="level3">
+<h3 class="anchored" data-anchor-id="b-spatial-lag-as-a-sum-of-neighboring-values">(b) Spatial lag as a sum of neighboring values</h3>
 <ul>
 <li>We can calculate spatial lag as a sum of neighboring values by assigning binary weights.</li>
 <li>This requires us to go back to our neighbors list, then apply a function that will assign binary weights, then we use glist = in the nb2listw function to explicitly assign these weights.</li>
 </ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Assign value</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Compute lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Append lag_sum GDPPC into hunan</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">Plot</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Assign value</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Compute lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Append lag_sum GDPPC into hunan</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">Plot &amp; Compare</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <ul>
@@ -1690,8 +1695,8 @@ B 88 7744 448 896 10224</code></pre>
 </div>
 </div>
 </section>
-<section id="spatial-window-average" class="level3">
-<h3 class="anchored" data-anchor-id="spatial-window-average">Spatial window average</h3>
+<section id="c-spatial-window-average" class="level3">
+<h3 class="anchored" data-anchor-id="c-spatial-window-average">(c) Spatial window average</h3>
 <p>The spatial window average uses row-standardized weights and includes the diagonal element. To do this in R, we need to go back to the neighbors structure and add the diagonal element before assigning weights.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">Add diagonal element</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Obtain weights</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-3" role="tab" aria-controls="tabset-8-3" aria-selected="false">Create lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-4" role="tab" aria-controls="tabset-8-4" aria-selected="false">Convert to data frame</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-5" role="tab" aria-controls="tabset-8-5" aria-selected="false">Left join</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-6" role="tab" aria-controls="tabset-8-6" aria-selected="false">Compare</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-7" role="tab" aria-controls="tabset-8-7" aria-selected="false">Plot</a></li></ul>
@@ -2340,9 +2345,13 @@ W 88 7744 88 30.90265 357.5308</code></pre>
 </div>
 <p>Note: For more effective comparison, it is advicible to use the core tmap mapping functions.</p>
 </section>
-<section id="spatial-window-sum" class="level3">
-<h3 class="anchored" data-anchor-id="spatial-window-sum">Spatial window sum</h3>
-<p>The spatial window sum is the counter part of the window average, but without using row-standardized weights.</p>
+<section id="d-spatial-window-sum" class="level3">
+<h3 class="anchored" data-anchor-id="d-spatial-window-sum">(d) Spatial window sum</h3>
+<ul>
+<li>The spatial window sum is the counter part of the window average, but without using row-standardized weights.</li>
+<li>Uses and includes the diagonal element.</li>
+<li>Sums up GDPPC of all neighbours, including target location itself</li>
+</ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Add diagonal element</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Assign weights</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">Compute lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-4" role="tab" aria-controls="tabset-9-4" aria-selected="false">Convert to data frame</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-5" role="tab" aria-controls="tabset-9-5" aria-selected="false">Left join</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-6" role="tab" aria-controls="tabset-9-6" aria-selected="false">Compare</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-7" role="tab" aria-controls="tabset-9-7" aria-selected="false">Plot</a></li></ul>
 <div class="tab-content">

@@ -1,3 +1,11 @@
 ---
 title: "Take-home Exercise 1: Geospatial Analytics for Public Good"
+date: "23 November 2023"
+date-modified: "last-modified"
+format: html
+execute:
+  echo: true #all the codes will appear
+  eval: true #all the codes will run
+  warning: false #dont display if there are any warnings
+editor: visual
 ---

@@ -96,6 +96,7 @@ tmap_arrange(basemap, gdppc, asp=1, ncol=2)
 
 ::: panel-tabset
 ## Queen
+
 The code chunk below is used to compute Queen contiguity weight matrix.
 
 ```{r}
@@ -103,12 +104,10 @@ wm_q <- poly2nb(hunan, queen=TRUE)
 summary(wm_q)
 ```
 
-Interpretation:
--   There are 88 area units in Hunan.
--   Most connected area unit has 11 neighbours.
--   There are two area units with only one neighbour.
+Interpretation: - There are 88 area units in Hunan. - Most connected area unit has 11 neighbours. - There are two area units with only one neighbour.
 
 ## Rook
+
 The code chunk below is used to compute Rook contiguity weight matrix.
 
 ```{r}
@@ -116,10 +115,7 @@ wm_r <- poly2nb(hunan, queen=FALSE)
 summary(wm_r)
 ```
 
-Interpretation:
--   There are 88 area units in Hunan.
--   Most connect area unit has 10 neighbours.
--   There are two area units with only one neighbours.
+Interpretation: - There are 88 area units in Hunan. - Most connect area unit has 10 neighbours. - There are two area units with only one neighbours.
 :::
 
 For each polygon in our polygon object, *wm_q* lists all neighboring polygons. For example, to see the neighbors for the first polygon in the object, type:
@@ -136,8 +132,7 @@ We can retrive the county name of Polygon ID=1 by using the code chunk below:
 hunan$County[1]
 ```
 
-Interpretation:
--   The output reveals that Polygon ID=1 is Anxiang county.
+Interpretation: - The output reveals that Polygon ID=1 is Anxiang county.
 
 To reveal the county names of the five neighboring polygons, the code chunk will be used:
 
@@ -193,21 +188,26 @@ We check the first few observations to see if things are formatted correctly.
 ```{r}
 head(coords)
 ```
+
 #### Plotting contiguity-based neighbours map
+
 ::: panel-tabset
 ## Queen
+
 ```{r fig.width=8, fig.height=6}
 plot(hunan$geometry, border="lightgrey")
 plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col= "red")
 ```
 
 ## Rook
+
 ```{r fig.width=8, fig.height=6}
 plot(hunan$geometry, border="lightgrey")
 plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
 ```
 
 ## Both
+
 ```{r fig.width=12, fig.height=8}
 par(mfrow=c(1,2))
 plot(hunan$geometry, border="lightgrey", main="Queen Contiguity")
@@ -217,11 +217,12 @@ plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
 ```
 :::
 
-## Computing distance based neighbours
+## Computing distance-based neighbours
 
 In this section, you will learn how to derive distance-based weight matrices by using [*dnearneigh()*](https://r-spatial.github.io/spdep/reference/dnearneigh.html) of **spdep** package.
 
-The function identifies neighbours of region points by Euclidean distance with a distance band with lower d1= and upper d2= bounds controlled by the bounds= argument. If unprojected coordinates are used and either specified in the coordinates object x or with x as a two column matrix and longlat=TRUE, great circle distances in **km** will be calculated assuming the WGS84 reference ellipsoid.
+-   The function identifies neighbours of region points by Euclidean distance with a distance band with lower d1= and upper d2= bounds controlled by the bounds= argument.
+-   If unprojected coordinates are used and either specified in the coordinates object x or with x as a two column matrix and longlat=TRUE, great circle distances in **km** will be calculated assuming the WGS84 reference ellipsoid.
 
 ### Determine the cut-off distance
 
@@ -232,14 +233,39 @@ Firstly, we need to determine the upper limit for distance band by using the ste
 -   Return the length of neighbour relationship edges by using [*nbdists()*](https://r-spatial.github.io/spdep/reference/nbdists.html) of **spdep**. The function returns in the units of the coordinates if the coordinates are projected, in km otherwise.
 -   Remove the list structure of the returned object by using [**unlist()**](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unlist).
 
+::: panel-tabset
+## Solution
 ```{r}
 #coords <- coordinates(hunan)
 k1 <- knn2nb(knearneigh(coords))
 k1dists <- unlist(nbdists(k1, coords, longlat = TRUE))
 summary(k1dists)
 ```
+## KNN
+```{r}
+knearneigh(coords)
+```
+## KNN2NB
 
-The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.
+```{r}
+k1 <- knn2nb(knearneigh(coords))
+k1
+```
+## NBDISTS
+
+```{r}
+nbdists(k1, coords, longlat = TRUE)
+```
+
+## Unlist
+```{r}
+unlist(nbdists(k1, coords, longlat = TRUE))
+```
+
+:::
+Interpretation:
+
+-   The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.
 
 ### Computing fixed distance weight matrix
 

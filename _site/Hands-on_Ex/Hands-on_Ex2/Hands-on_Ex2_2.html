@@ -243,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 23, 2023</p>
+      <p class="date-modified">November 24, 2023</p>
     </div>
   </div>
     
@@ -1428,7 +1428,12 @@ First 10 features:
 10  0.22823660 POLYGON ((113.1757 26.82734...</code></pre>
 </div>
 </div>
-<p>In fact, the code chunk above performs three tasks. First, it convert the output vector (i.e.&nbsp;<em>gi.fixed</em>) into r matrix object by using <em>as.matrix()</em>. Next, <em>cbind()</em> is used to join hunan@data and <em>gi.fixed</em> matrix to produce a new SpatialPolygonDataFrame called <em>hunan.gi</em>. Lastly, the field name of the gi values is renamed to <em>gstat_fixed</em> by using <em>rename()</em>.</p>
+<p>Code chunk above performs three tasks:</p>
+<ol type="1">
+<li><em>as.matrix()</em>: to convert the output vector (i.e.&nbsp;<em>gi.fixed</em>) into r matrix object by using .</li>
+<li><em>cbind()</em>: to join hunan@data and <em>gi.fixed</em> matrix to produce a new SpatialPolygonDataFrame called <em>hunan.gi</em>.</li>
+<li><em>rename()</em>: rename the field name of the gi values to <em>gstat_fixed</em> by using</li>
+</ol>
 </div>
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <p>The code chunk below shows the functions used to map the Gi values derived using fixed distance weight matrix.</p>

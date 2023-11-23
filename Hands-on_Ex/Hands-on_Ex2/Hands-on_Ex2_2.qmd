@@ -710,7 +710,11 @@ hunan.gi <- cbind(hunan, as.matrix(gi.fixed)) %>%
 hunan.gi
 ```
 
-In fact, the code chunk above performs three tasks. First, it convert the output vector (i.e. *gi.fixed*) into r matrix object by using *as.matrix()*. Next, *cbind()* is used to join hunan\@data and *gi.fixed* matrix to produce a new SpatialPolygonDataFrame called *hunan.gi*. Lastly, the field name of the gi values is renamed to *gstat_fixed* by using *rename()*.
+Code chunk above performs three tasks:
+
+1.  *as.matrix()*: to convert the output vector (i.e. *gi.fixed*) into r matrix object by using .
+2.  *cbind()*: to join hunan\@data and *gi.fixed* matrix to produce a new SpatialPolygonDataFrame called *hunan.gi*.
+3.  *rename()*: rename the field name of the gi values to *gstat_fixed* by using
 
 ## Mapping Gi values with fixed distance weights
 

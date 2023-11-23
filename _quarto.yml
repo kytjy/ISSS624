@@ -33,17 +33,14 @@ website:
       - about.qmd
   
   page-footer: 
-    right: >-
-      Made with [Quarto](https://quarto.org),
-      {{< fa brands r-project >}},
-      and lots of {{< fa heart >}}
+    right: "Blog made with 💜 and [Quarto](https://quarto.org/)"
 
       
 
 format:
   html:
     grid:
-      margin-width: 150px
+      margin-width: 250px
     toc: true
     toc_float: true
     theme: 

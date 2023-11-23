@@ -132,6 +132,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex2/Hands-on_Ex2_1.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 2.1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex2/Hands-on_Ex2_2.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 2.2-2.3</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -394,7 +398,12 @@ Link number distribution:
 85 with 10 links</code></pre>
 </div>
 </div>
-<p>Interpretation: - There are 88 area units in Hunan. - Most connect area unit has 10 neighbours. - There are two area units with only one neighbours.</p>
+<p>Interpretation:</p>
+<ul>
+<li><p>There are 88 area units in Hunan.</p></li>
+<li><p>Most connect area unit has 10 neighbours.</p></li>
+<li><p>There are two area units with only one neighbours.</p></li>
+</ul>
 </div>
 </div>
 </div>
@@ -415,7 +424,10 @@ Link number distribution:
 <pre><code>[1] "Anxiang"</code></pre>
 </div>
 </div>
-<p>Interpretation: - The output reveals that Polygon ID=1 is Anxiang county.</p>
+<p>Interpretation:</p>
+<ul>
+<li>The output reveals that Polygon ID=1 is Anxiang county.</li>
+</ul>
 <p>To reveal the county names of the five neighboring polygons, the code chunk will be used:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>hunan<span class="sc">$</span>NAME_3[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">57</span>,<span class="dv">85</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1374,6 +1386,7 @@ Non-symmetric neighbours list</code></pre>
 <li>S: variance-stabilizing coding scheme (sums over all links to n)</li>
 <li>minmax: divides the weights by min of the max row sums and max column sums of the input weights; similar to C/U</li>
 </ul></li>
+<li>The input of&nbsp;<em>nb2listw()</em>&nbsp;must be an object of class&nbsp;<strong>nb</strong>. The syntax of the function has two major arguments, namely style and zero.poly.</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>rswm_q <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">style=</span><span class="st">"W"</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span>
@@ -1393,7 +1406,10 @@ W 88 7744 88 37.86334 365.9147</code></pre>
 </div>
 </div>
 <ul>
-<li>zero.policy=TRUE: allows for lists of non-neighbors. This should be used with caution since the user may not be aware of missing neighbors in their dataset however, a zero.policy of FALSE would return an error.</li>
+<li>zero.policy=TRUE: allows for lists of non-neighbors. This should be used with caution since the user may not be aware of missing neighbors in their dataset however, a zero.policy of FALSE would return an error.
+<ul>
+<li>If <em>zero policy</em> is set to TRUE, weights vectors of zero length are inserted for regions without neighbour in the neighbours list. These will in turn generate lag values of zero, equivalent to the sum of products of the zero row t(rep(0, length=length(neighbours))) %*% x, for arbitrary numerical vector x of length length(neighbours). The spatially lagged value of x for the zero-neighbour region will then be zero, which may (or may not) be a sensible choice.</li>
+</ul></li>
 </ul>
 <p>To see the weight of the first polygon’s eight neighbors type:</p>
 <div class="cell">

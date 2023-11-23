@@ -115,7 +115,13 @@ wm_r <- poly2nb(hunan, queen=FALSE)
 summary(wm_r)
 ```
 
-Interpretation: - There are 88 area units in Hunan. - Most connect area unit has 10 neighbours. - There are two area units with only one neighbours.
+Interpretation:
+
+-   There are 88 area units in Hunan.
+
+-   Most connect area unit has 10 neighbours.
+
+-   There are two area units with only one neighbours.
 :::
 
 For each polygon in our polygon object, *wm_q* lists all neighboring polygons. For example, to see the neighbors for the first polygon in the object, type:
@@ -132,7 +138,9 @@ We can retrive the county name of Polygon ID=1 by using the code chunk below:
 hunan$County[1]
 ```
 
-Interpretation: - The output reveals that Polygon ID=1 is Anxiang county.
+Interpretation:
+
+-   The output reveals that Polygon ID=1 is Anxiang county.
 
 To reveal the county names of the five neighboring polygons, the code chunk will be used:
 
@@ -375,6 +383,7 @@ ids
     -   U: equal to C divided by the number of neighbours (sums over all links to unity)
     -   S: variance-stabilizing coding scheme (sums over all links to n)
     -   minmax: divides the weights by min of the max row sums and max column sums of the input weights; similar to C/U
+-   The input of *nb2listw()* must be an object of class **nb**. The syntax of the function has two major arguments, namely style and zero.poly.
 
 ```{r}
 rswm_q <- nb2listw(wm_q, style="W", zero.policy = TRUE)
@@ -382,6 +391,7 @@ rswm_q
 ```
 
 -   zero.policy=TRUE: allows for lists of non-neighbors. This should be used with caution since the user may not be aware of missing neighbors in their dataset however, a zero.policy of FALSE would return an error.
+    -   If *zero policy* is set to TRUE, weights vectors of zero length are inserted for regions without neighbour in the neighbours list. These will in turn generate lag values of zero, equivalent to the sum of products of the zero row t(rep(0, length=length(neighbours))) %\*% x, for arbitrary numerical vector x of length length(neighbours). The spatially lagged value of x for the zero-neighbour region will then be zero, which may (or may not) be a sensible choice.
 
 To see the weight of the first polygon's eight neighbors type:
 
@@ -675,7 +685,8 @@ tmap_arrange(lag_sum_gdppc, w_sum_gdppc, asp=1, ncol=2)
 ```
 :::
 
-::: {.callout-tip}
+::: callout-tip
 ## Note
+
 For more effective comparison, it is advisable to use the core tmap mapping functions.
 :::

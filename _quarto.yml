@@ -2,9 +2,12 @@ project:
   type: website
 
 website:
-  title: "ISSS624"
+  title: "Geospatial Data Analytics"
+  image: "images/globe.png"
   navbar:
-    background: dark
+    logo: "images/globe.png"
+    title: false
+    collapse-below: lg
     search: true
     left: 
       - text: Hands-on Exercises
@@ -28,17 +31,26 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
+  
+  page-footer: 
+    right: >-
+      Made with [Quarto](https://quarto.org),
+      {{< fa brands r-project >}},
+      and lots of {{< fa heart >}}
 
+      
 
 format:
   html:
-    theme: sandstone
-    mainfont: arial
-    fontcolor: "#444444"
-    linkcolor: "#716D64"
-    monofont: courier new
-    css: styles.css
+    grid:
+      margin-width: 150px
     toc: true
+    toc_float: true
+    theme: 
+      - theme.scss
+    highlight-style: tango
+    code-copy: hover
+    code-overflow: wrap
+    css: styles.css
 
 editor: visual
-

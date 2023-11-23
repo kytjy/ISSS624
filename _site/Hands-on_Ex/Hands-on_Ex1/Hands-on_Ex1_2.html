@@ -106,7 +106,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a href="../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../images/globe.png" alt="" class="navbar-logo">
+    <img src="../../images/pusheen-fly.gif" alt="" class="navbar-logo">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -233,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 18, 2023</p>
+      <p class="date-modified">November 23, 2023</p>
     </div>
   </div>
     
@@ -253,10 +253,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
 <p>In this hands-on exercise, the key R package use is <a href="https://cran.r-project.org/web/packages/tmap/"><strong>tmap</strong></a> package in R. Beside <strong>tmap</strong> package, four other R packages will be used. They are:</p>
 <ul>
-<li><p><a href="https://readr.tidyverse.org/"><strong>readr</strong></a> for importing delimited text file</p></li>
-<li><p><a href="https://tidyr.tidyverse.org/"><strong>tidyr</strong></a> for tidying data</p></li>
-<li><p><a href="https://dplyr.tidyverse.org/"><strong>dplyr</strong></a> for wrangling data</p></li>
-<li><p><a href="https://cran.r-project.org/web/packages/sf/"><strong>sf</strong></a> for handling geospatial data</p></li>
+<li><a href="https://readr.tidyverse.org/"><strong>readr</strong></a> for importing delimited text file</li>
+<li><a href="https://tidyr.tidyverse.org/"><strong>tidyr</strong></a> for tidying data</li>
+<li><a href="https://dplyr.tidyverse.org/"><strong>dplyr</strong></a> for wrangling data</li>
+<li><a href="https://cran.r-project.org/web/packages/sf/"><strong>sf</strong></a> for handling geospatial data</li>
 </ul>
 <p>Among the four packages, <strong>readr</strong>, <strong>tidyr</strong> and <strong>dplyr</strong> are part of <strong>tidyverse</strong> package.</p>
 <p>The code chunk below will be used to install and load these packages in RStudio.</p>
@@ -275,18 +275,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><p>Master Plan 2014 Subzone Boundary (Web) (i.e.&nbsp;<code>MP14_SUBZONE_WEB_PL</code>) in ESRI shapefile format.</p>
 <ul>
-<li><p>Downloaded from <a href="https://data.gov.sg/">data.gov.sg</a></p></li>
-<li><p>Geospatial data</p></li>
-<li><p>Consists of the geographical boundary of Singapore at the planning subzone level. The data is based on URA Master Plan 2014</p></li>
+<li>Downloaded from <a href="https://data.gov.sg/">data.gov.sg</a></li>
+<li>Geospatial data</li>
+<li>Consists of the geographical boundary of Singapore at the planning subzone level. The data is based on URA Master Plan 2014</li>
 </ul></li>
-</ul>
-<!-- -->
-<ul>
 <li><p>Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e.&nbsp;<code>respopagesextod2011to2020.csv</code>).</p>
 <ul>
-<li><p>Aspatial data fie.</p></li>
-<li><p>Downloaded at <a href="https://www.singstat.gov.sg/">Department of Statistics, Singapore</a></p></li>
-<li><p>Although it does not contain any coordinates values, but it’s PA and SZ fields can be used as unique identifiers to geocode to <code>MP14_SUBZONE_WEB_PL</code> shapefile.</p></li>
+<li>Aspatial data fie.</li>
+<li>Downloaded at <a href="https://www.singstat.gov.sg/">Department of Statistics, Singapore</a></li>
+<li>Although it does not contain any coordinates values, but it’s PA and SZ fields can be used as unique identifiers to geocode to <code>MP14_SUBZONE_WEB_PL</code> shapefile.</li>
 </ul></li>
 </ul>
 </section>
@@ -580,8 +577,10 @@ First 10 features:
 </ul>
 <section id="plotting-choropleth-maps-with-built-in-classification-methods" class="level4">
 <h4 class="anchored" data-anchor-id="plotting-choropleth-maps-with-built-in-classification-methods">Plotting choropleth maps with built-in classification methods</h4>
-<section id="a-quantile" class="level5">
-<h5 class="anchored" data-anchor-id="a-quantile">(1a) Quantile</h5>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Quantile</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Jenks / Natural Breaks</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Equal Interval</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false">Standard Deviation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <ul>
 <li>The code chunk below shows a quantile data classification that used 5 classes.</li>
 </ul>
@@ -595,9 +594,8 @@ First 10 features:
 <p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="b-jenks-natural-breaks" class="level5">
-<h5 class="anchored" data-anchor-id="b-jenks-natural-breaks">(1b) Jenks / Natural Breaks</h5>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
@@ -608,9 +606,8 @@ First 10 features:
 <p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="c-equal-interval" class="level5">
-<h5 class="anchored" data-anchor-id="c-equal-interval">(1c) Equal Interval</h5>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
@@ -624,9 +621,8 @@ First 10 features:
 <ul>
 <li>Notice that the distribution of quantile data classification method are more evenly distributed then equal data classification method.</li>
 </ul>
-</section>
-<section id="d-standard-deviation" class="level5">
-<h5 class="anchored" data-anchor-id="d-standard-deviation">(1d) Standard Deviation</h5>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
@@ -637,9 +633,13 @@ First 10 features:
 <p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="a-2-classes" class="level5">
-<h5 class="anchored" data-anchor-id="a-2-classes">(2a) 2 Classes</h5>
+</div>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">2 Classes</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">6 Classes</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">10 Classes</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">20 Classes</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
@@ -650,9 +650,8 @@ First 10 features:
 <p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="b-6-classes" class="level5">
-<h5 class="anchored" data-anchor-id="b-6-classes">(2b) 6 Classes</h5>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
@@ -663,9 +662,8 @@ First 10 features:
 <p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="c-10-classes" class="level5">
-<h5 class="anchored" data-anchor-id="c-10-classes">(2c) 10 Classes</h5>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
@@ -676,9 +674,8 @@ First 10 features:
 <p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="d-20-classes" class="level5">
-<h5 class="anchored" data-anchor-id="d-20-classes">(2d) 20 Classes</h5>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
@@ -689,7 +686,9 @@ First 10 features:
 <p><img src="Hands-on_Ex1_2_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
+</div>
+</div>
+</div>
 </section>
 <section id="plotting-choropleth-map-with-custom-break" class="level4">
 <h4 class="anchored" data-anchor-id="plotting-choropleth-map-with-custom-break">Plotting choropleth map with custom break</h4>
@@ -1229,6 +1228,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">Blog made with 💜 and <a href="https://quarto.org/">Quarto</a></div>
+  </div>
+</footer>
 
 
 

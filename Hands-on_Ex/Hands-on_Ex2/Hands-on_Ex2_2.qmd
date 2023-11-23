@@ -15,21 +15,13 @@ editor: visual
 Learning how to compute Global and Local Measure of Spatial Autocorrelation (GLSA) by using **spdep** package, including:
 
 -   import geospatial data using appropriate function(s) of **sf** package
-
 -   import csv file using appropriate function of **readr** package
-
 -   perform relational join using appropriate join function of **dplyr** package
-
 -   compute Global Spatial Autocorrelation (GSA) statistics by using appropriate functions of **spdep** package
-
     -   plot Moran scatterplot
-
     -   compute and plot spatial correlogram using appropriate function of **spdep** packag
-
 -   compute Local Indicator of Spatial Association (LISA) statistics for detecting clusters and outliers by using appropriate functions **spdep** package
-
 -   compute Getis-Ord's Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of **spdep** package
-
 -   visualise the analysis output by using **tmap** package.
 
 # 2. Getting Started
@@ -129,19 +121,14 @@ summary(wm_q)
 Interpretation:
 
 -   There are 88 area units in Hunan.
-
 -   Most connected area unit has 11 neighbours.
-
 -   There are two area units with only one neighbour.
 
 ### 4.2 Row-standardised weights matrix
 
 -   Assign weights to each neighboring polygon. In our case, each neighboring polygon will be assigned equal weight (style="W").
-
 -   This is accomplished by assigning the fraction 1/(# of neighbors) to each neighboring county then summing the weighted income values.
-
 -   While this is the most intuitive way to summaries the neighbors' values it has one drawback in that polygons along the edges of the study area will base their lagged values on fewer polygons thus potentially over- or under-estimating the true nature of the spatial autocorrelation in the data.
-
 -   Style="W" option used for this example for simplicity's sake but more robust options are available, notably style="B".
 
     -   Styles:

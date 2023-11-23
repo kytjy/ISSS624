@@ -21,11 +21,8 @@ editor: visual
 In this hands-on exercise, the key R package use is [**tmap**](https://cran.r-project.org/web/packages/tmap/) package in R. Beside **tmap** package, four other R packages will be used. They are:
 
 -   [**readr**](https://readr.tidyverse.org/) for importing delimited text file
-
 -   [**tidyr**](https://tidyr.tidyverse.org/) for tidying data
-
 -   [**dplyr**](https://dplyr.tidyverse.org/) for wrangling data
-
 -   [**sf**](https://cran.r-project.org/web/packages/sf/) for handling geospatial data
 
 Among the four packages, **readr**, **tidyr** and **dplyr** are part of **tidyverse** package.
@@ -47,19 +44,13 @@ Two data set will be used to create the choropleth map:
 -   Master Plan 2014 Subzone Boundary (Web) (i.e. `MP14_SUBZONE_WEB_PL`) in ESRI shapefile format.
 
     -   Downloaded from [data.gov.sg](https://data.gov.sg/)
-
     -   Geospatial data
-
     -   Consists of the geographical boundary of Singapore at the planning subzone level. The data is based on URA Master Plan 2014
 
-<!-- -->
-
--   Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e. `respopagesextod2011to2020.csv`).
+-   Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e. `respopagesextod2011to2020.csv`).
 
     -   Aspatial data fie.
-
     -   Downloaded at [Department of Statistics, Singapore](https://www.singstat.gov.sg/)
-
     -   Although it does not contain any coordinates values, but it's PA and SZ fields can be used as unique identifiers to geocode to `MP14_SUBZONE_WEB_PL` shapefile.
 
 ### Importing Geospatial Data into R
@@ -291,7 +282,8 @@ Notice that light-gray border lines have been added on the choropleth map.
 
 #### Plotting choropleth maps with built-in classification methods
 
-##### (1a) Quantile
+::: panel-tabset
+## Quantile
 
 -   The code chunk below shows a quantile data classification that used 5 classes.
 
@@ -303,7 +295,7 @@ tm_shape(mpsz_pop2020)+
   tm_borders(alpha = 0.5)
 ```
 
-##### (1b) Jenks / Natural Breaks
+## Jenks / Natural Breaks
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -313,7 +305,7 @@ tm_shape(mpsz_pop2020)+
   tm_borders(alpha = 0.5)
 ```
 
-##### (1c) Equal Interval
+## Equal Interval
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -325,7 +317,7 @@ tm_shape(mpsz_pop2020)+
 
 -   Notice that the distribution of quantile data classification method are more evenly distributed then equal data classification method.
 
-##### (1d) Standard Deviation
+## Standard Deviation
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -334,8 +326,10 @@ tm_shape(mpsz_pop2020)+
           style = "sd") +
   tm_borders(alpha = 0.5)
 ```
+:::
 
-##### (2a) 2 Classes
+::: panel-tabset
+## 2 Classes
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -345,7 +339,7 @@ tm_shape(mpsz_pop2020)+
   tm_borders(alpha = 0.5)
 ```
 
-##### (2b) 6 Classes
+## 6 Classes
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -355,7 +349,7 @@ tm_shape(mpsz_pop2020)+
   tm_borders(alpha = 0.5)
 ```
 
-##### (2c) 10 Classes
+## 10 Classes
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -365,7 +359,7 @@ tm_shape(mpsz_pop2020)+
   tm_borders(alpha = 0.5)
 ```
 
-##### (2d) 20 Classes
+## 20 Classes
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -374,6 +368,7 @@ tm_shape(mpsz_pop2020)+
           style = "jenks") +
   tm_borders(alpha = 0.5)
 ```
+:::
 
 #### Plotting choropleth map with custom break
 

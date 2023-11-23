@@ -96,7 +96,6 @@ tmap_arrange(basemap, gdppc, asp=1, ncol=2)
 
 ::: panel-tabset
 ## Queen
-
 The code chunk below is used to compute Queen contiguity weight matrix.
 
 ```{r}
@@ -105,13 +104,11 @@ summary(wm_q)
 ```
 
 Interpretation:
-
 -   There are 88 area units in Hunan.
 -   Most connected area unit has 11 neighbours.
 -   There are two area units with only one neighbour.
 
 ## Rook
-
 The code chunk below is used to compute Rook contiguity weight matrix.
 
 ```{r}
@@ -120,7 +117,6 @@ summary(wm_r)
 ```
 
 Interpretation:
-
 -   There are 88 area units in Hunan.
 -   Most connect area unit has 10 neighbours.
 -   There are two area units with only one neighbours.
@@ -141,7 +137,6 @@ hunan$County[1]
 ```
 
 Interpretation:
-
 -   The output reveals that Polygon ID=1 is Anxiang county.
 
 To reveal the county names of the five neighboring polygons, the code chunk will be used:
@@ -207,14 +202,12 @@ plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col= "red")
 ```
 
 ## Rook
-
 ```{r fig.width=8, fig.height=6}
 plot(hunan$geometry, border="lightgrey")
 plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
 ```
 
 ## Both
-
 ```{r fig.width=12, fig.height=8}
 par(mfrow=c(1,2))
 plot(hunan$geometry, border="lightgrey", main="Queen Contiguity")

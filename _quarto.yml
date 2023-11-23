@@ -5,7 +5,7 @@ website:
   title: "Geospatial Data Analytics"
   image: "images/globe.png"
   navbar:
-    logo: "images/globe.png"
+    logo: "images/pusheen.gif"
     title: false
     collapse-below: lg
     search: true

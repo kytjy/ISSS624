@@ -147,6 +147,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex1/In-class_Ex1.html" rel="" target="">
  <span class="dropdown-text">In-Class Exercise 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex2/In-class_Ex2.html" rel="" target="">
+ <span class="dropdown-text">In-Class Exercise 2</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -186,33 +190,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#study-area-and-data" id="toc-study-area-and-data" class="nav-link" data-scroll-target="#study-area-and-data">Study Area and Data</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a></li>
+  <li><a href="#study-area-and-data" id="toc-study-area-and-data" class="nav-link" data-scroll-target="#study-area-and-data">2 Study Area and Data</a>
   <ul class="collapse">
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting Started</a></li>
   </ul></li>
-  <li><a href="#loading-data-into-r-environment" id="toc-loading-data-into-r-environment" class="nav-link" data-scroll-target="#loading-data-into-r-environment">Loading Data Into R Environment</a></li>
-  <li><a href="#visualising-regional-development-indicator" id="toc-visualising-regional-development-indicator" class="nav-link" data-scroll-target="#visualising-regional-development-indicator">Visualising Regional Development Indicator</a></li>
-  <li><a href="#computing-contiguityadjacency-spatial-weights" id="toc-computing-contiguityadjacency-spatial-weights" class="nav-link" data-scroll-target="#computing-contiguityadjacency-spatial-weights">Computing Contiguity/Adjacency Spatial Weights</a>
+  <li><a href="#loading-data-into-r-environment" id="toc-loading-data-into-r-environment" class="nav-link" data-scroll-target="#loading-data-into-r-environment">3 Loading Data Into R Environment</a></li>
+  <li><a href="#visualising-regional-development-indicator" id="toc-visualising-regional-development-indicator" class="nav-link" data-scroll-target="#visualising-regional-development-indicator">4 Visualising Regional Development Indicator</a></li>
+  <li><a href="#neighbours" id="toc-neighbours" class="nav-link" data-scroll-target="#neighbours">5 Neighbours</a></li>
+  <li><a href="#computing-contiguityadjacency-spatial-weights" id="toc-computing-contiguityadjacency-spatial-weights" class="nav-link" data-scroll-target="#computing-contiguityadjacency-spatial-weights">6 Computing Contiguity/Adjacency Spatial Weights</a>
   <ul class="collapse">
-  <li><a href="#computing-contiguity-based-neighbours" id="toc-computing-contiguity-based-neighbours" class="nav-link" data-scroll-target="#computing-contiguity-based-neighbours">Computing contiguity based neighbours</a></li>
+  <li><a href="#computing-contiguity-based-neighbours" id="toc-computing-contiguity-based-neighbours" class="nav-link" data-scroll-target="#computing-contiguity-based-neighbours">6.1 Computing contiguity based neighbours</a></li>
   <li><a href="#visualising-contiguity-weights" id="toc-visualising-contiguity-weights" class="nav-link" data-scroll-target="#visualising-contiguity-weights">Visualising contiguity weights</a></li>
-  </ul></li>
-  <li><a href="#computing-distance-based-neighbours" id="toc-computing-distance-based-neighbours" class="nav-link" data-scroll-target="#computing-distance-based-neighbours">Computing distance-based neighbours</a>
+  <li><a href="#computing-distance-based-neighbours" id="toc-computing-distance-based-neighbours" class="nav-link" data-scroll-target="#computing-distance-based-neighbours">6.2 Computing distance-based neighbours</a>
   <ul class="collapse">
-  <li><a href="#determine-the-cut-off-distance-upper-limit" id="toc-determine-the-cut-off-distance-upper-limit" class="nav-link" data-scroll-target="#determine-the-cut-off-distance-upper-limit">Determine the cut-off distance / upper limit</a></li>
-  <li><a href="#computing-fixed-distance-weight-matrix" id="toc-computing-fixed-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-fixed-distance-weight-matrix">Computing fixed distance weight matrix</a></li>
+  <li><a href="#determine-the-cut-off-distance-upper-limit" id="toc-determine-the-cut-off-distance-upper-limit" class="nav-link" data-scroll-target="#determine-the-cut-off-distance-upper-limit">6.2.1 Determine the cut-off distance / upper limit</a></li>
+  <li><a href="#computing-fixed-distance-weight-matrix" id="toc-computing-fixed-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-fixed-distance-weight-matrix">6.2.2 Computing fixed distance weight matrix</a></li>
+  <li><a href="#plotting-fixed-distance-weight-matrix" id="toc-plotting-fixed-distance-weight-matrix" class="nav-link" data-scroll-target="#plotting-fixed-distance-weight-matrix">Plotting fixed distance weight matrix</a></li>
+  <li><a href="#computing-adaptive-distance-weight-matrix" id="toc-computing-adaptive-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-adaptive-distance-weight-matrix">6.2.3 Computing adaptive distance weight matrix</a></li>
   </ul></li>
-  <li><a href="#table-card" id="toc-table-card" class="nav-link" data-scroll-target="#table-card">table() &amp; card()</a>
-  <ul class="collapse">
-  <li><a href="#computing-adaptive-distance-weight-matrix" id="toc-computing-adaptive-distance-weight-matrix" class="nav-link" data-scroll-target="#computing-adaptive-distance-weight-matrix">Computing adaptive distance weight matrix</a></li>
   </ul></li>
-  <li><a href="#weights-based-on-idw" id="toc-weights-based-on-idw" class="nav-link" data-scroll-target="#weights-based-on-idw">Weights based on IDW</a>
+  <li><a href="#inversed-distance-weights" id="toc-inversed-distance-weights" class="nav-link" data-scroll-target="#inversed-distance-weights">5 Inversed Distance Weights</a>
   <ul class="collapse">
   <li><a href="#step-1-compute-distance-between-areas" id="toc-step-1-compute-distance-between-areas" class="nav-link" data-scroll-target="#step-1-compute-distance-between-areas">Step 1: Compute Distance between Areas</a></li>
   <li><a href="#step-2-row-standardised-weights-matrix" id="toc-step-2-row-standardised-weights-matrix" class="nav-link" data-scroll-target="#step-2-row-standardised-weights-matrix">Step 2: Row-standardised weights matrix</a></li>
   </ul></li>
-  <li><a href="#application-of-spatial-weight-matrix" id="toc-application-of-spatial-weight-matrix" class="nav-link" data-scroll-target="#application-of-spatial-weight-matrix">Application of Spatial Weight Matrix</a>
+  <li><a href="#application-of-spatial-weight-matrix" id="toc-application-of-spatial-weight-matrix" class="nav-link" data-scroll-target="#application-of-spatial-weight-matrix">6 Application of Spatial Weight Matrix</a>
   <ul class="collapse">
   <li><a href="#a-spatial-lag-with-row-standardized-weights" id="toc-a-spatial-lag-with-row-standardized-weights" class="nav-link" data-scroll-target="#a-spatial-lag-with-row-standardized-weights">(a) Spatial lag with row-standardized weights</a></li>
   <li><a href="#b-spatial-lag-as-a-sum-of-neighboring-values" id="toc-b-spatial-lag-as-a-sum-of-neighboring-values" class="nav-link" data-scroll-target="#b-spatial-lag-as-a-sum-of-neighboring-values">(b) Spatial lag as a sum of neighboring values</a></li>
@@ -254,8 +257,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<section id="overview" class="level1">
+<h1>1 Overview</h1>
 <p>In this hands-on exercise, you will learn how to compute spatial weights using R. By the end to this hands-on exercise, you will be able to:</p>
 <ul>
 <li>import geospatial data using appropriate function(s) of <strong>sf</strong> package,</li>
@@ -265,15 +268,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>calculate spatially lagged variables using appropriate functions of <strong>spdep</strong> package.</li>
 </ul>
 </section>
-<section id="study-area-and-data" class="level2">
-<h2 class="anchored" data-anchor-id="study-area-and-data">Study Area and Data</h2>
+<section id="study-area-and-data" class="level1">
+<h1>2 Study Area and Data</h1>
 <p>Two data sets will be used in this hands-on exercise, they are:</p>
 <ul>
-<li>Hunan county boundary layer. This is a geospatial data set in ESRI shapefile format.</li>
-<li>Hunan_2012.csv: This csv file contains selected Hunan’s local development indicators in 2012.</li>
+<li>Geospatial: Hunan province administrative boundary layer at county level; in ESRI shapefile format.</li>
+<li>Aspatial: Hunan_2012.csv containing selected Hunan’s local development indicators in 2012.</li>
 </ul>
-<section id="getting-started" class="level3">
-<h3 class="anchored" data-anchor-id="getting-started">Getting Started</h3>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">Getting Started</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Task</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Solution</a></li></ul>
 <div class="tab-content">
@@ -289,11 +292,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="loading-data-into-r-environment" class="level2">
-<h2 class="anchored" data-anchor-id="loading-data-into-r-environment">Loading Data Into R Environment</h2>
-<p>In this section, you will learn how to bring a geospatial data and its associated attribute table into R environment. The geospatial data is in ESRI shapefile format and the attribute table is in csv fomat.</p>
+<section id="loading-data-into-r-environment" class="level1">
+<h1>3 Loading Data Into R Environment</h1>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Import shapefile</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Import csv file</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Perform relational join</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Import Geospatial Shapefile</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Import Aspatial csv File</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Perform relational join</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <p>The code chunk below uses <a href="https://r-spatial.github.io/sf/reference/st_read.html"><em>st_read()</em></a> of <strong>sf</strong> package to import Hunan shapefile into R. The imported shapefile will be <strong>simple features</strong> Object of <strong>sf</strong>.</p>
@@ -328,9 +330,9 @@ Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
 </section>
-<section id="visualising-regional-development-indicator" class="level2">
-<h2 class="anchored" data-anchor-id="visualising-regional-development-indicator">Visualising Regional Development Indicator</h2>
-<p>Now, we are going to prepare a basemap and a choropleth map showing the distribution of GDPPC 2012 by using <em>qtm()</em> of <strong>tmap</strong> package.</p>
+<section id="visualising-regional-development-indicator" class="level1">
+<h1>4 Visualising Regional Development Indicator</h1>
+<p>Prepare a basemap and a choropleth map to show the distribution of GDPPC 2012 (GDP per capita) by using <em>qtm()</em> of <strong>tmap</strong> package.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>basemap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
@@ -343,14 +345,30 @@ Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
 </section>
-<section id="computing-contiguityadjacency-spatial-weights" class="level2">
-<h2 class="anchored" data-anchor-id="computing-contiguityadjacency-spatial-weights">Computing Contiguity/Adjacency Spatial Weights</h2>
+<section id="neighbours" class="level1">
+<h1>5 Neighbours</h1>
 <ul>
-<li><p><em>poly2nb()</em> of <strong>spdep</strong> package to compute contiguity weight matrices for the study area.</p></li>
-<li><p>This function builds a neighbours list based on regions with contiguous boundaries. If you look at the documentation you will see that you can pass a “queen” argument that takes TRUE or FALSE as options. If you do not specify this argument the default is set to TRUE, that is, if you don’t specify queen = FALSE this function will return a list of first order neighbours using the Queen criteria.</p></li>
+<li><p>Contiguity-based:</p>
+<ul>
+<li><p>Share common boundary (rooks, bishops, queen’s/king’s case)</p></li>
+<li><p>Measured using <code>poly2nb()</code></p></li>
+</ul></li>
+<li><p>Distance-based:</p>
+<ul>
+<li><p>Within threshold distance to the nucleus</p></li>
+<li><p>Measured using <code>knn2nb()</code></p></li>
+</ul></li>
 </ul>
-<section id="computing-contiguity-based-neighbours" class="level3">
-<h3 class="anchored" data-anchor-id="computing-contiguity-based-neighbours">Computing contiguity based neighbours</h3>
+</section>
+<section id="computing-contiguityadjacency-spatial-weights" class="level1">
+<h1>6 Computing Contiguity/Adjacency Spatial Weights</h1>
+<ul>
+<li><em>poly2nb()</em> of <strong>spdep</strong> package to compute contiguity weight matrices for the study area.</li>
+<li>This function builds a <strong><em>neighbours list</em></strong> based on regions with contiguous boundaries.</li>
+<li>“queen” argument: default is set to TRUE if not specified.</li>
+</ul>
+<section id="computing-contiguity-based-neighbours" class="level2">
+<h2 class="anchored" data-anchor-id="computing-contiguity-based-neighbours">6.1 Computing contiguity based neighbours</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Queen</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Rook</a></li></ul>
 <div class="tab-content">
@@ -375,7 +393,12 @@ Link number distribution:
 85 with 11 links</code></pre>
 </div>
 </div>
-<p>Interpretation: - There are 88 area units in Hunan. - Most connected area unit has 11 neighbours. - There are two area units with only one neighbour.</p>
+<p>Interpretation:</p>
+<ul>
+<li>There are 88 area units in Hunan.</li>
+<li>Most connected area unit has 11 neighbours.</li>
+<li>There are two area units with only one neighbour.</li>
+</ul>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <p>The code chunk below is used to compute Rook contiguity weight matrix.</p>
@@ -400,13 +423,17 @@ Link number distribution:
 </div>
 <p>Interpretation:</p>
 <ul>
-<li><p>There are 88 area units in Hunan.</p></li>
-<li><p>Most connect area unit has 10 neighbours.</p></li>
-<li><p>There are two area units with only one neighbours.</p></li>
+<li>There are 88 area units in Hunan.</li>
+<li>Most connect area unit has 10 neighbours.</li>
+<li>There are two area units with only one neighbours.</li>
 </ul>
 </div>
 </div>
 </div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Display Neighbours for Specific County</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Retrieve County Name &amp; Its Neighbours</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false">Retrieve GDPCC</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <p>For each polygon in our polygon object, <em>wm_q</em> lists all neighboring polygons. For example, to see the neighbors for the first polygon in the object, type:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>wm_q[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -417,6 +444,8 @@ Link number distribution:
 <ul>
 <li>Polygon 1 has 5 neighbors. The numbers represent the polygon IDs as stored in Hunan SpatialPolygonsDataFrame class.</li>
 </ul>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <p>We can retrive the county name of Polygon ID=1 by using the code chunk below:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>hunan<span class="sc">$</span>County[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -435,6 +464,8 @@ Link number distribution:
 <pre><code>[1] "Hanshou" "Jinshi"  "Li"      "Nan"     "Taoyuan"</code></pre>
 </div>
 </div>
+</div>
+<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
 <p>We can retrieve the GDPPC of these five countries by using the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>nb1 <span class="ot">&lt;-</span> wm_q[[<span class="dv">1</span>]]</span>
@@ -545,9 +576,12 @@ Link number distribution:
  - attr(*, "sym")= logi TRUE</code></pre>
 </div>
 </div>
+</div>
+</div>
+</div>
 </section>
-<section id="visualising-contiguity-weights" class="level3">
-<h3 class="anchored" data-anchor-id="visualising-contiguity-weights">Visualising contiguity weights</h3>
+<section id="visualising-contiguity-weights" class="level2">
+<h2 class="anchored" data-anchor-id="visualising-contiguity-weights">Visualising contiguity weights</h2>
 <ul>
 <li>A connectivity graph takes a point and displays a line to each neighboring point.
 <ul>
@@ -560,6 +594,10 @@ Link number distribution:
 <li>Our input vector will be the geometry column of us.bound. Our function will be st_centroid. We will be using map_dbl variation of map from the purrr package.</li>
 </ul></li>
 </ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Get Long &amp; Lat</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Combine Long &amp; Lat</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <p>To get our longitude values, we map the st_centroid function over the geometry column of us.bound and access the longitude value through double bracket notation [[ ]] and 1. This allows us to get only the longitude, which is the first value in each centroid.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="fu">map_dbl</span>(hunan<span class="sc">$</span>geometry, <span class="sc">~</span><span class="fu">st_centroid</span>(.x)[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -568,6 +606,8 @@ Link number distribution:
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fu">map_dbl</span>(hunan<span class="sc">$</span>geometry, <span class="sc">~</span><span class="fu">st_centroid</span>(.x)[[<span class="dv">2</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <p>Now that we have latitude and longitude, we use cbind to put longitude and latitude into the same object.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">cbind</span>(longitude, latitude)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -585,12 +625,15 @@ Link number distribution:
 [6,]  111.0341 29.79863</code></pre>
 </div>
 </div>
+</div>
+</div>
+</div>
 <section id="plotting-contiguity-based-neighbours-map" class="level4">
 <h4 class="anchored" data-anchor-id="plotting-contiguity-based-neighbours-map">Plotting contiguity-based neighbours map</h4>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Queen</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Rook</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false">Both</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Queen</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Rook</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-3" role="tab" aria-controls="tabset-6-3" aria-selected="false">Both</a></li></ul>
 <div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(wm_q, coords, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.6</span>, <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">col=</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -599,7 +642,7 @@ Link number distribution:
 </div>
 </div>
 </div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>)</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(wm_r, coords, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.6</span>, <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -608,7 +651,7 @@ Link number distribution:
 </div>
 </div>
 </div>
-<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<div id="tabset-6-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-3-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>, <span class="at">main=</span><span class="st">"Queen Contiguity"</span>)</span>
@@ -624,23 +667,22 @@ Link number distribution:
 </div>
 </section>
 </section>
-</section>
 <section id="computing-distance-based-neighbours" class="level2">
-<h2 class="anchored" data-anchor-id="computing-distance-based-neighbours">Computing distance-based neighbours</h2>
+<h2 class="anchored" data-anchor-id="computing-distance-based-neighbours">6.2 Computing distance-based neighbours</h2>
 <p>In this section, you will learn how to derive distance-based weight matrices by using <a href="https://r-spatial.github.io/spdep/reference/dnearneigh.html"><em>dnearneigh()</em></a> of <strong>spdep</strong> package.</p>
 <ul>
 <li>The function identifies neighbours of region points by Euclidean distance with a distance band with lower d1= and upper d2= bounds controlled by the bounds= argument.</li>
 <li>If unprojected coordinates are used and either specified in the coordinates object x or with x as a two column matrix and longlat=TRUE, great circle distances in <strong>km</strong> will be calculated assuming the WGS84 reference ellipsoid.</li>
 </ul>
 <section id="determine-the-cut-off-distance-upper-limit" class="level3">
-<h3 class="anchored" data-anchor-id="determine-the-cut-off-distance-upper-limit">Determine the cut-off distance / upper limit</h3>
+<h3 class="anchored" data-anchor-id="determine-the-cut-off-distance-upper-limit">6.2.1 Determine the cut-off distance / upper limit</h3>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Create neighbour list</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Calculate distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false">Obtain upper limit</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Create neighbour list</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Calculate distance</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Obtain upper limit</a></li></ul>
 <div class="tab-content">
-<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <ul>
-<li>Return a matrix with the indices of points belonging to the set of the k nearest neighbours of each other by using <a href="https://r-spatial.github.io/spdep/reference/knearneigh.html"><em>knearneigh()</em></a> of <strong>spdep</strong>.</li>
-<li>Convert the knn object returned by <em>knearneigh()</em> into a neighbours list of class nb with a list of integer vectors containing neighbour region number ids by using <a href="https://r-spatial.github.io/spdep/reference/knn2nb.html"><em>knn2nb()</em></a>.</li>
+<li><a href="https://r-spatial.github.io/spdep/reference/knearneigh.html"><em>knearneigh()</em></a> of <strong>spdep</strong>: returns a matrix with the indices of points belonging to the set of the k nearest neighbours of each other.</li>
+<li><a href="https://r-spatial.github.io/spdep/reference/knn2nb.html"><em>knn2nb()</em></a>: converts the knn object returned by <em>knearneigh()</em> into a neighbours list (class nb) with a list of integer vectors containing neighbour region number ids.</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>k1 <span class="ot">&lt;-</span> <span class="fu">knn2nb</span>(<span class="fu">knearneigh</span>(coords))</span>
@@ -655,10 +697,10 @@ Non-symmetric neighbours list</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
 <ul>
-<li>Return the length of neighbour relationship edges by using <a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>. The function returns in the units of the coordinates if the coordinates are projected, in km otherwise.</li>
-<li>Remove the list structure of the returned object by using <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unlist"><strong>unlist()</strong></a>.</li>
+<li><a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>: calculates the length of neighbour relationship edges (ie distance between neighboring regions). Returns units of the coordinates if the coordinates are projected, in km otherwise.</li>
+<li><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unlist"><strong>unlist()</strong></a>: removes the list structure of the returned object by using .</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>k1dists <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">nbdists</span>(k1, coords, <span class="at">longlat =</span> <span class="cn">TRUE</span>))</span>
@@ -678,7 +720,7 @@ Non-symmetric neighbours list</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+<div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(k1dists)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -689,11 +731,11 @@ Non-symmetric neighbours list</code></pre>
 </div>
 </div>
 </div>
-<p>Interpretation: - The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.</p>
+<p>Interpretation: The summary report shows that the largest first nearest neighbour distance is 61.79 km, so using this as the upper threshold gives certainty that all units will have at least one neighbour.</p>
 </section>
 <section id="computing-fixed-distance-weight-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="computing-fixed-distance-weight-matrix">Computing fixed distance weight matrix</h3>
-<p>Now, we will compute the distance weight matrix by using <em>dnearneigh()</em> as shown in the code chunk below.</p>
+<h3 class="anchored" data-anchor-id="computing-fixed-distance-weight-matrix">6.2.2 Computing fixed distance weight matrix</h3>
+<p><em>dnearneigh()</em> is used to compute the distance weight matrix.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>wm_d62 <span class="ot">&lt;-</span> <span class="fu">dnearneigh</span>(coords, <span class="dv">0</span>, <span class="dv">62</span>, <span class="at">longlat =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>wm_d62</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -705,8 +747,12 @@ Percentage nonzero weights: 4.183884
 Average number of links: 3.681818 </code></pre>
 </div>
 </div>
-<p>Interpretation: - 88 regions in Hunan - 324 links amongst regions of distance up to 62km - Avg of 3-4 neighbours within this distance</p>
-<p>To display the structure of wm_d62 weight matrix: ::: panel-tabset ## str()</p>
+<p>Interpretation: 88 regions in Hunan, 324 links amongst regions of distance up to 62km, Avg of 3-4 neighbours within this distance</p>
+<p>To display the structure of wm_d62 weight matrix:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">str()</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">table() &amp; card()</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(wm_d62)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -808,10 +854,8 @@ Average number of links: 3.681818 </code></pre>
  - attr(*, "sym")= logi TRUE</code></pre>
 </div>
 </div>
-</section>
-</section>
-<section id="table-card" class="level2">
-<h2 class="anchored" data-anchor-id="table-card">table() &amp; card()</h2>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <p>Another way to display the structure of the weight matrix is to combine <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/table"><em>table()</em></a> and <a href="https://r-spatial.github.io/spdep/reference/card.html"><em>card()</em></a> of <strong>spdep</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(hunan<span class="sc">$</span>County, </span>
@@ -910,7 +954,9 @@ Average number of links: 3.681818 </code></pre>
   Zixing        0 0 1 0 0 0</code></pre>
 </div>
 </div>
-<p>:::</p>
+</div>
+</div>
+</div>
 <p>[<em>n.comp.nb()</em>] finds the number of disjoint connected subgraphs in the graph depicted by [<em>nb.obj()</em>] - a spatial neighbours list object.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>n_comp <span class="ot">&lt;-</span> <span class="fu">n.comp.nb</span>(wm_d62)</span>
@@ -927,8 +973,13 @@ Average number of links: 3.681818 </code></pre>
 88 </code></pre>
 </div>
 </div>
-<section id="plotting-fixed-distance-weight-matrix" class="level4">
-<h4 class="anchored" data-anchor-id="plotting-fixed-distance-weight-matrix">Plotting fixed distance weight matrix</h4>
+</section>
+<section id="plotting-fixed-distance-weight-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-fixed-distance-weight-matrix">Plotting fixed distance weight matrix</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Distance-link</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Distance-link and 1st nearest neighbours</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <p>Next, we will plot the distance weight matrix by using the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>)</span>
@@ -939,6 +990,8 @@ Average number of links: 3.681818 </code></pre>
 </div>
 </div>
 <p>The red lines show the links of 1st nearest neighbours and the black lines show the links of neighbours within the cut-off distance of 62km.</p>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <p>Alternatively, we can plot both of them next to each other by using the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
@@ -950,9 +1003,12 @@ Average number of links: 3.681818 </code></pre>
 <p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
+</div>
+</div>
+</div>
 </section>
 <section id="computing-adaptive-distance-weight-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="computing-adaptive-distance-weight-matrix">Computing adaptive distance weight matrix</h3>
+<h3 class="anchored" data-anchor-id="computing-adaptive-distance-weight-matrix">6.2.3 Computing adaptive distance weight matrix</h3>
 <ul>
 <li><p>For fixed distance weight matrix, more densely settled areas (usually urban areas) tend to have more neighbours and the less densely settled areas (usually rural counties) tend to have lesser neighbours.</p></li>
 <li><p>Having many neighbours smoothes the neighbour relationship across more neighbours.</p></li>
@@ -1073,7 +1129,7 @@ Non-symmetric neighbours list</code></pre>
 </div>
 <p>Each county will have exactly six neighbours as specified.</p>
 <section id="plotting-distance-based-neighbours" class="level4">
-<h4 class="anchored" data-anchor-id="plotting-distance-based-neighbours">Plotting distance based neighbours</h4>
+<h4 class="anchored" data-anchor-id="plotting-distance-based-neighbours">6.2.3.1 Plotting distance based neighbours</h4>
 <p>We can plot the weight matrix using the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hunan<span class="sc">$</span>geometry, <span class="at">border=</span><span class="st">"lightgrey"</span>)</span>
@@ -1085,11 +1141,11 @@ Non-symmetric neighbours list</code></pre>
 </section>
 </section>
 </section>
-<section id="weights-based-on-idw" class="level2">
-<h2 class="anchored" data-anchor-id="weights-based-on-idw">Weights based on IDW</h2>
-<p>In this section, we will learn how to derive a spatial weight matrix based on Inversed Distance method.</p>
-<section id="step-1-compute-distance-between-areas" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-compute-distance-between-areas">Step 1: Compute Distance between Areas</h3>
+</section>
+<section id="inversed-distance-weights" class="level1">
+<h1>5 Inversed Distance Weights</h1>
+<section id="step-1-compute-distance-between-areas" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-compute-distance-between-areas">Step 1: Compute Distance between Areas</h2>
 <p>We use <a href="https://r-spatial.github.io/spdep/reference/nbdists.html"><em>nbdists()</em></a> of <strong>spdep</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>dist <span class="ot">&lt;-</span> <span class="fu">nbdists</span>(wm_q, coords, <span class="at">longlat =</span> <span class="cn">TRUE</span>)</span>
@@ -1370,8 +1426,8 @@ Non-symmetric neighbours list</code></pre>
 </div>
 </div>
 </section>
-<section id="step-2-row-standardised-weights-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-row-standardised-weights-matrix">Step 2: Row-standardised weights matrix</h3>
+<section id="step-2-row-standardised-weights-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-row-standardised-weights-matrix">Step 2: Row-standardised weights matrix</h2>
 <ul>
 <li>Assign weights to each neighboring polygon. Recall in lecture slides, it is calculated using the inverse of number of neigbours; total of each row in matrix adds to 1, which makes it a row-standardized.</li>
 <li>In our case study, each neighboring polygon will be assigned equal weight (style=“W”). This is accomplished by assigning the fraction 1/(# of neighbors) to each neighboring county then summing the weighted income values.</li>
@@ -1388,9 +1444,9 @@ Non-symmetric neighbours list</code></pre>
 </ul></li>
 </ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">W</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">B</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-3" role="tab" aria-controls="tabset-6-3" aria-selected="false">Zero.Policy = FALSE</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">W</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">B</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">Zero.Policy = FALSE</a></li></ul>
 <div class="tab-content">
-<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>rswm_q <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">style=</span><span class="st">"W"</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>rswm_q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1409,7 +1465,7 @@ W 88 7744 88 37.86334 365.9147</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>rswm_qB <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">style=</span><span class="st">"B"</span>, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>rswm_qB</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1428,7 +1484,7 @@ B 88 7744 448 896 10224</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-6-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-3-tab">
+<div id="tabset-10-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-3-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>rswm_qF <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_q, <span class="at">style=</span><span class="st">"W"</span>, <span class="at">zero.policy =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>rswm_qF</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1501,19 +1557,21 @@ B 88 7744 8.786867 0.3776535 3.8137</code></pre>
 </div>
 </section>
 </section>
-<section id="application-of-spatial-weight-matrix" class="level2">
-<h2 class="anchored" data-anchor-id="application-of-spatial-weight-matrix">Application of Spatial Weight Matrix</h2>
+<section id="application-of-spatial-weight-matrix" class="level1">
+<h1>6 Application of Spatial Weight Matrix</h1>
 <ul>
-<li>Apatially lagged variable: the weighted sum or a weighted average of the neighboring values for that variable.</li>
+<li>Spatially lagged variable: the weighted sum or a weighted average of the neighboring values for that variable. Used to account for spatial autocorrelation in the data, where values of a variable in 1 location is influenced by values of variable in the nearby locations,</li>
 <li>4 methods</li>
 </ul>
-<section id="a-spatial-lag-with-row-standardized-weights" class="level3">
-<h3 class="anchored" data-anchor-id="a-spatial-lag-with-row-standardized-weights">(a) Spatial lag with row-standardized weights</h3>
+<section id="a-spatial-lag-with-row-standardized-weights" class="level2">
+<h2 class="anchored" data-anchor-id="a-spatial-lag-with-row-standardized-weights">(a) Spatial lag with row-standardized weights</h2>
 <ul>
-<li>Sums up GDPPC of all the neighbours, except the taget location itself</li>
+<li>Sums up GDPPC of all the neighbours, except the target location itself</li>
 </ul>
-<section id="step-1-compute-the-average-neighbor-gdppc-value-for-each-polygon" class="level4">
-<h4 class="anchored" data-anchor-id="step-1-compute-the-average-neighbor-gdppc-value-for-each-polygon">Step 1: Compute the average neighbor GDPPC value for each polygon</h4>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true">Step 1: Compute the avg neighbor GDPPC value</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false">Step 2: Append values onto hunan df</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-3" role="tab" aria-controls="tabset-11-3" aria-selected="false">Step 3: Plot both the GDPPC and spatial lag GDPPC</a></li></ul>
+<div class="tab-content">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
 <ul>
 <li>These values are often referred to as <strong>spatially lagged values</strong>.</li>
 </ul>
@@ -1545,16 +1603,15 @@ B 88 7744 8.786867 0.3776535 3.8137</code></pre>
 <pre><code>[1] 20981 34592 24473 21311 22879</code></pre>
 </div>
 </div>
-</section>
-<section id="step-2-append-the-spatially-lag-gdppc-values-onto-hunan-sf-data-frame-by-using-the-code-chunk-below." class="level4">
-<h4 class="anchored" data-anchor-id="step-2-append-the-spatially-lag-gdppc-values-onto-hunan-sf-data-frame-by-using-the-code-chunk-below.">Step 2: Append the spatially lag GDPPC values onto hunan sf data frame by using the code chunk below.</h4>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>lag.list <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(rswm_q, hunan<span class="sc">$</span>GDPPC))</span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>lag.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lag.list)</span>
 <span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(lag.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"lag GDPPC"</span>)</span>
 <span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan,lag.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>_ The following table shows the average neighboring income values (stored in the Inc.lag object) for each county.</p>
+<p>The following table shows the average neighboring income values (stored in the Inc.lag object) for each county.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hunan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1579,9 +1636,8 @@ Geodetic CRS:  WGS 84
 6 POLYGON ((110.8825 30.11675...</code></pre>
 </div>
 </div>
-</section>
-<section id="step-3-plot-both-the-gdppc-and-spatial-lag-gdppc-for-comparison" class="level4">
-<h4 class="anchored" data-anchor-id="step-3-plot-both-the-gdppc-and-spatial-lag-gdppc-for-comparison">Step 3: Plot both the GDPPC and spatial lag GDPPC for comparison</h4>
+</div>
+<div id="tabset-11-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-3-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>lag_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"lag GDPPC"</span>)</span>
@@ -1590,18 +1646,20 @@ Geodetic CRS:  WGS 84
 <p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
+</div>
+</div>
+</div>
 </section>
-</section>
-<section id="b-spatial-lag-as-a-sum-of-neighboring-values" class="level3">
-<h3 class="anchored" data-anchor-id="b-spatial-lag-as-a-sum-of-neighboring-values">(b) Spatial lag as a sum of neighboring values</h3>
+<section id="b-spatial-lag-as-a-sum-of-neighboring-values" class="level2">
+<h2 class="anchored" data-anchor-id="b-spatial-lag-as-a-sum-of-neighboring-values">(b) Spatial lag as a sum of neighboring values</h2>
 <ul>
 <li>We can calculate spatial lag as a sum of neighboring values by assigning binary weights.</li>
 <li>This requires us to go back to our neighbors list, then apply a function that will assign binary weights, then we use glist = in the nb2listw function to explicitly assign these weights.</li>
 </ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Assign value</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Compute lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Append lag_sum GDPPC into hunan</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">Plot &amp; Compare</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true">Create binary spatial weights matrix</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false">Compute lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-3" role="tab" aria-controls="tabset-12-3" aria-selected="false">Append lag_sum GDPPC into hunan</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-4" role="tab" aria-controls="tabset-12-4" aria-selected="false">Plot &amp; Compare</a></li></ul>
 <div class="tab-content">
-<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
 <ul>
 <li>We start by applying a function that will assign a value of 1 per each neighbor.</li>
 <li>This is done with lapply, which we have been using to manipulate the neighbors structure throughout the past notebooks.</li>
@@ -1628,7 +1686,7 @@ B 88 7744 448 896 10224</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
 <p>With the proper weights assigned, we can use lag.listw to compute a lag variable from our weight and GDPPC.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>lag_sum <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(b_weights2, hunan<span class="sc">$</span>GDPPC))</span>
@@ -1675,13 +1733,13 @@ B 88 7744 448 896 10224</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
+<div id="tabset-12-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-3-tab">
 <p>Next, we will append the <em>lag_sum GDPPC</em> field into <code>hunan</code> sf data frame by using the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, lag.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
-<div id="tabset-7-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-4-tab">
+<div id="tabset-12-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-4-tab">
 <p>Now, We can plot both the <em>GDPPC</em> and <em>Spatial Lag Sum GDPPC</em> for comparison using the code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"GDPPC"</span>)</span>
@@ -1695,32 +1753,40 @@ B 88 7744 448 896 10224</code></pre>
 </div>
 </div>
 </section>
-<section id="c-spatial-window-average" class="level3">
-<h3 class="anchored" data-anchor-id="c-spatial-window-average">(c) Spatial window average</h3>
+<section id="c-spatial-window-average" class="level2">
+<h2 class="anchored" data-anchor-id="c-spatial-window-average">(c) Spatial window average</h2>
 <p>The spatial window average uses row-standardized weights and includes the diagonal element. To do this in R, we need to go back to the neighbors structure and add the diagonal element before assigning weights.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">Add diagonal element</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Obtain weights</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-3" role="tab" aria-controls="tabset-8-3" aria-selected="false">Create lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-4" role="tab" aria-controls="tabset-8-4" aria-selected="false">Convert to data frame</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-5" role="tab" aria-controls="tabset-8-5" aria-selected="false">Left join</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-6" role="tab" aria-controls="tabset-8-6" aria-selected="false">Compare</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-7" role="tab" aria-controls="tabset-8-7" aria-selected="false">Plot</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true">Add diagonal element</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false">Create spatial weights list</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-3" role="tab" aria-controls="tabset-13-3" aria-selected="false">Create lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-4" role="tab" aria-controls="tabset-13-4" aria-selected="false">Convert to data frame</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-5" role="tab" aria-controls="tabset-13-5" aria-selected="false">Left join</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-6" role="tab" aria-controls="tabset-13-6" aria-selected="false">Compare</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-7" role="tab" aria-controls="tabset-13-7" aria-selected="false">Plot</a></li></ul>
 <div class="tab-content">
-<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
 <p>To add the diagonal element to the neighbour list, we just need to use <em>include.self()</em> from <strong>spdep</strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>wm_qs <span class="ot">&lt;-</span> <span class="fu">include.self</span>(wm_q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>wm_qs <span class="ot">&lt;-</span> <span class="fu">include.self</span>(wm_q)</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>wm_qs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Neighbour list object:
+Number of regions: 88 
+Number of nonzero links: 536 
+Percentage nonzero weights: 6.921488 
+Average number of links: 6.090909 </code></pre>
+</div>
 </div>
 <p>Notice that the Number of nonzero links, Percentage nonzero weights and Average number of links are 536, 6.921488 and 6.090909 respectively as compared to wm_q of 448, 5.785124 and 5.090909</p>
 <p>Let us take a good look at the neighbour list of area [1] by using the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>wm_qs[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>wm_qs[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1]  1  2  3  4 57 85</code></pre>
 </div>
 </div>
 <p>Notice that now [1] has six neighbours instead of five.</p>
 </div>
-<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
 <p>Now we obtain weights with <em>nb2listw()</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>wm_qs <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_qs)</span>
-<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>wm_qs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>wm_qs <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_qs)</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>wm_qs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Characteristics of weights list object:
 Neighbour list object:
@@ -1737,12 +1803,12 @@ W 88 7744 88 30.90265 357.5308</code></pre>
 </div>
 <p>Again, we use <em>nb2listw()</em> and <em>glist()</em> to explicitly assign weight values.</p>
 </div>
-<div id="tabset-8-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-3-tab">
+<div id="tabset-13-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-3-tab">
 <p>Lastly, we just need to create the lag variable from our weight structure and GDPPC variable.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>lag_w_avg_gpdpc <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(wm_qs, </span>
-<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>                             hunan<span class="sc">$</span>GDPPC)</span>
-<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>lag_w_avg_gpdpc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>lag_w_avg_gpdpc <span class="ot">&lt;-</span> <span class="fu">lag.listw</span>(wm_qs, </span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>                             hunan<span class="sc">$</span>GDPPC)</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>lag_w_avg_gpdpc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 24650.50 22434.17 26233.00 27084.60 26927.00 22230.17 47621.20 37160.12
  [9] 49224.71 29886.89 26627.50 22690.17 25366.40 25825.75 30329.00 32682.83
@@ -1758,29 +1824,29 @@ W 88 7744 88 30.90265 357.5308</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-8-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-4-tab">
+<div id="tabset-13-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-4-tab">
 <p>Next, we will convert the lag variable listw object into a data.frame by using <em>as.data.frame()</em>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>lag.list.wm_qs <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(wm_qs, hunan<span class="sc">$</span>GDPPC))</span>
-<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>lag_wm_qs.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lag.list.wm_qs)</span>
-<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(lag_wm_qs.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"lag_window_avg GDPPC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>lag.list.wm_qs <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(wm_qs, hunan<span class="sc">$</span>GDPPC))</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>lag_wm_qs.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lag.list.wm_qs)</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(lag_wm_qs.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"lag_window_avg GDPPC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Note: The third command line on the code chunk above renames the field names of <em>lag_wm_q1.res</em> object into <em>NAME_3</em> and <em>lag_window_avg GDPPC</em> respectively.</p>
 </div>
-<div id="tabset-8-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-5-tab">
+<div id="tabset-13-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-5-tab">
 <p>Next, the code chunk below will be used to append <em>lag_window_avg GDPPC</em> values onto <em>hunan</em> sf data.frame by using <em>left_join()</em> of <strong>dplyr</strong> package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, lag_wm_qs.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, lag_wm_qs.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
-<div id="tabset-8-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-6-tab">
+<div id="tabset-13-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-6-tab">
 <p>To compare the values of lag GDPPC and Spatial window average, <code>kable()</code> of Knitr package is used to prepare a table using the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="sc">%&gt;%</span></span>
-<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"County"</span>, </span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">"lag GDPPC"</span>, </span>
-<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>         <span class="st">"lag_window_avg GDPPC"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="sc">%&gt;%</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"County"</span>, </span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">"lag GDPPC"</span>, </span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>         <span class="st">"lag_window_avg GDPPC"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
@@ -2331,11 +2397,11 @@ W 88 7744 88 30.90265 357.5308</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-8-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-7-tab">
+<div id="tabset-13-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-7-tab">
 <p>Lastly, <em>qtm()</em> of <strong>tmap</strong> package is used to plot the lag_gdppc and w_ave_gdppc maps next to each other for quick comparison.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>w_avg_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"lag_window_avg GDPPC"</span>)</span>
-<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(lag_gdppc, w_avg_gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>w_avg_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"lag_window_avg GDPPC"</span>)</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(lag_gdppc, w_avg_gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-58-1.png" class="img-fluid" width="1152"></p>
 </div>
@@ -2345,21 +2411,21 @@ W 88 7744 88 30.90265 357.5308</code></pre>
 </div>
 <p>Note: For more effective comparison, it is advicible to use the core tmap mapping functions.</p>
 </section>
-<section id="d-spatial-window-sum" class="level3">
-<h3 class="anchored" data-anchor-id="d-spatial-window-sum">(d) Spatial window sum</h3>
+<section id="d-spatial-window-sum" class="level2">
+<h2 class="anchored" data-anchor-id="d-spatial-window-sum">(d) Spatial window sum</h2>
 <ul>
 <li>The spatial window sum is the counter part of the window average, but without using row-standardized weights.</li>
 <li>Uses and includes the diagonal element.</li>
 <li>Sums up GDPPC of all neighbours, including target location itself</li>
 </ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Add diagonal element</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Assign weights</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">Compute lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-4" role="tab" aria-controls="tabset-9-4" aria-selected="false">Convert to data frame</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-5" role="tab" aria-controls="tabset-9-5" aria-selected="false">Left join</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-6" role="tab" aria-controls="tabset-9-6" aria-selected="false">Compare</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-7" role="tab" aria-controls="tabset-9-7" aria-selected="false">Plot</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true">Add diagonal element</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false">Assign weights</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-3" role="tab" aria-controls="tabset-14-3" aria-selected="false">Compute lag variable</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-4" role="tab" aria-controls="tabset-14-4" aria-selected="false">Convert to data frame</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-5" role="tab" aria-controls="tabset-14-5" aria-selected="false">Left join</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-6" role="tab" aria-controls="tabset-14-6" aria-selected="false">Compare</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-7" role="tab" aria-controls="tabset-14-7" aria-selected="false">Plot</a></li></ul>
 <div class="tab-content">
-<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
 <p>To add the diagonal element to the neighbour list, we just need to use <em>include.self()</em> from <strong>spdep</strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>wm_qs <span class="ot">&lt;-</span> <span class="fu">include.self</span>(wm_q)</span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>wm_qs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>wm_qs <span class="ot">&lt;-</span> <span class="fu">include.self</span>(wm_q)</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>wm_qs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Neighbour list object:
 Number of regions: 88 
@@ -2369,11 +2435,11 @@ Average number of links: 6.090909 </code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div id="tabset-14-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-2-tab">
 <p>Next, we will assign <strong>binary</strong> weights to the neighbour structure that includes the diagonal element.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>b_weights <span class="ot">&lt;-</span> <span class="fu">lapply</span>(wm_qs, <span class="cf">function</span>(x) <span class="dv">0</span><span class="sc">*</span>x <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>b_weights[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>b_weights <span class="ot">&lt;-</span> <span class="fu">lapply</span>(wm_qs, <span class="cf">function</span>(x) <span class="dv">0</span><span class="sc">*</span>x <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>b_weights[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [1] 1 1 1 1 1 1</code></pre>
@@ -2382,10 +2448,10 @@ Average number of links: 6.090909 </code></pre>
 <p>Notice that now [1] has six neighbours instead of five.</p>
 <p>Again, we use <em>nb2listw()</em> and <em>glist()</em> to explicitly assign weight values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>b_weights2 <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_qs, </span>
-<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">glist =</span> b_weights, </span>
-<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">style =</span> <span class="st">"B"</span>)</span>
-<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a>b_weights2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>b_weights2 <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(wm_qs, </span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">glist =</span> b_weights, </span>
+<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">style =</span> <span class="st">"B"</span>)</span>
+<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>b_weights2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Characteristics of weights list object:
 Neighbour list object:
@@ -2401,11 +2467,11 @@ B 88 7744 536 1072 14160</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-9-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-3-tab">
+<div id="tabset-14-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-3-tab">
 <p>With our new weight structure, we can compute the lag variable with <em>lag.listw()</em>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(b_weights2, hunan<span class="sc">$</span>GDPPC))</span>
-<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc <span class="ot">&lt;-</span> <span class="fu">list</span>(hunan<span class="sc">$</span>NAME_3, <span class="fu">lag.listw</span>(b_weights2, hunan<span class="sc">$</span>GDPPC))</span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
  [1] "Anxiang"       "Hanshou"       "Jinshi"        "Li"           
@@ -2444,26 +2510,26 @@ B 88 7744 536 1072 14160</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-9-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-4-tab">
+<div id="tabset-14-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-4-tab">
 <p>Next, we will convert the lag variable listw object into a data.frame by using <em>as.data.frame()</em>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(w_sum_gdppc)</span>
-<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(w_sum_gdppc.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"w_sum GDPPC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc.res <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(w_sum_gdppc)</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(w_sum_gdppc.res) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NAME_3"</span>, <span class="st">"w_sum GDPPC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Note: The second command line on the code chunk above renames the field names of <em>w_sum_gdppc.res</em> object into <em>NAME_3</em> and <em>w_sum GDPPC</em> respectively.</p>
 </div>
-<div id="tabset-9-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-5-tab">
+<div id="tabset-14-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-5-tab">
 <p>Next, the code chunk below will be used to append <em>w_sum GDPPC</em> values onto <em>hunan</em> sf data.frame by using <em>left_join()</em> of <strong>dplyr</strong> package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, w_sum_gdppc.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, w_sum_gdppc.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
-<div id="tabset-9-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-6-tab">
+<div id="tabset-14-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-6-tab">
 <p>To compare the values of lag GDPPC and Spatial window average, <code>kable()</code> of Knitr package is used to prepare a table using the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="sc">%&gt;%</span></span>
-<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"County"</span>, <span class="st">"lag_sum GDPPC"</span>, <span class="st">"w_sum GDPPC"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="sc">%&gt;%</span></span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"County"</span>, <span class="st">"lag_sum GDPPC"</span>, <span class="st">"w_sum GDPPC"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
@@ -3014,11 +3080,11 @@ B 88 7744 536 1072 14160</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-9-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-7-tab">
+<div id="tabset-14-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-7-tab">
 <p>Lastly, <em>qtm()</em> of <strong>tmap</strong> package is used to plot the lag_sum GDPPC and w_sum_gdppc maps next to each other for quick comparison.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"w_sum GDPPC"</span>)</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(lag_sum_gdppc, w_sum_gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>w_sum_gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan, <span class="st">"w_sum GDPPC"</span>)</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(lag_sum_gdppc, w_sum_gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex2_1_files/figure-html/unnamed-chunk-66-1.png" class="img-fluid" width="1152"></p>
 </div>

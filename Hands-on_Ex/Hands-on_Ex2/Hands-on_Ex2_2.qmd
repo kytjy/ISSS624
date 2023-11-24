@@ -10,6 +10,9 @@ execute:
 editor: visual
 ---
 
+::: {.callout-note collapse="true"}
+## Continuation from Hands-on Exercise 2.1
+
 # 1. Learning Objectives
 
 Learning how to compute Global and Local Measure of Spatial Autocorrelation (GLSA) by using **spdep** package, including:
@@ -35,10 +38,10 @@ In this case study, we are interested to examine the spatial pattern of a select
 
 ## The Study Area and Data
 
-Data sets:
+Datasets:
 
--   Hunan province administrative boundary layer at county level. This is a geospatial data set in ESRI shapefile format.
--   Hunan_2012.csv: csv file containing selected Hunan's local development indicators in 2012.
+-   Geospatial: Hunan province administrative boundary layer at county level; in ESRI shapefile format.
+-   Aspatial: Hunan_2012.csv containing selected Hunan's local development indicators in 2012.
 
 ## Setting the Analytical Tools
 
@@ -102,12 +105,16 @@ basemap <- tm_shape(hunan) +
 gdppc <- qtm(hunan, "GDPPC")
 tmap_arrange(basemap, gdppc, asp=1, ncol=2)
 ```
+:::
 
 # 4. Global Spatial Autocorrelation
 
+::: {.callout-note collapse="true"}
+## Continuation from Hands-on Exercise 2.1
+
 ### 4.1 Computing Contiguity Spatial Weights
 
-Before we can compute the global spatial autocorrelation statistics, we need to construct a spatial weights of the study area. The spatial weights is used to define the neighbourhood relationships between the geographical units (i.e. county) in the study area.
+Before we can compute the global spatial autocorrelation statistics, we need to construct a spatial weights of the study area. The spatial weights is used to define the neighbourhood relationships between the geographical units (i.e. county) in the study area.
 
 -   *poly2nb()* of **spdep** package to compute contiguity weight matrices for the study area.
 -   This function builds a neighbours list based on regions with contiguous boundaries. If you look at the documentation you will see that you can pass a "queen" argument that takes TRUE or FALSE as options. If you do not specify this argument the default is set to TRUE, that is, if you don't specify queen = FALSE this function will return a list of first order neighbours using the Queen criteria.
@@ -127,8 +134,11 @@ Interpretation:
 ### 4.2 Row-standardised weights matrix
 
 -   Assign weights to each neighboring polygon. In our case, each neighboring polygon will be assigned equal weight (style="W").
+
 -   This is accomplished by assigning the fraction 1/(# of neighbors) to each neighboring county then summing the weighted income values.
+
 -   While this is the most intuitive way to summaries the neighbors' values it has one drawback in that polygons along the edges of the study area will base their lagged values on fewer polygons thus potentially over- or under-estimating the true nature of the spatial autocorrelation in the data.
+
 -   Style="W" option used for this example for simplicity's sake but more robust options are available, notably style="B".
 
     -   Styles:
@@ -149,10 +159,27 @@ Interpretation:
     ```
 
 -   zero.policy=TRUE: allows for lists of non-neighbors. This should be used with caution since the user may not be aware of missing neighbors in their dataset however, a zero.policy of FALSE would return an error. - If *zero policy* is set to TRUE, weights vectors of zero length are inserted for regions without neighbour in the neighbours list. These will in turn generate lag values of zero, equivalent to the sum of products of the zero row t(rep(0, length=length(neighbours))) %\*% x, for arbitrary numerical vector x of length length(neighbours). The spatially lagged value of x for the zero-neighbour region will then be zero, which may (or may not) be a sensible choice.
+:::
 
 ### 4.3 Global Spatial Autocorrelation: Moran's I
 
 ::: panel-tabset
+## Description
+
+-   Describe how features differ from the values in the study area as a whole
+
+-   Moran I (Z value) is:
+
+    -   positive (I\>0): Clustered, observations tend to be similar;
+
+    -   negative(I\<0): Dispersed, observations tend to be dissimilar;
+
+    -   approximately zero: observations are arranged randomly over space.
+
+## Hypothesis
+
+H0: Observed spatial patterns of values is equally likely as any other spatial pattern i.e. data is randomly disbursed, no spatial pattern H1: Data is more spatially clustered than expected by chance alone.
+
 ## Moran's I test
 
 Moran's I statistical testing using [*moran.test()*](https://r-spatial.github.io/spdep/reference/moran.test.html) of **spdep**:
@@ -181,10 +208,10 @@ bperm
 ::: {.callout-note collapse="true"}
 ## Interpretation
 
-p-value \<0.05, reject null hypothesis.
+p-value \<0.05, reject null hypothesis. Positive Moran's I suggest variable is spatially clustered and tend to be similar.
 :::
 
-## Visualise Monte Carlo Moran's I
+## Visualise Monte Carlo Moran's I using hist()
 
 Plot the distribution of the statistical values as histrogram to examine the simulated Moran's I test statistics in greater detail: [*hist()*](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/hist) and [*abline()*](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline) of R Graphics are used.
 
@@ -197,15 +224,46 @@ hist(bperm$res,
      breaks=20, 
      xlab="Simulated Moran's I")
 abline(v=0, 
-       col="red") 
+       col="#e0218a") 
+```
+
+## Using ggplot
+
+```{r}
+plot2 <- bperm$res
+mu <- mean(plot2)
+
+ggplot(data=data.frame(plot2),
+       aes(x=plot2)
+  ) +
+  geom_histogram(
+    bins=30,
+    fill="#69b3a2",
+    color="black",
+    size=0.2
+  ) +
+  geom_vline(
+    xintercept = mu,
+    color="purple"
+  )
 ```
 :::
 
-### 4.5 Global Spatial Autocorrelation: Geary's
+## 4.4 Global Spatial Autocorrelation: Geary's
 
 In this section, you will learn how to perform Geary's c statistics testing by using appropriate functions of **spdep** package.
 
 ::: panel-tabset
+## Description
+
+-   Describes how features differ from their immediate neighbours.
+
+-   Geary c (Z value) is:
+
+    -   Large c value (\>1) : Dispersed, observations tend to be dissimilar;
+    -   Small c value (\<1) : Clustered, observations tend to be similar;
+    -   c = 1: observations are arranged **randomly** over space.
+
 ## Geary's C test
 
 The code chunk below performs Geary's C test for spatial autocorrelation by using [*geary.test()*](https://r-spatial.github.io/spdep/reference/geary.test.html) of **spdep**.
@@ -213,6 +271,11 @@ The code chunk below performs Geary's C test for spatial autocorrelation by usin
 ```{r}
 geary.test(hunan$GDPPC, listw=rswm_q)
 ```
+::: {.callout-note collapse="true"}
+## Interpretation
+
+p-value \<0.05, reject null hypothesis. Conclude that Geary's C statistic of 0.69 suggest variable is not randomly arranged, and is spatially clusters. Observations tend to be similar.
+:::
 
 ## Computing Monte Carlo Geary's C
 

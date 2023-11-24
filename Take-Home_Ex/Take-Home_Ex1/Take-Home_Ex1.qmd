@@ -12,18 +12,30 @@ editor: visual
 
 # 1 Overview
 
-## Context
+## 1.1 Background
 
-## Objectives
+## 1.2 Objectives
+
+Geospatial Data Analysis hold tremendous potential to address complex problems facing society. In this study, I will apply appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) to **reveal the spatial and spatio-temporal mobility patterns of public bus passengers in Singapore**.
+
+This will include the following tasks:
+
+-   Using appropriate sf method, import the shape file into R and save it in a simple feature data frame format.
+-   Using appropriate tidyr and dplyr methods, derive the proportion of functional and non-functional water point at LGA level.
+-   Combining the geospatial and aspatial data frame into simple feature data frame.
+-   Performing outliers/clusters analysis by using appropriate local measures of spatial association methods.
+-   Performing hot spot area analysis by using appropriate local measures of spatial association methods.
 
 # 2 Getting Started
 
-Ensure that **spdep**, **sf**, **tmap** and **tidyverse** packages are installed:
+The following packages will be used for this exercise:
 
--   sf is use for importing and handling geospatial data in R,
--   tidyverse is mainly use for wrangling attribute data in R,
+-   sf for importing, managing, and handling geospatial data,
+-   tidyverse for non-spatial data handling,
 -   spdep will be used to compute spatial weights, global and local spatial autocorrelation statistics, and
--   tmap will be used to prepare cartographic quality chropleth map.
+-   tmap for thematic mapping.
+
+The code chunk below ensures that **spdep**, **sf**, **tmap** and **tidyverse** packages are installed and loaded in R.
 
 ```{r}
 pacman::p_load(sf, spdep, tmap, tidyverse)
@@ -37,9 +49,17 @@ pacman::p_load(sf, spdep, tmap, tidyverse)
 
 ## The Data
 
+The following data are used for this study:
+
+-   Aspatial:
+    -   *Passenger Volume by Origin Destination Bus Stops* downloaded from [LTA DataMall](https://www.waterpointdata.org/access-data/).
+-   Geospatial
+    -   *Bus Stop Location* from LTA DataMall. It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.
+    -   *hexagon*, a [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 250m is provided to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA.
+
 ## Import & Preparation
 
-:::panel-tabset
+::: panel-tabset
 ## Aspatial
 
 Firstly, we will import the *Passenger Volume by Origin Destination Bus Stops* dataset downloaded from LTA DataMall by using `read_csv()` or **readr** package.
@@ -47,6 +67,13 @@ Firstly, we will import the *Passenger Volume by Origin Destination Bus Stops* d
 ```{r}
 odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 ```
+
 ## Geospatial
 
 :::
+
+# 4 Exploratory Data Analysis
+
+# 5 Exploratory Spatial Data Analysis
+
+# 6 Conclusion

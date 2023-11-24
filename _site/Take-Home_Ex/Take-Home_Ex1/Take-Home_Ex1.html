@@ -147,6 +147,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex1/In-class_Ex1.html" rel="" target="">
  <span class="dropdown-text">In-Class Exercise 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex2/In-class_Ex2.html" rel="" target="">
+ <span class="dropdown-text">In-Class Exercise 2</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -188,8 +192,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a>
   <ul class="collapse">
-  <li><a href="#context" id="toc-context" class="nav-link" data-scroll-target="#context">Context</a></li>
-  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1.1 Background</a></li>
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">1.2 Objectives</a></li>
   </ul></li>
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a></li>
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3 <strong>Data Preparation</strong></a>
@@ -197,6 +201,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The Data</a></li>
   <li><a href="#import-preparation" id="toc-import-preparation" class="nav-link" data-scroll-target="#import-preparation">Import &amp; Preparation</a></li>
   </ul></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">4 Exploratory Data Analysis</a></li>
+  <li><a href="#exploratory-spatial-data-analysis" id="toc-exploratory-spatial-data-analysis" class="nav-link" data-scroll-target="#exploratory-spatial-data-analysis">5 Exploratory Spatial Data Analysis</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">6 Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -234,22 +241,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="overview" class="level1">
 <h1>1 Overview</h1>
-<section id="context" class="level2">
-<h2 class="anchored" data-anchor-id="context">Context</h2>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">1.1 Background</h2>
 </section>
 <section id="objectives" class="level2">
-<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<h2 class="anchored" data-anchor-id="objectives">1.2 Objectives</h2>
+<p>Geospatial Data Analysis hold tremendous potential to address complex problems facing society. In this study, I will apply appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) to <strong>reveal the spatial and spatio-temporal mobility patterns of public bus passengers in Singapore</strong>.</p>
+<p>This will include the following tasks:</p>
+<ul>
+<li>Using appropriate sf method, import the shape file into R and save it in a simple feature data frame format.</li>
+<li>Using appropriate tidyr and dplyr methods, derive the proportion of functional and non-functional water point at LGA level.</li>
+<li>Combining the geospatial and aspatial data frame into simple feature data frame.</li>
+<li>Performing outliers/clusters analysis by using appropriate local measures of spatial association methods.</li>
+<li>Performing hot spot area analysis by using appropriate local measures of spatial association methods.</li>
+</ul>
 </section>
 </section>
 <section id="getting-started" class="level1">
 <h1>2 Getting Started</h1>
-<p>Ensure that <strong>spdep</strong>, <strong>sf</strong>, <strong>tmap</strong> and <strong>tidyverse</strong> packages are installed:</p>
+<p>The following packages will be used for this exercise:</p>
 <ul>
-<li>sf is use for importing and handling geospatial data in R,</li>
-<li>tidyverse is mainly use for wrangling attribute data in R,</li>
+<li>sf for importing, managing, and handling geospatial data,</li>
+<li>tidyverse for non-spatial data handling,</li>
 <li>spdep will be used to compute spatial weights, global and local spatial autocorrelation statistics, and</li>
-<li>tmap will be used to prepare cartographic quality chropleth map.</li>
+<li>tmap for thematic mapping.</li>
 </ul>
+<p>The code chunk below ensures that <strong>spdep</strong>, <strong>sf</strong>, <strong>tmap</strong> and <strong>tidyverse</strong> packages are installed and loaded in R.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, spdep, tmap, tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -262,6 +279,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>3 <strong>Data Preparation</strong></h1>
 <section id="the-data" class="level2">
 <h2 class="anchored" data-anchor-id="the-data">The Data</h2>
+<p>The following data are used for this study:</p>
+<ul>
+<li>Aspatial:
+<ul>
+<li><em>Passenger Volume by Origin Destination Bus Stops</em> downloaded from <a href="https://www.waterpointdata.org/access-data/">LTA DataMall</a>.</li>
+</ul></li>
+<li>Geospatial
+<ul>
+<li><em>Bus Stop Location</em> from LTA DataMall. It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.</li>
+<li><em>hexagon</em>, a <a href="https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm">hexagon</a> layer of 250m is provided to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA.</li>
+</ul></li>
+</ul>
 </section>
 <section id="import-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="import-preparation">Import &amp; Preparation</h2>
@@ -279,9 +308,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-
-
 </section>
+</section>
+<section id="exploratory-data-analysis" class="level1">
+<h1>4 Exploratory Data Analysis</h1>
+</section>
+<section id="exploratory-spatial-data-analysis" class="level1">
+<h1>5 Exploratory Spatial Data Analysis</h1>
+</section>
+<section id="conclusion" class="level1">
+<h1>6 Conclusion</h1>
+
+
 </section>
 
 </main> <!-- /main -->

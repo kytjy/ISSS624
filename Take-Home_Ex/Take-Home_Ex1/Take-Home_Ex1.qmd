@@ -30,15 +30,17 @@ This will include the following tasks:
 
 The following packages will be used for this exercise:
 
+***update for sfdep***
 -   sf for importing, managing, and handling geospatial data,
 -   tidyverse for non-spatial data handling,
 -   spdep will be used to compute spatial weights, global and local spatial autocorrelation statistics, and
 -   tmap for thematic mapping.
 
-The code chunk below ensures that **spdep**, **sf**, **tmap** and **tidyverse** packages are installed and loaded in R.
+The code chunk below ensures that **sfdep**, **sf**, **tmap** and **tidyverse** packages are installed and loaded in R.
+
 
 ```{r}
-pacman::p_load(sf, spdep, tmap, tidyverse)
+pacman::p_load(sf, sfdep, tmap, tidyverse)
 
 # -   Creates a package list containing the necessary R packages
 # -   Checks if the R packages in the package list have been installed
@@ -67,6 +69,13 @@ Firstly, we will import the *Passenger Volume by Origin Destination Bus Stops* d
 ```{r}
 odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 ```
+
+Prima facie, ORIGIN_PT_CODE and DESTINATON_PT_CODE in the odbus tibble data frame are in numeric data type.
+
+```{r}
+glimpse(odbus)
+```
+
 
 ## Geospatial
 

@@ -1,5 +1,5 @@
 ---
-title: "In-class Exercise 2: Spatial Weights and Applications"
+title: "In-class Exercise 2: EHSA"
 date: "25 November 2023"
 date-modified: "last-modified"
 format: html
@@ -9,3 +9,248 @@ execute:
   warning: false #dont display if there are any warnings
 editor: visual
 ---
+
+::: {.callout-note collapse="true"}
+## Notes from Class
+
+## Spatial Randomness
+
+-   High chance they are not randomly distributed
+-   Where are the areas with higher concentration of activity (crime, electricity consumption)
+-   What contributes to the difference --\> spatial inequality
+
+## Spatial Context
+
+-   Spatial weights: help to define/understand spatial context
+-   neighbour = 1; not neighbour = 0
+-   Types:
+    -   adjacent: use geog area (next to each other)
+        -   lagged: used to see when the neighbour effect subsides
+            -   lagged 2 = 2nd degree
+    -   distance: within a threshold distance
+        -   inverse distance: nearest distance = higher weightage
+    -   For example
+        -   real-world phenomena of neighbours who do not share same boundary eg islands
+        -   for take home exercise, distance should be better. With hexagon, we can make sure each area is equal and more precise to capture rather than using subzones.
+-   Should exclude areas (eg central catchments) before running tests (eg Moran's I)
+-   Use row-standardised weight
+-   Summary statistics
+    -   Global = more mathematically informed
+        -   Spatial dependency: used to interpolate (eg goldmine discovery)\
+        -   Spatial autocorrelation:
+            -   Compare observed value vs its neighbour
+            -   Trying to reject H0 of spatial randomness
+            -   Signs of clustering vs dispersion
+                -   Negative = checkerbox pattenrs
+                -   Positive = clumps / cluster
+            -   Should do Monte Carlo permutations for THE1!
+    -   Local
+        -   Local Moran's I
+            -   Highlight both autocorrelation and where statistic test is significant
+            -   Could also have autocorrelation bc not enough neighbours
+            -   Could be applied to distance and proximity
+        -   Gi's statistics
+            -   Only distance-based
+            -   Gi = doesnt count itself
+            -   G\*i = takes itself into consideration (Moran's I and Geary's C uses this)
+-   Emerging hotpot
+    -   Usually used for time-series data
+    -   Mann-Kendall test: statistical, non-spatial
+        -   if value at time k \> time j (reference value)
+    -   EHSA: replaces x with G\*i
+        -   cube = 1. time, 2. passengers, 3. location
+:::
+
+# 1 Overview
+
+## 1.1 Background
+
+## 1.2 Objectives
+
+# 2 Getting Started
+
+```{r}
+pacman::p_load(sf, sfdep, tmap, tidyverse, knitr, plotly)
+```
+
+-   sf: does buffer, count polygons
+-   sfdep: create spacetime cube, and EHSA
+-   tmap: create thematic maps
+-   tidyverse: to conform to tiddle dataframe format; incl. readr to import text file into r, readxl, dplyr, ggplot2 etc
+-   knitr: create html tables
+-   plotly: intera ctive plots
+
+# The Data
+
+Two data sets will be used in this hands-on exercise, they are:
+
+-   Geospatial: Hunan in ESRI shapefile format.
+-   Aspatial: Hunan_2012.csv.
+
+## Import Data
+
+::: panel-tabset
+## Geospatial
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+-   tibblr df, each observation represents 1 geographical area as it has geometry that allows you to plot polygon feature
+-   each record is a simple feature (sf) if it has geometry data
+
+## Aspatial
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+-   non-spatial data
+-   typical tibblr data frame
+
+## Left Join
+
+-   In order to retain the geospatial properties, the left dataframe must be the sf data.frame (ie hunan)
+-   If reversed, geometry will be dropped
+-   This left_join is from dplyr, rather than from Base R
+
+```{r}
+hunan_GDPPC <- left_join(hunan,hunan2012)%>%
+  select(1:4, 7, 15)
+```
+
+## Choropleth Map
+
+```{r}
+basemap <- tm_shape(hunan) +
+  tm_polygons() +
+  tm_text("NAME_3", size=0.3)
+
+gdppc <- qtm(hunan, "GDPPC")
+tmap_arrange(basemap, gdppc, asp=1, ncol=2)
+```
+:::
+
+# 3 Deriving Contiguity Spatial Weight
+
+1.    Identifying contiguity neighbours list
+2.    Spatial weights
+
+## Deriving contiguity weights: Queen's method
+
+```{r}
+wm_q <- hunan_GDPPC %>% 
+  mutate(nb=st_contiguity(geometry),
+         wt=st_weights(nb,
+                       style="W"),
+         .before=1)
+```
+
+-   style = W: row standardised weight matrix, can also be B/U/S/minmax
+-   nb = nearest neigbour
+-   dont have to separate contiguity & weights separately with sfdep
+-   .before = 1: adds before the first column
+
+# 4 GLSA using sfdep
+## Computing Local Moran's I
+
+```{r}
+lisa <- wm_q %>%  
+  mutate(local_moran = local_moran(
+    GDPPC, nb, wt, nsim=99),
+    .before=1) %>% 
+  ## unlist the data
+  unnest(local_moran)
+```
+
+-   Number of simulation is always = nsim + 1, nsim = 99 means 100 simulations
+-   ii: local moran statistic
+-   eii: expectation of local moran statistics
+-   Var_ii: variance of local moran statistic
+-   z_ii:
+-   high-high/low-low columns based on mean, median and pysal (if highly skewed, should use median. Look at distribution of variables.)
+
+
+# 5 EHSA
+
+-   build spacetime cube: date, location, GDPPC
+
+## Loading the data
+
+```{r}
+GDPPC <- read.csv("data/aspatial/Hunan_GDPPC.csv")
+```
+
+## Time Series Cube
+
+:::panel-tabset
+## Create a Time Series Cube
+
+```{r}
+GDPPC_st <- spacetime(GDPPC, hunan,
+                      .loc_col="County",
+                      .time_col="Year")
+```
+
+## Verify
+
+```{r}
+is_spacetime_cube(GDPPC_st)
+```
+:::
+
+## Computing Gi*
+### Deriving Spatial Weights
+
+```{r}
+GDPPC_nb <- GDPPC_st %>% 
+  activate("geometry") %>% 
+  mutate(nb=include_self(st_contiguity(geometry)),
+         wt = st_inverse_distance(nb, geometry,
+                                  scale = 1,
+                                  alpha = 1),
+         .before=1) %>% 
+  set_nbs("nb") %>% 
+  set_wts("wt")
+```
+
+### Computing Gi*
+```{r}
+gi_stars <- GDPPC_nb %>% 
+  group_by(Year) %>% 
+  mutate(gi_star=local_gstar_perm(
+    GDPPC, nb, wt)) %>% 
+  tidyr::unnest(gi_star)
+```
+
+
+
+## Mann-Kendall Test
+
+### Performing Emerging Hotspot Analysis
+
+```{r}
+ehsa <- emerging_hotspot_analysis(
+  x=GDPPC_st,
+  .var="GDPPC",
+  k=1,
+  nsim=99
+)
+```
+
+### Visualising EHSA
+-   when using tmaps, not significant will be greyed out
+
+```{r}
+ehsa_sig <- hunan_ehsa %>% 
+  filter(p-value<0.05)
+tmap_mode("plot")
+tm_shape(hunan_ehsa) +
+  tm_polygons()+
+  tm_borders(alpha=0.05)+
+tm_shape(ehsa_sig)+
+  tm_fill("classification")+
+  tm_borders(alpha=0.4)
+```
+

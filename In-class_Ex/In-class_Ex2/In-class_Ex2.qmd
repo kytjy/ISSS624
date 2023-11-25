@@ -1,5 +1,5 @@
 ---
-title: "In-class Exercise 2: EHSA"
+title: "In-class Exercise 2: SW, GLSA, EHSA"
 date: "25 November 2023"
 date-modified: "last-modified"
 format: html
@@ -63,14 +63,12 @@ editor: visual
 
 # 1 Overview
 
-## 1.1 Background
-
-## 1.2 Objectives
+1.  Using sfdep
 
 # 2 Getting Started
 
 ```{r}
-pacman::p_load(sf, sfdep, tmap, tidyverse, knitr, plotly)
+pacman::p_load(sf, tmap, sfdep, tidyverse, knitr, plotly, Kendall)
 ```
 
 -   sf: does buffer, count polygons
@@ -81,8 +79,6 @@ pacman::p_load(sf, sfdep, tmap, tidyverse, knitr, plotly)
 -   plotly: intera ctive plots
 
 # The Data
-
-Two data sets will be used in this hands-on exercise, they are:
 
 -   Geospatial: Hunan in ESRI shapefile format.
 -   Aspatial: Hunan_2012.csv.
@@ -95,9 +91,10 @@ Two data sets will be used in this hands-on exercise, they are:
 ```{r}
 hunan <- st_read(dsn = "data/geospatial", 
                  layer = "Hunan")
+class(hunan)
 ```
 
--   tibblr df, each observation represents 1 geographical area as it has geometry that allows you to plot polygon feature
+-   tibble df, each observation represents 1 geographical area as it has geometry that allows you to plot polygon feature
 -   each record is a simple feature (sf) if it has geometry data
 
 ## Aspatial
@@ -107,7 +104,7 @@ hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
 ```
 
 -   non-spatial data
--   typical tibblr data frame
+-   typical tibble data frame
 
 ## Left Join
 
@@ -116,23 +113,119 @@ hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
 -   This left_join is from dplyr, rather than from Base R
 
 ```{r}
-hunan_GDPPC <- left_join(hunan,hunan2012)%>%
+hunan_GDPPC <- left_join(hunan,
+                         hunan2012)%>%
   select(1:4, 7, 15)
+
+# by = c('County' = 'County')) not specified bc matched automatically
+
+glimpse(hunan_GDPPC)
 ```
 
 ## Choropleth Map
 
 ```{r}
-
+tmap_mode("plot")
+tm_shape(hunan_GDPPC) +
+  tm_fill("GDPPC", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "GDPPC") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Distribution of GDP per capita by district, Hunan Province",
+            main.title.position = "center",
+            main.title.size = 0.8,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            legend.text.size = 0.6,
+            frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
 ```
 :::
 
 # 3 Deriving Contiguity Spatial Weight
 
-1.    Identifying contiguity neighbours list
-2.    Spatial weights
+1.  Identify contiguity neighbours list
+2.  Derive contiguity spatial weights
 
-## Deriving contiguity weights: Queen's method
+## 3.1 Identify contiguity neighbours: Queen's Method
+
+::: panel-tabset
+## Neighbours List
+
+```{r}
+nb_queen <- hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry),
+         .before = 1)
+
+
+# queen = TRUE by default
+```
+
+## 1st Lag Neighbour List
+
+```{r}
+summary(nb_queen$nb)
+
+# 88 area units in Hunan
+# Most connected area unit has 11 neighbours
+# 2 are units with only 1 neighbour
+```
+
+## View Content
+
+```{r}
+nb_queen
+
+# Shows that polygon 1 has five neighbours (polygons #2, 3, 4, 57,and 85)
+```
+
+## Display as Table
+
+```{r}
+kable(head(nb_queen,
+           n=3))
+```
+:::
+
+## 3.2 Identify Contiguity Neighbours: Rooks' Method
+
+::: panel-tabset
+## Neighbours List
+
+```{r}
+nb_rook <- hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry,
+                            queen = FALSE),
+         .before = 1)
+```
+
+## Identify hogher order neigbours
+
+-   Derive contiguity neighbour list using lag 2 Queen's method
+
+```{r}
+nb2_queen <-  hunan_GDPPC %>% 
+  mutate(nb = st_contiguity(geometry),
+         nb2 = st_nb_lag_cumul(nb, 2),
+         .before = 1)
+
+## nb column shows neighbours list for each county, note that Queen's method has more neighbours in some cases!
+```
+
+## 1st and 2nd Order Neighbours
+
+```{r}
+nb2_queen
+```
+:::
+
+# 4 Deriving contiguity weights: Queen's method
+
+::: panel-tabset
+## Code
 
 ```{r}
 wm_q <- hunan_GDPPC %>% 
@@ -146,9 +239,126 @@ wm_q <- hunan_GDPPC %>%
 -   nb = nearest neigbour
 -   dont have to separate contiguity & weights separately with sfdep
 -   .before = 1: adds before the first column
+-   allow_zero: If TRUE, assigns zero as lagged value to zone without neighbors.
 
-# 4 GLSA using sfdep
-## Computing Local Moran's I
+## Results
+
+```{r}
+wm_q
+```
+:::
+
+# 4 Distance-Based Weights
+
+There are three popularly used distance-based spatial weights, they are: - fixed distance weights, - adaptive distance weights, and - inverse distance weights (IDW).
+
+::: panel-tabset
+## Fixed-Distance Weights
+
+### Step 1: Determine upper limit for distance bands
+
+```{r}
+geo <- sf::st_geometry(hunan_GDPPC)
+nb <- st_knn(geo, k=1, longlat = TRUE)
+
+dists <- unlist(st_nb_dists(geo, nb))
+```
+
+### Step 2: Derive summary stats
+
+```{r}
+summary(dists)
+```
+The maximum nearest neighbour distance is 65.8 km, thus we will use threshold value of 66km to ensure each spatial unit as least one neighbour.
+
+### Step 3: Compute fixed distance weight
+
+```{r}
+wm_fd <- hunan_GDPPC %>%
+  mutate(nb = st_dist_band(geometry,
+                           upper = 66),
+               wt = st_weights(nb),
+               .before = 1)
+```
+
+### Step 4: Examine data frame
+
+```{r}
+wm_fd
+```
+
+```{r}
+kable(head(wm_fd,
+           n=5))
+```
+
+## Adaptive Distance Weights
+
+```{r}
+wm_ad <- hunan_GDPPC %>% 
+  mutate(nb = st_knn(geometry,
+                     k=8),
+         wt = st_weights(nb),
+               .before = 1)
+```
+
+## Inverse Distance Weights
+
+```{r}
+wm_idw <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wts = st_inverse_distance(nb, geometry,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+```
+:::
+
+# 5 GLSA using sfdep
+
+## 5.1 Global Measure of Spatial Association
+
+::: panel-tabset
+## Compute Global Moran's I
+
+```{r}
+# Output: tibble format
+moranI <- global_moran(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt)
+glimpse(moranI)
+```
+
+## Perform Global Moran's I Test
+
+```{r}
+global_moran_test(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt)
+
+# default: “two.sided”; can also be “greater” or “less”. 
+# default: randomization =  TRUE. If FALSE, under the assumption of normality.
+```
+
+# Global Moran's I Permutation Test
+
+```{r}
+set.seed(1234)
+global_moran_perm(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt,
+                  nsim = 99)
+
+# no. of simulations = nsim + 1, ie nsim = 99, 100 simulations will be performed.
+
+
+```
+:::
+
+## 5.2 Compute Local Moran's I
+
+::: panel-tabset
+## Compute
 
 ```{r}
 lisa <- wm_q %>%  
@@ -157,6 +367,14 @@ lisa <- wm_q %>%
     .before=1) %>% 
   # unlist the data
   unnest(local_moran)
+
+lisa
+# The quadrants (HH, LH, HL, LL) is automatically calculated for us.
+```
+
+```{r}
+colnames(lisa)
+
 ```
 
 -   Number of simulation is always = nsim + 1, nsim = 99 means 100 simulations
@@ -164,88 +382,330 @@ lisa <- wm_q %>%
 -   eii: expectation of local moran statistics
 -   Var_ii: variance of local moran statistic
 -   z_ii:
--   high-high/low-low columns based on mean, median and pysal (if highly skewed, should use median. Look at distribution of variables.)
+-   high-high/low-low columns based on mean, median and pysal ***(if highly skewed, should use median. Look at distribution of variables.)***
 
-
-# 5 EHSA
-
--   build spacetime cube: date, location, GDPPC
-
-## Loading the data
+## Visualise Local Moran's I
 
 ```{r}
-GDPPC <- read.csv("data/aspatial/Hunan_GDPPC.csv")
+tmap_mode("plot")
+tm_shape(lisa) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of GDPPC",
+            main.title.size = 0.8)
 ```
 
-## Time Series Cube
+## Visual p-value of Local Moran's I
 
-:::panel-tabset
+```{r}
+tmap_mode("plot")
+tm_shape(lisa) +
+  tm_fill("p_ii_sim") + 
+  tm_borders(alpha = 0.5) +
+   tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+```
+
+## Side-by-Side Comparison
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(lisa) +
+  tm_fill("ii") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "local Moran's I of GDPPC",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(lisa) +
+  tm_fill("p_ii",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of local Moran's I",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, ncol = 2)
+```
+
+## Visualise LISA map
+
+```{r}
+lisa_sig <- lisa  %>%
+  filter(p_ii < 0.05)
+tmap_mode("plot")
+tm_shape(lisa) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig) +
+  tm_fill("mean") +  ##check distribution to know if should use mean/median
+  tm_borders(alpha = 0.4)
+```
+:::
+
+## 5.3 Hot Spot & Cold Spot Area Analysis (HCSA)
+
+-   HCSA uses spatial weights to identify locations of statistically significant hot/cold spots in a spatially weighted attribute that are in proximity of one another based on calculated dist.
+
+:::panel-tabset 
+
+## Derive Inverse Distance Weights Matrix
+```{r}
+wm_idw <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wts = st_inverse_distance(nb, geometry,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+```
+
+## Compute Gi\* Stats
+
+```{r}
+HCSA <- wm_idw %>% 
+  mutate(local_Gi = local_gstar_perm(
+    GDPPC, nb, wt, nsim = 99),
+         .before = 1) %>%
+  unnest(local_Gi)
+HCSA
+
+is_tibble(HCSA)
+```
+
+## Visualise Gi\*
+
+```{r}
+tmap_mode("plot")
+tm_shape(HCSA) +
+  tm_fill("gi_star") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8))
+```
+
+## Visualise p-value of HCSA
+
+```{r}
+tmap_mode("plot")
+tm_shape(HCSA) +
+  tm_fill("p_sim") + 
+  tm_borders(alpha = 0.5)
+```
+
+## Visualise local Gi\* stat and p-value of local HCSA
+
+```{r}
+tmap_mode("plot")
+map1 <- tm_shape(HCSA) +
+  tm_fill("gi_star") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "Gi* of GDPPC",
+            main.title.size = 0.8)
+
+map2 <- tm_shape(HCSA) +
+  tm_fill("p_value",
+          breaks = c(0, 0.001, 0.01, 0.05, 1),
+          labels = c("0.001", "0.01", "0.05", "Not sig")) + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "p-value of Gi*",
+            main.title.size = 0.8)
+
+tmap_arrange(map1, map2, ncol = 2)
+```
+
+## Visualise hot spot & cold spots
+
+Plot the significant (i.e. p-values \<0.05) hot spot and cold spot areas:
+
+```{r}
+HCSA_sig <- HCSA  %>%
+  filter(p_sim < 0.05) #alpha = 5%
+tmap_mode("plot")
+tm_shape(HCSA) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(HCSA_sig) +
+  tm_fill("gi_star") + 
+  tm_borders(alpha = 0.4)
+```
+
+# 6 EHSA
+
+-   build spacetime cube: location, date, GDPPC
+
+```{r}
+GDPPC <- read_csv('data/aspatial/Hunan_GDPPC.csv')
+```
+
+## 6.1 Time Series Cube
+
+::: panel-tabset
 ## Create a Time Series Cube
 
 ```{r}
 GDPPC_st <- spacetime(GDPPC, hunan,
-                      .loc_col="County",
-                      .time_col="Year")
+                      .loc_col = 'County',  #assign location 
+                      .time_col = 'Year')   #assign time
+
+class(GDPPC_st)
+str(GDPPC_st)
 ```
 
-## Verify
+## Verify if created correctly
 
 ```{r}
 is_spacetime_cube(GDPPC_st)
 ```
 :::
 
-## Computing Gi*
-### Deriving Spatial Weights
+## 6.2 Computing Gi\*
+
+:::panel-tabset
+
+## Derive Spatial Weights
+
+-   activate(): to activate geometry context
+-   mutate(): to create 2 new cols nb and wt
+-   set_nbs() and set_wts(): activate data context again & copy over the nb & wt cols to each time-slice
 
 ```{r}
-GDPPC_nb <- GDPPC_st %>% 
-  activate("geometry") %>% 
-  mutate(nb=include_self(st_contiguity(geometry)),
-         wt = st_inverse_distance(nb, geometry,
-                                  scale = 1,
+GDPPC_nb <- GDPPC_st %>%
+  activate("geometry") %>%
+  mutate(nb = include_self(st_contiguity(geometry)),
+         wt = st_inverse_distance(nb, 
+                                  geometry, 
+                                  scale = 1, 
                                   alpha = 1),
-         .before=1) %>% 
-  set_nbs("nb") %>% 
+         .before = 1) %>%
+  set_nbs("nb") %>%
   set_wts("wt")
+
+head(GDPPC_nb)
 ```
 
-### Computing Gi*
+## Compute Gi\*
+
 ```{r}
-# gi_stars <- GDPPC_nb %>% 
-#  group_by(Year) %>% 
-#  mutate(gi_star=local_gstar_perm(
-#    GDPPC, nb, wt)) %>% 
-#  tidyr::unnest(gi_star)
+gi_stars <- GDPPC_nb %>% 
+  group_by(Year) %>% 
+  mutate(gi_star = local_gstar_perm(
+    GDPPC, nb, wt)) %>% 
+  tidyr::unnest(gi_star)
+
+glimpse(gi_stars)
+```
+:::
+
+
+## 6.3 Mann-Kendall Test
+
+With these Gi\* measures by year we can then evaluate each location for a trend using the Mann-Kendall test. The code chunk below uses Changsha county.
+
+:::panel-tabset
+
+## Code
+```{r}
+cbg <- gi_stars %>% 
+  ungroup() %>% 
+  filter(County == "Changsha") |> 
+  select(County, Year, gi_star)
+
+glimpse(cbg)
+```
+
+## Interactive Plot
+```{r}
+p <- ggplot(data = cbg, 
+       aes(x = Year, 
+           y = gi_star)) +
+  geom_line() +
+  theme_light()
+
+ggplotly(p)
+```
+
+## Analyse Trend
+```{r}
+cbg %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>% 
+  tidyr::unnest_wider(mk)
+```
+sl = p-value, tau = trend
+This result tells us that there is a slight upward but insignificant trend.
+We can replicate this for each location by using group_by() of dplyr package.
+
+```{r}
+ehsa <- gi_stars %>%
+  group_by(County) %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+  tidyr::unnest_wider(mk)
+```
+:::
+
+## 6.4 Emerging Hot Spot Analysis
+
+:::panel-tabset
+## Arrange to show sig emerging hot/cold spots
+```{r}
+emerging <- ehsa %>% 
+  arrange(sl, abs(tau)) %>% 
+  slice(1:5)
+
 ```
 
 
+## Performing Emerging Hotspot Analysis
 
-## Mann-Kendall Test
-
-### Performing Emerging Hotspot Analysis
+emerging_hotspot_analysis() of sfdep package: 
+-   spacetime object x (i.e. GDPPC_st), 
+-   quoted name of the variable of interest (i.e. GDPPC) for .var argument. 
+-   k argument is used to specify the number of time lags which is set to 1 by default
+-   nsim map numbers of simulation to be performed.
 
 ```{r}
-# ehsa <- emerging_hotspot_analysis(
-#  x=GDPPC_st,
-#  .var="GDPPC",
-#  k=1,
-#  nsim=99
-# )
+ehsa <- emerging_hotspot_analysis(
+  x = GDPPC_st, 
+  .var = "GDPPC", 
+  k = 1, 
+  nsim = 99
+)
+```
+
+## Visualise distribution of EHSA classes
+```{r}
+ggplot(data = ehsa,
+       aes(x = classification)) +
+  geom_bar()
 ```
 
 ### Visualising EHSA
+Visualise the geographic distribution EHSA classes. However, before we can do so, we need to join both hunan and ehsa together by using the code chunk below.
+
 -   when using tmaps, not significant will be greyed out
 
+
 ```{r}
-# ehsa_sig <- hunan_ehsa %>% 
-#  filter(p-value<0.05)
-# tmap_mode("plot")
-# tm_shape(hunan_ehsa) +
-#  tm_polygons()+
-#  tm_borders(alpha=0.05)+
-# tm_shape(ehsa_sig)+
-#  tm_fill("classification")+
-#   tm_borders(alpha=0.4)
+hunan_ehsa <- hunan %>%
+  left_join(ehsa,
+            by = join_by(County == location))
 ```
 
+Next, tmap functions will be used to plot a categorical choropleth map by using the code chunk below.
+
+
+```{r}
+ehsa_sig <- hunan_ehsa  %>%
+  filter(p_value < 0.05)
+tmap_mode("plot")
+tm_shape(hunan_ehsa) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(ehsa_sig) +
+  tm_fill("classification") + 
+  tm_borders(alpha = 0.4)
+```

@@ -448,7 +448,7 @@ tm_shape(lisa_sig) +
 
 -   HCSA uses spatial weights to identify locations of statistically significant hot/cold spots in a spatially weighted attribute that are in proximity of one another based on calculated dist.
 
-:::panel-tabset 
+::: panel-tabset 
 
 ## Derive Inverse Distance Weights Matrix
 ```{r}
@@ -529,6 +529,7 @@ tm_shape(HCSA_sig) +
   tm_fill("gi_star") + 
   tm_borders(alpha = 0.4)
 ```
+:::
 
 # 6 EHSA
 

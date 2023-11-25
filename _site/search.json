@@ -697,6 +697,48 @@
     "href": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#import-data",
     "title": "In-class Exercise 2: EHSA",
     "section": "Import Data",
-    "text": "Import Data\n\nGeospatialAspatialLeft JoinChoropleth Map\n\n\n\nhunan &lt;- st_read(dsn = \"data/geospatial\", \n                 layer = \"Hunan\")\n\nReading layer `Hunan' from data source \n  `C:\\kytjy\\ISSS624\\In-class_Ex\\In-class_Ex2\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 88 features and 7 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812\nGeodetic CRS:  WGS 84\n\n\n\ntibblr df, each observation represents 1 geographical area as it has geometry that allows you to plot polygon feature\neach record is a simple feature (sf) if it has geometry data\n\n\n\n\nhunan2012 &lt;- read_csv(\"data/aspatial/Hunan_2012.csv\")\n\n\nnon-spatial data\ntypical tibblr data frame\n\n\n\n\nIn order to retain the geospatial properties, the left dataframe must be the sf data.frame (ie hunan)\nIf reversed, geometry will be dropped\nThis left_join is from dplyr, rather than from Base R\n\n\nhunan &lt;- left_join(hunan,hunan2012)%&gt;%\n  select(1:4, 7, 15)\n\n\n\n\nbasemap &lt;- tm_shape(hunan) +\n  tm_polygons() +\n  tm_text(\"NAME_3\", size=0.3)\n\ngdppc &lt;- qtm(hunan, \"GDPPC\")\ntmap_arrange(basemap, gdppc, asp=1, ncol=2)"
+    "text": "Import Data\n\nGeospatialAspatialLeft JoinChoropleth Map\n\n\n\nhunan &lt;- st_read(dsn = \"data/geospatial\", \n                 layer = \"Hunan\")\n\nReading layer `Hunan' from data source \n  `C:\\kytjy\\ISSS624\\In-class_Ex\\In-class_Ex2\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 88 features and 7 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812\nGeodetic CRS:  WGS 84\n\n\n\ntibblr df, each observation represents 1 geographical area as it has geometry that allows you to plot polygon feature\neach record is a simple feature (sf) if it has geometry data\n\n\n\n\nhunan2012 &lt;- read_csv(\"data/aspatial/Hunan_2012.csv\")\n\n\nnon-spatial data\ntypical tibblr data frame\n\n\n\n\nIn order to retain the geospatial properties, the left dataframe must be the sf data.frame (ie hunan)\nIf reversed, geometry will be dropped\nThis left_join is from dplyr, rather than from Base R\n\n\nhunan_GDPPC &lt;- left_join(hunan,hunan2012)%&gt;%\n  select(1:4, 7, 15)"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#deriving-contiguity-weights-queens-method",
+    "href": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#deriving-contiguity-weights-queens-method",
+    "title": "In-class Exercise 2: EHSA",
+    "section": "Deriving contiguity weights: Queen’s method",
+    "text": "Deriving contiguity weights: Queen’s method\n\nwm_q &lt;- hunan_GDPPC %&gt;% \n  mutate(nb=st_contiguity(geometry),\n         wt=st_weights(nb,\n                       style=\"W\"),\n         .before=1)\n\n\nstyle = W: row standardised weight matrix, can also be B/U/S/minmax\nnb = nearest neigbour\ndont have to separate contiguity & weights separately with sfdep\n.before = 1: adds before the first column"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#computing-local-morans-i",
+    "href": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#computing-local-morans-i",
+    "title": "In-class Exercise 2: EHSA",
+    "section": "Computing Local Moran’s I",
+    "text": "Computing Local Moran’s I\n\nlisa &lt;- wm_q %&gt;%  \n  mutate(local_moran = local_moran(\n    GDPPC, nb, wt, nsim=99),\n    .before=1) %&gt;% \n  # unlist the data\n  unnest(local_moran)\n\n\nNumber of simulation is always = nsim + 1, nsim = 99 means 100 simulations\nii: local moran statistic\neii: expectation of local moran statistics\nVar_ii: variance of local moran statistic\nz_ii:\nhigh-high/low-low columns based on mean, median and pysal (if highly skewed, should use median. Look at distribution of variables.)"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#loading-the-data",
+    "href": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#loading-the-data",
+    "title": "In-class Exercise 2: EHSA",
+    "section": "Loading the data",
+    "text": "Loading the data\n\nGDPPC &lt;- read.csv(\"data/aspatial/Hunan_GDPPC.csv\")"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#time-series-cube",
+    "href": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#time-series-cube",
+    "title": "In-class Exercise 2: EHSA",
+    "section": "Time Series Cube",
+    "text": "Time Series Cube\n\nCreate a Time Series CubeVerify\n\n\n\nGDPPC_st &lt;- spacetime(GDPPC, hunan,\n                      .loc_col=\"County\",\n                      .time_col=\"Year\")\n\n\n\n\nis_spacetime_cube(GDPPC_st)\n\n[1] TRUE"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#computing-gi",
+    "href": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#computing-gi",
+    "title": "In-class Exercise 2: EHSA",
+    "section": "Computing Gi*",
+    "text": "Computing Gi*\n\nDeriving Spatial Weights\n\nGDPPC_nb &lt;- GDPPC_st %&gt;% \n  activate(\"geometry\") %&gt;% \n  mutate(nb=include_self(st_contiguity(geometry)),\n         wt = st_inverse_distance(nb, geometry,\n                                  scale = 1,\n                                  alpha = 1),\n         .before=1) %&gt;% \n  set_nbs(\"nb\") %&gt;% \n  set_wts(\"wt\")\n\n\n\nComputing Gi*\n\n# gi_stars &lt;- GDPPC_nb %&gt;% \n#  group_by(Year) %&gt;% \n#  mutate(gi_star=local_gstar_perm(\n#    GDPPC, nb, wt)) %&gt;% \n#  tidyr::unnest(gi_star)"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#mann-kendall-test",
+    "href": "In-class_Ex/In-class_Ex2/In-class_Ex2.html#mann-kendall-test",
+    "title": "In-class Exercise 2: EHSA",
+    "section": "Mann-Kendall Test",
+    "text": "Mann-Kendall Test\n\nPerforming Emerging Hotspot Analysis\n\n# ehsa &lt;- emerging_hotspot_analysis(\n#  x=GDPPC_st,\n#  .var=\"GDPPC\",\n#  k=1,\n#  nsim=99\n# )\n\n\n\nVisualising EHSA\n\nwhen using tmaps, not significant will be greyed out\n\n\n# ehsa_sig &lt;- hunan_ehsa %&gt;% \n#  filter(p-value&lt;0.05)\n# tmap_mode(\"plot\")\n# tm_shape(hunan_ehsa) +\n#  tm_polygons()+\n#  tm_borders(alpha=0.05)+\n# tm_shape(ehsa_sig)+\n#  tm_fill(\"classification\")+\n#   tm_borders(alpha=0.4)"
   }
 ]

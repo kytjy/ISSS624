@@ -159,7 +159,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercises">    
         <li>
-    <a class="dropdown-item" href="../../Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html" rel="" target="">
+    <a class="dropdown-item" href="../../Take-Home_Ex/Take-Home_Ex1.html" rel="" target="">
  <span class="dropdown-text">Take-home Exercise 1</span></a>
   </li>  
     </ul>
@@ -195,7 +195,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1.1 Background</a></li>
   <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">1.2 Objectives</a></li>
   </ul></li>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a></li>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link" data-scroll-target="#loading-packages">2 Loading Packages</a></li>
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3 <strong>Data Preparation</strong></a>
   <ul class="collapse">
   <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The Data</a></li>
@@ -230,7 +230,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 25, 2023</p>
+      <p class="date-modified">November 26, 2023</p>
     </div>
   </div>
     
@@ -243,31 +243,95 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>1 Overview</h1>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">1.1 Background</h2>
+<p>As urban infrastructures, including public transportation systems like buses, taxis, mass rapid transit, public utilities, and roads, become increasingly digitised, the data generated becomes a valuable resource for tracking the movements of people and vehicles over space and time. This transformation has been facilitated bypervasive computing technologies such as Global Positioning System (GPS) and Radio Frequency Identification (RFID) tags on vehicles. An example of this is the collection of data on bus routes and ridership, amassed from the use of smart cards and GPS devices available on public buses.</p>
+<p>The data collected from these sources is likely to contain valuable patterns that offer insights into various aspects of human movement and behavior within a city. Analyzing and comparing these patterns can provide a deeper understanding of urban mobility. Such insights can be instrumental in improving urban management and can also serve as valuable information for both public and private sector stakeholders involved in urban transportation services. This information can aid them in making informed decisions and gaining a competitive edge in their respective domains.</p>
 </section>
 <section id="objectives" class="level2">
 <h2 class="anchored" data-anchor-id="objectives">1.2 Objectives</h2>
-<p>Geospatial Data Analysis hold tremendous potential to address complex problems facing society. In this study, I will apply appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) to <strong>reveal the spatial and spatio-temporal mobility patterns of public bus passengers in Singapore</strong>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Aim</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Tasks</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>The objective of this study is to utilize appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) techniques to <strong>uncover spatial and spatio-temporal mobility patterns among public bus passengers in Singapore</strong>.</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p>This will include the following tasks:</p>
 <ul>
-<li>Using appropriate sf method, import the shape file into R and save it in a simple feature data frame format.</li>
-<li>Using appropriate tidyr and dplyr methods, derive the proportion of functional and non-functional water point at LGA level.</li>
-<li>Combining the geospatial and aspatial data frame into simple feature data frame.</li>
-<li>Performing outliers/clusters analysis by using appropriate local measures of spatial association methods.</li>
-<li>Performing hot spot area analysis by using appropriate local measures of spatial association methods.</li>
+<li>Geovisualisation and Analysis:
+<ul>
+<li>Compute the passenger trips generated by origin at the hexagon level with reference to the time intervals:</li>
+</ul></li>
 </ul>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Peak hour period</th>
+<th>Bus tap on time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Weekday morning peak</td>
+<td>6am to 9am</td>
+</tr>
+<tr class="even">
+<td>Weekday afternoon peak</td>
+<td>5pm to 8pm</td>
+</tr>
+<tr class="odd">
+<td>Weekend/holiday morning peak</td>
+<td>11am to 2pm</td>
+</tr>
+<tr class="even">
+<td>Weekend/holiday evening peak</td>
+<td>4pm to 7pm</td>
+</tr>
+</tbody>
+</table>
+<pre><code>-   Display the geographical distribution of the passenger trips
+-   Explore spatial patterns revealed by the geovisualisation</code></pre>
+<ul>
+<li>Local Indicators of Spatial Association (LISA) Analysis
+<ul>
+<li>Compute LISA of the passenger trips generate by origin</li>
+<li>Display and draw statistical conclusions of LISA maps</li>
+</ul></li>
+<li>Emerging Hot Spot Analysis (EHSA)
+<ul>
+<li>Perform Mann-Kendall Test by using the spatio-temporal local Gi* values</li>
+<li>Display EHSA maps of the Gi* values, describe the spatial patterns revealed</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
 </section>
 </section>
-<section id="getting-started" class="level1">
-<h1>2 Getting Started</h1>
+<section id="loading-packages" class="level1">
+<h1>2 Loading Packages</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Packages</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <p>The following packages will be used for this exercise:</p>
-<p><strong><em>update for sfdep</em></strong> - sf for importing, managing, and handling geospatial data, - tidyverse for non-spatial data handling, - spdep will be used to compute spatial weights, global and local spatial autocorrelation statistics, and - tmap for thematic mapping.</p>
+<ul>
+<li>sf for importing, managing, and handling geospatial data,</li>
+<li>tidyverse for non-spatial data handling,</li>
+<li>sfdep will be used to compute spatial weights, global and local spatial autocorrelation statistics, and</li>
+<li>tmap for thematic mapping.</li>
+</ul>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <p>The code chunk below ensures that <strong>sfdep</strong>, <strong>sf</strong>, <strong>tmap</strong> and <strong>tidyverse</strong> packages are installed and loaded in R.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, tmap, tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># -   Creates a package list containing the necessary R packages</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># -   Checks if the R packages in the package list have been installed</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -   If not installed, will install the missing packages &amp; launch into R environment.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, tmap, tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># -   Creates a package list containing the necessary R packages</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># -   Checks if the R packages in the package list have been installed</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -   If not installed, will install the missing packages &amp; launch into R environment.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
 </div>
 </section>
 <section id="data-preparation" class="level1">
@@ -278,11 +342,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>Aspatial:
 <ul>
-<li><em>Passenger Volume by Origin Destination Bus Stops</em> downloaded from <a href="https://www.waterpointdata.org/access-data/">LTA DataMall</a>.</li>
+<li><em>Passenger Volume by Origin Destination Bus Stops</em> for August, September and October 2023, downloaded from <a href="https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html">LTA DataMall</a> using <a href="https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf">API</a>.</li>
 </ul></li>
 <li>Geospatial
 <ul>
-<li><em>Bus Stop Location</em> from LTA DataMall. It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.</li>
+<li><em>Bus Stop Location</em> from <a href="https://datamall.lta.gov.sg/content/datamall/en/static-data.html">LTA DataMall</a>. It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.</li>
 <li><em>hexagon</em>, a <a href="https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm">hexagon</a> layer of 250m is provided to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA.</li>
 </ul></li>
 </ul>
@@ -290,16 +354,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="import-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="import-preparation">Import &amp; Preparation</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Aspatial</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Geospatial</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Aspatial</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Geospatial</a></li></ul>
 <div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p>Firstly, we will import the <em>Passenger Volume by Origin Destination Bus Stops</em> dataset downloaded from LTA DataMall by using <code>read_csv()</code> or <strong>readr</strong> package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>odbus <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/origin_destination_bus_202308.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>odbus <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/origin_destination_bus_202308.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Prima facie, ORIGIN_PT_CODE and DESTINATON_PT_CODE in the odbus tibble data frame are in numeric data type.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(odbus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(odbus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 5,709,512
 Columns: 7
@@ -313,7 +377,7 @@ $ TOTAL_TRIPS         &lt;dbl&gt; 7, 2, 3, 10, 5, 4, 3, 22, 3, 3, 7, 1, 3, 1, 3,
 </div>
 </div>
 </div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 
 </div>
 </div>

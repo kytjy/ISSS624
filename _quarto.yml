@@ -30,7 +30,7 @@ website:
       - text: Take-home Exercises
         menu: 
           - text: Take-home Exercise 1
-            href: Take-Home_Ex/Take-Home_Ex1/Take-Home_Ex1.html          
+            href: Take-Home_Ex/Take-Home_Ex1.html          
     right:
       - href: index.qmd
         text: Home

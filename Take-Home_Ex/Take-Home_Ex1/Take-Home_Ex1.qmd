@@ -432,9 +432,9 @@ origin_gridwgeom <- st_as_sf(origin_gridwgeom)
 
 :::
 
-## 4 Geovisualisation & Analysis
+# 4 Geovisualisation & Analysis
 
-### 4.1 
+## 4.1 
 
 ```{r}
 summary(origin_gridwgeom$WDM)
@@ -444,11 +444,33 @@ summary(origin_gridwgeom$WEE)
 ```
 
 
-### Plots
+## Plots
 
 :::panel-tabset
+## Total of Peak Periods
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode("view")
+plotWDM <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("totaltrips", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Total passenger trips for total peak periods",
+          alpha=0.6) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+  
+plotWDM
+```
+
+The distribution of 
+
 ## Weekday Morning
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 tmap_mode("view")
 plotWDM <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
@@ -465,6 +487,8 @@ plotWDM
 
 ## Weekday Afternoon
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 tmap_mode("view")
 plotWDA <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
@@ -481,6 +505,8 @@ plotWDA
 
 ## Weekday Afternoon
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 tmap_mode("view")
 plotWEM <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
@@ -498,6 +524,8 @@ plotWEM
 
 ## Weekday Evening
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 tmap_mode("view")
 plotWEE <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
@@ -511,7 +539,20 @@ plotWEE <- tm_basemap("CartoDB.Positron") +
   
 plotWEE
 ```
+
+## Side-by-Side
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ttm()
+tmap_arrange(plotWDM, plotWDA, plotWEM, plotWEE,
+             asp=2, nrow=2,ncol=2)
+```
+
 :::
+
+
 
 ## 5 Local Indicators of Spatial Association Analysis
 

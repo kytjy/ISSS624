@@ -436,6 +436,13 @@ origin_gridwgeom <- st_as_sf(origin_gridwgeom)
 
 ### 4.1 
 
+```{r}
+summary(origin_gridwgeom$WDM)
+summary(origin_gridwgeom$WDA)
+summary(origin_gridwgeom$WEM)
+summary(origin_gridwgeom$WEE)
+```
+
 
 ### Plots
 
@@ -446,7 +453,7 @@ tmap_mode("view")
 plotWDM <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
   tm_fill("WDM", 
-          style = "jenks", 
+          style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekday morning peak",
           alpha=0.6) +
@@ -462,7 +469,7 @@ tmap_mode("view")
 plotWDA <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
   tm_fill("WDA", 
-          style = "jenks", 
+          style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekday afternoon peak",
           alpha=0.6) +
@@ -478,7 +485,7 @@ tmap_mode("view")
 plotWEM <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
   tm_fill("WEM", 
-          style = "jenks", 
+          style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekend/holiday morning peak",
           alpha=0.6) +
@@ -495,7 +502,7 @@ tmap_mode("view")
 plotWEE <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
   tm_fill("WEE", 
-          style = "jenks", 
+          style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekend/holiday evening peak",
           alpha=0.6) +

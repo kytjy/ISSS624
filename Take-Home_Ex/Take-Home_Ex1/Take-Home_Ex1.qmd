@@ -64,7 +64,7 @@ The following packages will be used for this exercise:
 The code chunk below, using `p_load` function of the [**pacman**](https://cran.r-project.org/web/packages/pacman/pacman.pdf) package, ensures that **sfdep**, **sf**, **tmap** and **tidyverse** packages are installed and loaded in R.
 
 ```{r}
-pacman::p_load(sf, sfdep, tmap, tidyverse, patchwork)
+pacman::p_load(sf, sfdep, tmap, tidyverse, patchwork, DT, mapview, leaflett)
 
 # -   Creates a package list containing the necessary R packages
 # -   Checks if the R packages in the package list have been installed
@@ -124,18 +124,17 @@ Insights:
     -   *TOTAL_TRIPS*: Number of trips
 -   We also note that values in *ORIGIN_PT_CODE* and *DESTINATON_PT_CODE* are in numeric data type.
 
-### (c) Unique Bus Stops
+### (b) Unique Bus Stops
 
 *n_distinct()* of the **dplyr** package allows us to count the unique bus stops in the data set.
 
 ```{r}
 n_distinct(odbus08$ORIGIN_PT_CODE)
-n_distinct(odbus08$DESTINATION_PT_CODE)
 ```
 
-The results reveal that there are 5067 distinct origin bus stops and 5071 unique destination bus stops.
+The results reveal that there are 5067 distinct origin bus stops.
 
-### (d) Distributions of Trips
+### (c) Distributions of Trips
 
 *summary()* function allows us to take a quick look into the distribution of the passenger trips
 
@@ -185,7 +184,7 @@ Results confirm that there are no duplicated records found.
 
 ### (c) Extracting the Study Data
 
-In our study, we would like to know patterns for 4 peak hour periods. Therefore, we can create a new column *period* using the *ifelse()* that states whether an observation occurred during peak period using the code chunk below.
+In our study, we would like to know patterns for 4 peak hour periods. Therefore, we can create a new variable *period* using the *ifelse()* that states whether an observation occurred during peak period using the code chunk below.
 
 ```{r}
 peak <- odbus08 %>%
@@ -212,6 +211,22 @@ peakperiods <- peak %>%
   group_by(period, ORIGIN_PT_CODE) %>% 
   summarise(TRIPS=sum(TOTAL_TRIPS))
 ```
+
+Let's visualise the proportions of passenger volumes for each peak period. 
+
+```{r}
+ggplot(data=peakperiods, 
+       aes(x=period,y=TRIPS))+
+  geom_bar(stat="identity") +
+  theme(legend.position="none")
+                 #color="black", 
+                 #fill="light blue") +
+  labs(title = "Frequency of Trip for each Peak Period",
+      x = "Peak Period)",
+      y = "Frequency")
+```
+We can see that passenger volume on weekdays are much higher than over the weekends/holidays.
+
 :::
 
 ### 3.2.2 Geospatial
@@ -235,6 +250,8 @@ The imported shape file is simple features object of sf. From the output, we can
 mapview::mapview(busstop)
 ```
 
+Note that there are 5 bus stops located outside Singapore, they are bus stops 46239, 46609, 47701, 46211, and 46219.
+
 ### (b) Hexagon Layer
 
 A hexagonal grid is used to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA. Hexagons have a number of advantages over these other shapes:
@@ -249,7 +266,8 @@ A hexagonal grid is used to replace the relative coarse and irregular Master Pla
 -   The "softer" shape of a hexagon compared to a square means it performs better at representing gradual spatial changes.
 :::
 
-Firstly, we create a hexagonal grid layer of 250m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [*st_make_grid*](https://r-spatial.github.io/sf/reference/st_make_grid.html), and [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below.
+#### Step 1: Create Hexagonal Grids
+We first create a hexagonal grid layer of 250m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [*st_make_grid*](https://r-spatial.github.io/sf/reference/st_make_grid.html), and [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below.
 
 ::: {.callout-note collapse="true"}
 ## *st_make_grid* Arguments
@@ -271,7 +289,8 @@ hexagon_grid_sf = st_sf(area_hexagon_grid) %>%
   mutate(grid_id = 1:length(lengths(area_hexagon_grid)))
 ```
 
-Secondly, we count the number of points in each grid and keep grids with bus stops using the code chunks below.
+#### Step 2: Remove grids with no bus stops
+Secondly, we count the number of bus stops in each grid and keep grids with bus stops using the code chunks below.
 
 ```{r}
 # Create a column containing the count of bus stops in each grid
@@ -281,7 +300,7 @@ hexagon_grid_sf$busstops = lengths(st_intersects(hexagon_grid_sf, busstop))
 hexagon_w_busstops = filter(hexagon_grid_sf, busstops > 0)
 ```
 
-Before we proceed, let's confirm that all bus stops have been accounted for in our hexagon layer.
+Let's confirm that all bus stops have been accounted for in our hexagon layer.
 
 ```{r}
 sum(hexagon_w_busstops$busstops)
@@ -289,10 +308,26 @@ sum(hexagon_w_busstops$busstops)
 
 This is in line with the 5161 points of the busstop shapefile.
 
-Lastly, using [*qtm()*](https://r-tmap.github.io/tmap/reference/qtm.html) of **tmap**, we can quickly visualise the results of the hexagon grids we have created.
+Lastly, using [*tm_shape*](https://www.rdocumentation.org/packages/tmap/versions/3.3-4/topics/tm_shape) of **tmap**, we can quickly visualise the results of the hexagon grids we have created.
 
 ```{r}
-qtm(hexagon_w_busstops, fill="busstops")
+
+tmap_mode("view")
+hex <- tm_shape(hexagon_w_busstops)+
+  tm_fill(
+    col = "busstops",
+    palette = "Blues",
+    style = "cont",
+    title = "Number of Bus Stops",
+    id = "grid_id",
+    showNA = FALSE,
+    alpha = 0.6,
+    popup.format = list(
+      grid_id = list(format = "f", digits = 0)
+    )
+  )+
+  tm_borders(col = "grey40", lwd = 0.7)
+hex
 ```
 
 ## Geospatial Data Wrangling
@@ -302,45 +337,175 @@ qtm(hexagon_w_busstops, fill="busstops")
 Code chunk below populates the grid ID (i.e. grid_id) of hexagon_w_busstops sf data frame into busstop sf data frame.
 
 ```{r}
-hexlayer <- st_intersection(busstop, hexagon_w_busstops) %>% 
-  select(BUS_STOP_N, grid_id) %>% 
+bs_wgrids <- st_intersection(busstop, hexagon_w_busstops) %>% 
+  select(BUS_STOP_N,BUS_ROOF_N,LOC_DESC, grid_id, busstops) %>% 
   st_drop_geometry
 
-hexlayer
 ```
 
 ::: callout-note
 -   `st_intersection()` is used to perform point and polygon overly and the output will be in point sf object.
 -   `select()` of dplyr package is then use to retain only BUS_STOP_N and SUBZONE_C in the busstop_mpsz sf data frame.
--   `five` bus stops are excluded in the resultant data frame because they are outside of Singapore bpundary.
+-   `st_stop_geometry()` removes the geometry data to manipulate it like a regular dataframe using `tidyr` and `dplyr` functions
 :::
 
-### (c) Append grid ID to odbus08
-
-Next, we are going to append the grid ID from hexlayer data frame onto odbus08 data frame.
+Before we proceed, let's perform a duplicates check on `bs_wgrids`.
 
 ```{r}
-origin_grid <- left_join(odbus08 , hexlayer,
-            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>% 
-  rename(ORIGIN_BS = ORIGIN_PT_CODE) %>%
-  group_by(grid_id) %>%
-  summarise(TOT_TRIPS = sum(TOTAL_TRIPS))
-```
-
-### (d) Duplicates Check
-
-Before continue, it is a good practice for us to check for duplicating records.
-
-```{r}
-duplicate2 <- origin_grid %>%
+duplicate2 <- bs_wgrids %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
 
 duplicate2
 ```
+Results displayed 4 genuine duplicated records. We remove these to prevent double-counting.
+
+The code chunk below helps retain unique records.
+```{r}
+bs_wgrids <- unique(bs_wgrids)
+```
+
+
+### (c) Append grid ID to peakperiods
+
+Transpose each peak period `period` as a columns using *pivot_wider()* of **tidyr** package will allow us to create further variables at a bus stop level. We replace NA values with 0 to reflect when there are no traffic for certain periods.
+```{r}
+peakperiods_wide <- pivot_wider(peakperiods, 
+                                names_from = "period", 
+                                values_from = "TRIPS")
+
+peakperiods_wide["WDA"][is.na(peakperiods_wide["WDA"])] <- 0
+peakperiods_wide["WDM"][is.na(peakperiods_wide["WDM"])] <- 0
+peakperiods_wide["WEE"][is.na(peakperiods_wide["WEE"])] <- 0
+peakperiods_wide["WEM"][is.na(peakperiods_wide["WEM"])] <- 0
+
+#length(unique(peakperiods$ORIGIN_PT_CODE))
+glimpse(peakperiods_wide)
+```
+Notice that there are 5067 origin bus stops from the `peakperiods` table, compared to the 5161 bus stops from LTA's BusStop shape file. This could be due to timing difference -- LTA's `BusStop` shapefile is as of July 2023, while `peakperiod` is based on Aug 2023.
+
+We can now append the grid ID from bs_wgrids data frame onto peakperiods_wide data frame. Recall we previously identified 5 bus stops outside Singapore, *filter()* allows us to exclude the 5 outside Singapore.
+```{r}
+origin_grid <- left_join(peakperiods_wide, bs_wgrids,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>% 
+  rename(ORIGIN_BS = ORIGIN_PT_CODE) %>% 
+  group_by(grid_id) %>% 
+  # retains SG bus stops
+  filter(!ORIGIN_BS %in% c(46239, 46609, 47701, 46211, 46219))
+
+glimpse(origin_grid)
+```
+### (d) Duplicates Check
+
+Before continue, it is a good practice for us to check for duplicating records.
+
+```{r}
+duplicate3 <- origin_grid %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+duplicate3
+```
 
 The results show that there are no duplicates found.
+
+### (e) Variable Creation for Geospatial Analysis
+
+```{r}
+origin_grid <- origin_grid %>% 
+  mutate(totaltrips=WDA+WDM+WEE+WEM)
+```
+
+### (d) Retrieve Geometry
+
+```{r}
+origin_gridwgeom <- inner_join(origin_grid, 
+                           hexagon_w_busstops,
+                           by = "grid_id")
+
+origin_gridwgeom <- st_as_sf(origin_gridwgeom)
+
+
+```
+
 :::
 
-## Choropleth Visualisation
+## 4 Geovisualisation & Analysis
+
+### 4.1 
+
+
+### Plots
+
+:::panel-tabset
+## Weekday Morning
+```{r}
+tmap_mode("view")
+plotWDM <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("WDM", 
+          style = "jenks", 
+          palette = "Blues",
+          title = "Total passenger trips during weekday morning peak",
+          alpha=0.6) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+  
+plotWDM
+```
+
+## Weekday Afternoon
+```{r}
+tmap_mode("view")
+plotWDA <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("WDA", 
+          style = "jenks", 
+          palette = "Blues",
+          title = "Total passenger trips during weekday afternoon peak",
+          alpha=0.6) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+  
+plotWDA
+```
+
+## Weekday Afternoon
+```{r}
+tmap_mode("view")
+plotWEM <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("WEM", 
+          style = "jenks", 
+          palette = "Blues",
+          title = "Total passenger trips during weekend/holiday morning peak",
+          alpha=0.6) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+  
+plotWEM
+```
+
+
+## Weekday Evening
+```{r}
+tmap_mode("view")
+plotWEE <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("WEE", 
+          style = "jenks", 
+          palette = "Blues",
+          title = "Total passenger trips during weekend/holiday evening peak",
+          alpha=0.6) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+  
+plotWEE
+```
+:::
+
+## 5 Local Indicators of Spatial Association Analysis
+
+## 6 Emerging Hot Spot Analysis

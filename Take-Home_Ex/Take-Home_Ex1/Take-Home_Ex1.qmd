@@ -64,7 +64,7 @@ The following packages will be used for this exercise:
 The code chunk below, using `p_load` function of the [**pacman**](https://cran.r-project.org/web/packages/pacman/pacman.pdf) package, ensures that **sfdep**, **sf**, **tmap** and **tidyverse** packages are installed and loaded in R.
 
 ```{r}
-pacman::p_load(sf, sfdep, tmap, tidyverse, patchwork, DT, mapview, leaflett)
+pacman::p_load(sf, sfdep, tmap, tidyverse, patchwork, DT, mapview, leaflet, scales)
 
 # -   Creates a package list containing the necessary R packages
 # -   Checks if the R packages in the package list have been installed
@@ -104,7 +104,7 @@ odbus08 <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 
 ### (a) Attributes
 
-*glimpse()* of the **dplyr** package allows us to learn more about the attribute information.
+*glimpse()* of the **dplyr** package allows us to see all columns and their data type in the data frame.
 
 ```{r}
 glimpse(odbus08)
@@ -212,20 +212,25 @@ peakperiods <- peak %>%
   summarise(TRIPS=sum(TOTAL_TRIPS))
 ```
 
-Let's visualise the proportions of passenger volumes for each peak period. 
+Let's visualise the proportions of passenger volumes for each peak period.
 
 ```{r}
-ggplot(data=peakperiods, 
+#| code-fold: true
+#| code-summary: "Show the code"
+
+freq<- ggplot(data=peakperiods, 
        aes(x=period,y=TRIPS))+
   geom_bar(stat="identity") +
-  theme(legend.position="none")
-                 #color="black", 
-                 #fill="light blue") +
+  theme(legend.position="none")+
   labs(title = "Frequency of Trip for each Peak Period",
-      x = "Peak Period)",
+      x = "Peak Period",
       y = "Frequency")
+
+freq + scale_y_continuous(labels=label_comma())
 ```
+
 We can see that passenger volume on weekdays are much higher than over the weekends/holidays.
+
 
 :::
 
@@ -266,13 +271,18 @@ A hexagonal grid is used to replace the relative coarse and irregular Master Pla
 -   The "softer" shape of a hexagon compared to a square means it performs better at representing gradual spatial changes.
 :::
 
-#### Step 1: Create Hexagonal Grids
+#### Create Hexagonal Grids
+
 We first create a hexagonal grid layer of 250m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [*st_make_grid*](https://r-spatial.github.io/sf/reference/st_make_grid.html), and [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below.
 
 ::: {.callout-note collapse="true"}
 ## *st_make_grid* Arguments
 
-*st_make_grid* function is used to create a grid over a spatial object. It takes 4 arguments, they are: - x: sf object; the input spatial data - cellsize: for hexagonal cells the distance between opposite edges in the unit of the crs the spatial data is using. In this case, we take cellsize to be 250m \* 2 = 500m
+*st_make_grid* function is used to create a grid over a spatial object. It takes 4 arguments, they are:
+
+-   x: sf object; the input spatial data
+
+-   cellsize: for hexagonal cells the distance between opposite edges in the unit of the crs the spatial data is using. In this case, we take cellsize to be 250m \* 2 = 500m
 
 ![](images/hex.PNG){width="276"}
 
@@ -282,14 +292,21 @@ We first create a hexagonal grid layer of 250m (refers to the perpendicular dist
 
 ```{r}
 area_hexagon_grid = st_make_grid(busstop, 500, what = "polygons", square = FALSE)
+```
 
+#### Convert to sf and count grids
+
+Next, [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) converts the grid created to sf object while [*lengths()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) of Base R is used to calculate the number of grids created.
+
+```{r}
 # Converts grid to sf
 hexagon_grid_sf = st_sf(area_hexagon_grid) %>%
   # Assign unique ID to each grid
   mutate(grid_id = 1:length(lengths(area_hexagon_grid)))
 ```
 
-#### Step 2: Remove grids with no bus stops
+#### Remove grids with no bus stops
+
 Secondly, we count the number of bus stops in each grid and keep grids with bus stops using the code chunks below.
 
 ```{r}
@@ -311,7 +328,8 @@ This is in line with the 5161 points of the busstop shapefile.
 Lastly, using [*tm_shape*](https://www.rdocumentation.org/packages/tmap/versions/3.3-4/topics/tm_shape) of **tmap**, we can quickly visualise the results of the hexagon grids we have created.
 
 ```{r}
-
+#| code-fold: true
+#| code-summary: "Show the code"
 tmap_mode("view")
 hex <- tm_shape(hexagon_w_busstops)+
   tm_fill(
@@ -359,17 +377,19 @@ duplicate2 <- bs_wgrids %>%
 
 duplicate2
 ```
+
 Results displayed 4 genuine duplicated records. We remove these to prevent double-counting.
 
 The code chunk below helps retain unique records.
+
 ```{r}
 bs_wgrids <- unique(bs_wgrids)
 ```
 
-
 ### (c) Append grid ID to peakperiods
 
 Transpose each peak period `period` as a columns using *pivot_wider()* of **tidyr** package will allow us to create further variables at a bus stop level. We replace NA values with 0 to reflect when there are no traffic for certain periods.
+
 ```{r}
 peakperiods_wide <- pivot_wider(peakperiods, 
                                 names_from = "period", 
@@ -383,9 +403,11 @@ peakperiods_wide["WEM"][is.na(peakperiods_wide["WEM"])] <- 0
 #length(unique(peakperiods$ORIGIN_PT_CODE))
 glimpse(peakperiods_wide)
 ```
+
 Notice that there are 5067 origin bus stops from the `peakperiods` table, compared to the 5161 bus stops from LTA's BusStop shape file. This could be due to timing difference -- LTA's `BusStop` shapefile is as of July 2023, while `peakperiod` is based on Aug 2023.
 
 We can now append the grid ID from bs_wgrids data frame onto peakperiods_wide data frame. Recall we previously identified 5 bus stops outside Singapore, *filter()* allows us to exclude the 5 outside Singapore.
+
 ```{r}
 origin_grid <- left_join(peakperiods_wide, bs_wgrids,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>% 
@@ -396,6 +418,7 @@ origin_grid <- left_join(peakperiods_wide, bs_wgrids,
 
 glimpse(origin_grid)
 ```
+
 ### (d) Duplicates Check
 
 Before continue, it is a good practice for us to check for duplicating records.
@@ -411,7 +434,7 @@ duplicate3
 
 The results show that there are no duplicates found.
 
-### (e) Variable Creation for Geospatial Analysis
+### (e) Derive New Features
 
 ```{r}
 origin_grid <- origin_grid %>% 
@@ -429,12 +452,11 @@ origin_gridwgeom <- st_as_sf(origin_gridwgeom)
 
 
 ```
-
 :::
 
 # 4 Geovisualisation & Analysis
 
-## 4.1 
+## 4.1 Summary
 
 ```{r}
 summary(origin_gridwgeom$WDM)
@@ -443,31 +465,60 @@ summary(origin_gridwgeom$WEM)
 summary(origin_gridwgeom$WEE)
 ```
 
+## 4.2 Plots
 
-## Plots
-
-:::panel-tabset
+::: panel-tabset
 ## Total of Peak Periods
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode("view")
-plotWDM <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
+
+tmap_mode ("plot")
+
+plottotal_q <-   tm_shape(origin_gridwgeom) +
   tm_fill("totaltrips", 
           style = "quantile", 
           palette = "Blues",
-          title = "Total passenger trips for total peak periods",
-          alpha=0.6) +
+          alpha=0.5,
+          title = "Peak periods Trips",
+          )+
+  tm_layout(main.title = "Total trips during peak periods",
+              main.title.position = "center",
+              main.title.size = 1.2,
+              legend.height = 0.45, 
+              legend.width = 0.35,
+              frame = TRUE)+
+  tm_borders(alpha = 0.5) +
+  tm_compass(size = 2) +
   tm_scale_bar() +
-  tm_grid(alpha =0.2)
-  
-plotWDM
+  tm_grid(alpha =0.2) 
+
+plottotal_q
 ```
 
-The distribution of 
+The choropleths above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, while higher levels of ridership in the North region are indicated by the darker shades of blue.
+
+```{r}
+tmap_mode("view")
+plottotal_j <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("totaltrips", 
+          style = "jenks", 
+          palette = "Blues",
+          title = "Total passenger trips during weekday morning peak",
+          alpha=0.6,
+          id="LOC_DESC")
+#  tm_scale_bar() +
+#  tm_grid(alpha =0.2)
+  
+plottotal_j
+```
+
+Using Jenk's partitioning method, we see more clearly which areas have higher ridership. The area after Punggol Road in the East displayed the darkest shade of blue, suggesting that the bus stops in the area has the highest number of trips. Next, Woodlands checkpoint in the North also displayed high ridership.
 
 ## Weekday Morning
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -478,14 +529,17 @@ plotWDM <- tm_basemap("CartoDB.Positron") +
           style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekday morning peak",
-          alpha=0.6) +
-  tm_scale_bar() +
-  tm_grid(alpha =0.2)
+          alpha=0.6,
+          id="LOC_DESC")
+#  tm_scale_bar() +
+#  tm_grid(alpha =0.2)
   
 plotWDM
 ```
 
+
 ## Weekday Afternoon
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -496,14 +550,14 @@ plotWDA <- tm_basemap("CartoDB.Positron") +
           style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekday afternoon peak",
-          alpha=0.6) +
-  tm_scale_bar() +
-  tm_grid(alpha =0.2)
+          alpha=0.6,
+          id="LOC_DESC")
   
 plotWDA
 ```
 
 ## Weekday Afternoon
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -514,15 +568,14 @@ plotWEM <- tm_basemap("CartoDB.Positron") +
           style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekend/holiday morning peak",
-          alpha=0.6) +
-  tm_scale_bar() +
-  tm_grid(alpha =0.2)
+          alpha=0.6,
+          id="LOC_DESC")
   
 plotWEM
 ```
 
-
 ## Weekday Evening
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -533,14 +586,14 @@ plotWEE <- tm_basemap("CartoDB.Positron") +
           style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips during weekend/holiday evening peak",
-          alpha=0.6) +
-  tm_scale_bar() +
-  tm_grid(alpha =0.2)
+          alpha=0.6,
+          id="LOC_DESC")
   
 plotWEE
 ```
 
 ## Side-by-Side
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -549,11 +602,8 @@ ttm()
 tmap_arrange(plotWDM, plotWDA, plotWEM, plotWEE,
              asp=2, nrow=2,ncol=2)
 ```
-
 :::
 
+# 5 Local Indicators of Spatial Association Analysis
 
-
-## 5 Local Indicators of Spatial Association Analysis
-
-## 6 Emerging Hot Spot Analysis
+# 6 Emerging Hot Spot Analysis

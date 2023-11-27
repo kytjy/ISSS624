@@ -496,6 +496,22 @@ plottotal_q <-   tm_shape(origin_gridwgeom) +
 
 plottotal_q
 ```
+```{r}
+tmap_mode("view")
+plottotal_qt <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("totaltrips", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Total passenger trips for total peak periods",
+          alpha=0.6,
+          id="LOC_DESC")+
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+  
+plottotal_qt
+```
+
 
 The choropleths above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, while higher levels of ridership in the North region are indicated by the darker shades of blue.
 

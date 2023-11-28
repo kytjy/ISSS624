@@ -88,8 +88,7 @@ The following data are used for this study:
 
 ## 3.2.1 Aspatial
 
-::: panel-tabset
-## Import into R
+::: panel-tabset \## Import into R
 
 We will be importing the *Passenger Volume by Origin Destination Bus Stops* dataset from August to October 2023, downloaded from LTA DataMall by using `read_csv()` or **readr** package.
 
@@ -133,24 +132,6 @@ n_distinct(odbus08$ORIGIN_PT_CODE)
 ```
 
 The results reveal that there are 5067 distinct origin bus stops.
-
-### (c) Distributions of Trips
-
-*summary()* function allows us to take a quick look into the distribution of the passenger trips
-
-```{r}
-summary(odbus08$TOTAL_TRIPS)
-
-```
-
-Insights: - Average passenger volume is 21, minimum is 1, and maximum is 35049 - 75% of the time, there are ≤13 passengers
-
-```{r}
-max <- odbus08 %>% filter(TOTAL_TRIPS==35049)
-max
-```
-
-Further investigation suggests that the maximum passenger volume was from a weekday at 6pm - 7pm, from original bus stop 46101 to bus stop 46211.
 
 ## Data Wrangling
 
@@ -231,8 +212,374 @@ freq + scale_y_continuous(labels=label_comma())
 
 We can see that passenger volume on weekdays are much higher than over the weekends/holidays.
 
+Transpose each peak period `period` as a columns using *pivot_wider()* of **tidyr** package will allow us to create further variables at a bus stop level. We replace NA values with 0 to reflect when there are no traffic for certain periods.
 
-:::
+```{r}
+peakperiods_wide <- pivot_wider(peakperiods, 
+                                names_from = "period", 
+                                values_from = "TRIPS")
+
+peakperiods_wide["WDA"][is.na(peakperiods_wide["WDA"])] <- 0
+peakperiods_wide["WDM"][is.na(peakperiods_wide["WDM"])] <- 0
+peakperiods_wide["WEE"][is.na(peakperiods_wide["WEE"])] <- 0
+peakperiods_wide["WEM"][is.na(peakperiods_wide["WEM"])] <- 0
+
+glimpse(peakperiods_wide)
+```
+
+Notice that there are 5067 unique origin bus stops.
+
+### (d) Variable Transformation
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Extract column
+distWDM <- peakperiods_wide$WDM
+# Calculate mean 
+distWDM_mean <- mean(distWDM)
+
+plot_distWDM <- ggplot(
+    data = data.frame(distWDM),
+    aes(x = distWDM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWDM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 80000, 
+    y = 2000,
+    label = paste("Mean =", round(distWDM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+# Extract column
+distWDA <- peakperiods_wide$WDA
+# Calculate mean 
+distWDA_mean <- mean(distWDA)
+
+plot_distWDA <- ggplot(
+    data = data.frame(distWDA),
+    aes(x = distWDA)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWDA_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 110000, 
+    y = 2000,
+    label = paste("Mean =", round(distWDA_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Afternoon Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+# Extract column
+distWEM <- peakperiods_wide$WEM
+# Calculate mean 
+distWEM_mean <- mean(distWEM)
+
+plot_distWEM <- ggplot(
+    data = data.frame(distWEM),
+    aes(x = distWEM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWEM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 23000, 
+    y = 2000,
+    label = paste("Mean =", round(distWEM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekdend/Holiday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+# Extract column
+distWEE <- peakperiods_wide$WEE
+# Calculate mean 
+distWEE_mean <- mean(distWEE)
+
+plot_distWEE <- ggplot(
+    data = data.frame(distWEE),
+    aes(x = distWEE)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWEE_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 29000, 
+    y = 2000, 
+    label = paste("Mean =", round(distWEE_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekend/Holiday Evening Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+(plot_distWDM | plot_distWDA)/
+(plot_distWEM | plot_distWEE)
+```
+
+The distribution of passenger trips for the 4 peak periods appear to be highly skewed to the right. Rescaling our data using log transformation can greatly reduce the skewness.
+
+```{r}
+peakperiods_wider <- peakperiods_wide %>% 
+  mutate(logWDM = ifelse(WDM == 0, 0, log(WDM)),
+         logWDA = ifelse(WDA == 0, 0, log(WDA)),
+         logWEM = ifelse(WEM == 0, 0, log(WEM)),
+         logWEE = ifelse(WEE == 0, 0, log(WEE)))
+
+```
+
+Let's visualise the distribution of the 4 peak periods again.
+
+```{r}
+# Extract column
+distlogWDM <- peakperiods_wider$logWDM
+# Calculate mean 
+distlogWDM_mean <- mean(distlogWDM)
+
+plot_distlogWDM <- ggplot(
+    data = data.frame(distlogWDM),
+    aes(x = distlogWDM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWDM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 10, 
+    y = 1000,
+    label = paste("Mean =", round(distlogWDM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) 
+
+# Extract column
+distlogWDA <- peakperiods_wider$logWDA
+# Calculate mean 
+distlogWDA_mean <- mean(distlogWDA)
+
+plot_distlogWDA <- ggplot(
+    data = data.frame(distlogWDA),
+    aes(x = distlogWDA)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWDA_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 10, 
+    y = 1000,
+    label = paste("Mean =", round(distlogWDA_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Afternoon Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  )
+
+# Extract column
+distlogWEM <- peakperiods_wider$logWEM
+# Calculate mean 
+distlogWEM_mean <- mean(distlogWEM)
+
+plot_distlogWEM <- ggplot(
+    data = data.frame(distlogWEM),
+    aes(x = distlogWEM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWEM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 10, 
+    y = 1000,
+    label = paste("Mean =", round(distlogWEM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekdend/Holiday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) 
+
+# Extract column
+distlogWEE <- peakperiods_wider$logWEE
+# Calculate mean 
+distlogWEE_mean <- mean(distlogWEE)
+
+plot_distlogWEE <- ggplot(
+    data = data.frame(distlogWEE),
+    aes(x = distlogWEE)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWEE_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 10, 
+    y = 1000, 
+    label = paste("Mean =", round(distlogWEE_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekend/Holiday Evening Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) 
+
+(plot_distlogWDM | plot_distlogWDA)/
+(plot_distlogWEM | plot_distlogWEE)
+```
 
 ### 3.2.2 Geospatial
 
@@ -250,6 +597,8 @@ busstop <- st_read(dsn = "data/geospatial",
 ```
 
 The imported shape file is simple features object of sf. From the output, we can see that there are 5161 **points** with 3 fields, and confirm that the datum SVY21 is correct.
+
+Recall that there are 5067 origin bus stops from the `peakperiods_wider` table, compared to the 5161 bus stops from LTA's BusStop shape file. This could be due to timing difference -- LTA's `BusStop` shapefile is as of July 2023, while `peakperiod` is based on Aug 2023.
 
 ```{r}
 mapview::mapview(busstop)
@@ -271,7 +620,8 @@ A hexagonal grid is used to replace the relative coarse and irregular Master Pla
 -   The "softer" shape of a hexagon compared to a square means it performs better at representing gradual spatial changes.
 :::
 
-#### Create Hexagonal Grids
+::: panel-tabset
+## Create Hexagonal Grids
 
 We first create a hexagonal grid layer of 250m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [*st_make_grid*](https://r-spatial.github.io/sf/reference/st_make_grid.html), and [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below.
 
@@ -294,7 +644,7 @@ We first create a hexagonal grid layer of 250m (refers to the perpendicular dist
 area_hexagon_grid = st_make_grid(busstop, 500, what = "polygons", square = FALSE)
 ```
 
-#### Convert to sf and count grids
+## Convert to sf and count grids
 
 Next, [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) converts the grid created to sf object while [*lengths()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) of Base R is used to calculate the number of grids created.
 
@@ -305,9 +655,9 @@ hexagon_grid_sf = st_sf(area_hexagon_grid) %>%
   mutate(grid_id = 1:length(lengths(area_hexagon_grid)))
 ```
 
-#### Remove grids with no bus stops
+## Remove grids with no bus stops
 
-Secondly, we count the number of bus stops in each grid and keep grids with bus stops using the code chunks below.
+We count the number of bus stops in each grid and keep grids with bus stops using the code chunks below.
 
 ```{r}
 # Create a column containing the count of bus stops in each grid
@@ -316,6 +666,8 @@ hexagon_grid_sf$busstops = lengths(st_intersects(hexagon_grid_sf, busstop))
 # Remove if no bus stop in side that grid, ie only keep hexagons with bus stops
 hexagon_w_busstops = filter(hexagon_grid_sf, busstops > 0)
 ```
+
+## Check & Visualise
 
 Let's confirm that all bus stops have been accounted for in our hexagon layer.
 
@@ -330,7 +682,7 @@ Lastly, using [*tm_shape*](https://www.rdocumentation.org/packages/tmap/versions
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode("view")
+tmap_mode ("plot")
 hex <- tm_shape(hexagon_w_busstops)+
   tm_fill(
     col = "busstops",
@@ -347,6 +699,7 @@ hex <- tm_shape(hexagon_w_busstops)+
   tm_borders(col = "grey40", lwd = 0.7)
 hex
 ```
+:::
 
 ## Geospatial Data Wrangling
 
@@ -386,30 +739,12 @@ The code chunk below helps retain unique records.
 bs_wgrids <- unique(bs_wgrids)
 ```
 
-### (c) Append grid ID to peakperiods
-
-Transpose each peak period `period` as a columns using *pivot_wider()* of **tidyr** package will allow us to create further variables at a bus stop level. We replace NA values with 0 to reflect when there are no traffic for certain periods.
-
-```{r}
-peakperiods_wide <- pivot_wider(peakperiods, 
-                                names_from = "period", 
-                                values_from = "TRIPS")
-
-peakperiods_wide["WDA"][is.na(peakperiods_wide["WDA"])] <- 0
-peakperiods_wide["WDM"][is.na(peakperiods_wide["WDM"])] <- 0
-peakperiods_wide["WEE"][is.na(peakperiods_wide["WEE"])] <- 0
-peakperiods_wide["WEM"][is.na(peakperiods_wide["WEM"])] <- 0
-
-#length(unique(peakperiods$ORIGIN_PT_CODE))
-glimpse(peakperiods_wide)
-```
-
-Notice that there are 5067 origin bus stops from the `peakperiods` table, compared to the 5161 bus stops from LTA's BusStop shape file. This could be due to timing difference -- LTA's `BusStop` shapefile is as of July 2023, while `peakperiod` is based on Aug 2023.
+### (c) Populate PeakPeriods with Grid Details
 
 We can now append the grid ID from bs_wgrids data frame onto peakperiods_wide data frame. Recall we previously identified 5 bus stops outside Singapore, *filter()* allows us to exclude the 5 outside Singapore.
 
 ```{r}
-origin_grid <- left_join(peakperiods_wide, bs_wgrids,
+origin_grid <- left_join(peakperiods_wider, bs_wgrids,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>% 
   rename(ORIGIN_BS = ORIGIN_PT_CODE) %>% 
   group_by(grid_id) %>% 
@@ -419,36 +754,13 @@ origin_grid <- left_join(peakperiods_wide, bs_wgrids,
 glimpse(origin_grid)
 ```
 
-### (d) Duplicates Check
-
-Before continue, it is a good practice for us to check for duplicating records.
-
-```{r}
-duplicate3 <- origin_grid %>%
-  group_by_all() %>%
-  filter(n()>1) %>%
-  ungroup()
-
-duplicate3
-```
-
-The results show that there are no duplicates found.
-
-### (e) Derive New Features
-
-```{r}
-origin_grid <- origin_grid %>% 
-  mutate(totaltrips=WDA+WDM+WEE+WEM)
-```
-
 ### (d) Retrieve Geometry
 
 ```{r}
-origin_gridwgeom <- inner_join(origin_grid, 
-                           hexagon_w_busstops,
+origin_gridwgeom <- inner_join(hexagon_w_busstops,
+                               origin_grid, 
                            by = "grid_id")
-
-origin_gridwgeom <- st_as_sf(origin_gridwgeom)
+#origin_gridwgeom <- st_as_sf(origin_gridwgeom)
 
 
 ```
@@ -456,70 +768,84 @@ origin_gridwgeom <- st_as_sf(origin_gridwgeom)
 
 # 4 Geovisualisation & Analysis
 
-## 4.1 Summary
+## 4.1 Data Classification
 
-```{r}
-summary(origin_gridwgeom$WDM)
-summary(origin_gridwgeom$WDA)
-summary(origin_gridwgeom$WEM)
-summary(origin_gridwgeom$WEE)
-```
+Different classification schemes will highlight the areas with the highest and/or lowest values, while others will create classes that cause a more uniform distribution of colors. When your data is sharply skewed or has extreme outliers, you need to consider whether it is important to highlight those areas or to create a more even distribution of colors/sizes.
+
+Across the 4 peak periods, the distribution of ridership appears to be highly skewed to the right. Consequently, the resulting intervals if the "quantile" style is used might be misleading, with very different values located in the same class. Similarly, "equal" style should be avoided as it might lead to empty classes. Let's visualise using "jenks" and
 
 ## 4.2 Plots
 
 ::: panel-tabset
-## Total of Peak Periods
+## Weekday Morning
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
 
-tmap_mode ("plot")
+tmap_mode ("view")
 
-plottotal_q <-   tm_shape(origin_gridwgeom) +
-  tm_fill("totaltrips", 
-          style = "quantile", 
-          palette = "Blues",
-          alpha=0.5,
-          title = "Peak periods Trips",
-          )+
-  tm_layout(main.title = "Total trips during peak periods",
-              main.title.position = "center",
-              main.title.size = 1.2,
-              legend.height = 0.45, 
-              legend.width = 0.35,
-              frame = TRUE)+
-  tm_borders(alpha = 0.5) +
-  tm_compass(size = 2) +
-  tm_scale_bar() +
-  tm_grid(alpha =0.2) 
+#plotlogWDM_q <-   tm_shape(origin_gridwgeom) +
+#  tm_fill("logWDM", 
+#          style = "quantile", 
+#          palette = "Blues",
+#          alpha=0.5,
+#          title = "Peak periods Trips",
+#          )+
+#  tm_layout(main.title = "Total trips during peak periods",
+#              main.title.position = "center",
+#              main.title.size = 1.2,
+#              legend.height = 0.45, 
+#              legend.width = 0.35,
+#              frame = TRUE)+
+#  tm_borders(alpha = 0.5) +
+#  tm_compass(size = 2) +
+#  tm_scale_bar() +
+#  tm_grid(alpha =0.2) 
 
-plottotal_q
-```
-```{r}
-tmap_mode("view")
-plottotal_qt <- tm_basemap("CartoDB.Positron") +
+plotlogWDM_q <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
-  tm_fill("totaltrips", 
+  tm_fill("logWDM", 
           style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips for total peak periods",
           alpha=0.6,
-          id="LOC_DESC")+
-  tm_scale_bar() +
-  tm_grid(alpha =0.2)
+          id="LOC_DESC")
+#  tm_scale_bar() +
+#  tm_grid(alpha =0.2)
   
-plottotal_qt
+plotlogWDM_q
 ```
 
-
-The choropleths above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, while higher levels of ridership in the North region are indicated by the darker shades of blue.
+The choropleths above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, particularly in the West, while higher levels of ridership in the North region are indicated by the darker shades of blue.
 
 ```{r}
-tmap_mode("view")
-plottotal_j <- tm_basemap("CartoDB.Positron") +
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("view")
+plotlogWDM_e <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
-  tm_fill("totaltrips", 
+  tm_fill("logWDM", 
+          style = "equal", 
+          palette = "Blues",
+          title = "Total passenger trips for total peak periods",
+          alpha=0.6,
+          id="LOC_DESC")
+#  tm_scale_bar() +
+#  tm_grid(alpha =0.2)
+  
+plotlogWDM_e
+```
+
+Bukit Panjang Interchange
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("plot")
+plotlogWDM_j <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWDM", 
           style = "jenks", 
           palette = "Blues",
           title = "Total passenger trips during weekday morning peak",
@@ -528,21 +854,19 @@ plottotal_j <- tm_basemap("CartoDB.Positron") +
 #  tm_scale_bar() +
 #  tm_grid(alpha =0.2)
   
-plottotal_j
+plotlogWDM_j
 ```
 
 Using Jenk's partitioning method, we see more clearly which areas have higher ridership. The area after Punggol Road in the East displayed the darkest shade of blue, suggesting that the bus stops in the area has the highest number of trips. Next, Woodlands checkpoint in the North also displayed high ridership.
 
-## Weekday Morning
-
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode("view")
-plotWDM <- tm_basemap("CartoDB.Positron") +
+tmap_mode ("plot")
+plotlogWDM_sd <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
-  tm_fill("WDM", 
-          style = "quantile", 
+  tm_fill("logWDM", 
+          style = "sd", 
           palette = "Blues",
           title = "Total passenger trips during weekday morning peak",
           alpha=0.6,
@@ -550,74 +874,16 @@ plotWDM <- tm_basemap("CartoDB.Positron") +
 #  tm_scale_bar() +
 #  tm_grid(alpha =0.2)
   
-plotWDM
+plotlogWDM_sd
 ```
 
+## Weekday Morning
 
 ## Weekday Afternoon
 
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode("view")
-plotWDA <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
-  tm_fill("WDA", 
-          style = "quantile", 
-          palette = "Blues",
-          title = "Total passenger trips during weekday afternoon peak",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotWDA
-```
-
 ## Weekday Afternoon
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode("view")
-plotWEM <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
-  tm_fill("WEM", 
-          style = "quantile", 
-          palette = "Blues",
-          title = "Total passenger trips during weekend/holiday morning peak",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotWEM
-```
 
 ## Weekday Evening
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode("view")
-plotWEE <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
-  tm_fill("WEE", 
-          style = "quantile", 
-          palette = "Blues",
-          title = "Total passenger trips during weekend/holiday evening peak",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotWEE
-```
-
-## Side-by-Side
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-
-ttm()
-tmap_arrange(plotWDM, plotWDA, plotWEM, plotWEE,
-             asp=2, nrow=2,ncol=2)
-```
 :::
 
 # 5 Local Indicators of Spatial Association Analysis

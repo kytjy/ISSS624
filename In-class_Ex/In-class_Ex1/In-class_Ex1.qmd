@@ -25,6 +25,7 @@ The specific task of this in-class exercise are to:
 
 ::: panel-tabset
 ## Task
+
 The code chunk below loads the necessary packages:
 
 -   tmap: for thematic mapping
@@ -34,6 +35,7 @@ The code chunk below loads the necessary packages:
 This is similar to using library() to call the packages. Note that pacman itself is not loaded.
 
 ## Solution
+
 ```{r}
 pacman::p_load(sf,tmap,tidyverse)
 ```
@@ -45,9 +47,11 @@ Firstly, we will import the *Passenger Volume by Origin Destination Bus Stops* d
 
 ::: panel-tabset
 ## Task
+
 Import origin_destination_bus_202308.csv downloaded from LTA DataMall into RStudio and save it as a tibble data frame called odbus.
 
 ## Solution
+
 ```{r}
 odbus <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 ```
@@ -61,9 +65,11 @@ glimpse(odbus)
 
 ::: panel-tabset
 ## Task
+
 Using appropriate tidyverse functions to convert these data values into factor data type.
 
 ## Solution
+
 ```{r}
 odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
 odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE)
@@ -80,9 +86,11 @@ glimpse(odbus)
 
 ::: panel-tabset
 ## Task
+
 For the purpose of this exercise, we will extract commuting flows on weekday and between 7 and 9 o'clock time intervals. Call the output tibble data table as origin7_9.
 
 ## Solution
+
 ```{r}
 origin7_9 <- odbus %>% 
   filter(DAY_TYPE=="WEEKDAY") %>% 
@@ -126,9 +134,11 @@ Note that both geometry formats are different, we will need to transform the coo
 
 ::: panel-tabset
 ## Task
+
 Import BusStop downloaded from LTA DataMall into RStudio and save it as a sf data frame called busstop.
 
 ## Solution
+
 ```{r}
 busstop <-st_read(dsn="data/geospatial",
                   layer="BusStop") %>% 
@@ -144,9 +154,11 @@ glimpse(busstop)
 
 ::: panel-tabset
 ## Task
+
 Import MPSZ-2019 downloaded from eLearn into RStudio and save it as a sf data frame called mpsz.
 
 ## Solution
+
 ```{r}
 mpsz <- st_read(dsn="data/geospatial",
                 layer = "MPSZ-2019") %>% 
@@ -191,44 +203,48 @@ write_rds(busstop_mpsz, "data/rds/busstop_mpsz.csv")
 
 ::: panel-tabset
 ## Task
+
 Next, we are going to append the planning subzone code from busstop_mpsz data frame onto odbus7_9 data frame.
 
 ## Solution
+
 ```{r}
-origin_data <- left_join(origin7_9 , busstop_mpsz,
+origin_SZ <- left_join(origin7_9 , busstop_mpsz,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>%
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
-         ORIGIN_SZ = SUBZONE_C)
+         ORIGIN_SZ = SUBZONE_C) %>%
+  group_by(ORIGIN_SZ) %>%
+  summarise(TOT_TRIPS = sum(TRIPS))
 ```
 :::
 
 Before continue, it is a good practice for us to check for duplicating records.
 
 ```{r}
-duplicate <- origin_data %>%
+duplicate <- origin_SZ %>%
   group_by_all() %>%
   filter(n()>1) %>%
   ungroup()
-
-duplicate
 ```
 
 If duplicated records are found, the code chunk below will be used to retain the unique records.
 
 ```{r}
-origin_data <- unique(origin_data)
+origin_data <- unique(origin_SZ)
 ```
 
 It will be a good practice to confirm if the duplicating records issue has been addressed fully.
 
 ::: panel-tabset
 ## Task
+
 Next, write a code chunk to update od_data data frame with the planning subzone codes.
 
 ## Solution
+
 ```{r}
-mpsz_origtrip <- left_join(mpsz, 
-                           origin_data,
+origintrip_SZ <- left_join(mpsz, 
+                           origin_SZ,
                            by = c("SUBZONE_C" = "ORIGIN_SZ"))
 ```
 :::
@@ -237,12 +253,15 @@ mpsz_origtrip <- left_join(mpsz,
 
 ::: panel-tabset
 ## Task
+
 Prepare a choropleth map showing the distribution of passenger trips at planning sub-zone level.
 
 ## Solution
+
 ```{r}
-tm_shape(mpsz_origtrip)+
-  tm_fill("TRIPS", 
+
+tm_shape(origintrip_SZ)+
+  tm_fill("TOT_TRIPS", 
           style = "quantile", 
           palette = "Blues",
           title = "Passenger trips") +
@@ -256,7 +275,7 @@ tm_shape(mpsz_origtrip)+
   tm_compass(type="8star", size = 2) +
   tm_scale_bar() +
   tm_grid(alpha =0.2) +
-  tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\n and Population data from Department of Statistics DOS", 
+  tm_credits("Source: Planning Sub-zone boundary from URA\n and Passenger trips data from LTA", 
              position = c("left", "bottom"))
 ```
 :::

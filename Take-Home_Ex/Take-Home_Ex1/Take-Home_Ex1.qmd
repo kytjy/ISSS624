@@ -837,7 +837,7 @@ plotlogWDM_e <- tm_basemap("CartoDB.Positron") +
 plotlogWDM_e
 ```
 
-Bukit Panjang Interchange
+The map using equal intervals provided more insights. We noted that the bus stop nearer to the MRT stations had higher levels of ridership. In particular, Tiong Bahru Sation, Buona Vista Station, Joo Koon 
 
 ```{r}
 #| code-fold: true

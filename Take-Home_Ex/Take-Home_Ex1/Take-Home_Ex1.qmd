@@ -772,9 +772,9 @@ origin_gridwgeom <- inner_join(hexagon_w_busstops,
 
 ## 4.1 Data Classification
 
-Different classification schemes will highlight the areas with the highest and/or lowest values, while others will create classes that cause a more uniform distribution of colors. When the data is sharply skewed or has extreme outliers, we will need to consider whether it is important to highlight those areas or to create a more even distribution of colors/sizes.
+Different classification schemes highlight areas with the highest and/or lowest values, while others create classes that result in a more uniform distribution of colors. When data is sharply skewed or has extreme outliers, it's important to consider whether the goal is to emphasize those areas or to achieve a more even distribution of colors and sizes.
 
-Across the 4 peak periods, the distribution of ridership appears to be highly skewed to the right. Consequently, the resulting intervals if the "quantile" style is used might be misleading, with very different values located in the same class. Similarly, "equal" style should be avoided as it might lead to empty classes. Let's visualise using "jenks" and
+Since our variable is less skewed after log transformation, we can explore various classification methods for visualization. This approach may reveal interesting insights that were not immediately apparent before.
 
 ## 4.2 Plots
 
@@ -794,14 +794,14 @@ plotlogWDM_q <- tm_basemap("CartoDB.Positron") +
   tm_fill("logWDM", 
           style = "quantile", 
           palette = "Blues",
-          title = "Total passenger trips for total peak periods",
+          title = "Total passenger trips",
           alpha=0.6,
           id="LOC_DESC")
 
 plotlogWDM_q
 ```
 
-The choropleths above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, particularly in the West, while higher levels of ridership in the North region are indicated by the darker shades of blue.
+The grids above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, particularly in the West, while higher levels of ridership in the North region are indicated by the darker shades of blue.
 
 Bus stops nearer to the residential estates appeared to be popular during the weekday morning peak period:
 
@@ -832,6 +832,8 @@ plotlogWDM_e
 ```
 
 The map using equal intervals provided slightly different insights. We noted that the bus stop nearer to the MRT stations had higher levels of ridership. In particular, more trips originated from Tiong Bahru Station, Buona Vista Station, Tanah Merah Station, Admiralty Station, Harbourfront, and Woodleigh Station. Bus interchanges also appeared to be popular origins, i.e. Bukit Panjang Interchange and Joo Koon Interchange.
+
+In general, more homogenuity is noted using the equal interval -- the constrast between hexagon to hexagn is less varied. 
 
 ## Jenk's
 ```{r}
@@ -899,6 +901,8 @@ plotlogWDA_e
 
 Notably, there were higher concentration of passengers who boarded the bus at Serangoon Station, Harbourfront/VivoCity, Tiong Bahru Station, Admiralty Station, and Punggol Station during weekday afternoons according to the equal interval classification method.
 
+Similar to the map for weekday morning peak period, the equal interval seemed to produce more homogeneous classifications.
+
 ## Jenk's
 
 ```{r}
@@ -917,7 +921,7 @@ plotlogWDA_j <- tm_basemap("CartoDB.Positron") +
 plotlogWDA_j
 ```
 
-Similar trends were noted using the Jenk's classification
+Jenk's classification deliver similar insights to the quantile classification.
 :::
 
 ### 4.2.3 Weekend/Holiday Morning
@@ -980,7 +984,7 @@ plotlogWEM_j
 
 :::
 
-## 4.2.4 Weekend/Holiday Evening
+### 4.2.4 Weekend/Holiday Evening
 
 :::panel-tabset
 ## Quantile
@@ -1005,6 +1009,8 @@ plotlogWEE_q
 ## Equal Intervals
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 tmap_mode ("view")
 plotlogWEE_e <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
@@ -1022,6 +1028,8 @@ plotlogWEE_e
 ## Jenk's
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 tmap_mode ("view")
 plotlogWEE_j <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +

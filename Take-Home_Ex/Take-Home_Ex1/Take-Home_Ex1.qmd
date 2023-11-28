@@ -417,6 +417,8 @@ peakperiods_wider <- peakperiods_wide %>%
 Let's visualise the distribution of the 4 peak periods again.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 # Extract column
 distlogWDM <- peakperiods_wider$logWDM
 # Calculate mean 
@@ -621,7 +623,7 @@ A hexagonal grid is used to replace the relative coarse and irregular Master Pla
 :::
 
 ::: panel-tabset
-## Create Hexagonal Grids
+## Step 1: Create Hexagonal Grids
 
 We first create a hexagonal grid layer of 250m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [*st_make_grid*](https://r-spatial.github.io/sf/reference/st_make_grid.html), and [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below.
 
@@ -644,7 +646,7 @@ We first create a hexagonal grid layer of 250m (refers to the perpendicular dist
 area_hexagon_grid = st_make_grid(busstop, 500, what = "polygons", square = FALSE)
 ```
 
-## Convert to sf and count grids
+## Step 2: Convert to sf and count grids
 
 Next, [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) converts the grid created to sf object while [*lengths()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) of Base R is used to calculate the number of grids created.
 
@@ -655,7 +657,7 @@ hexagon_grid_sf = st_sf(area_hexagon_grid) %>%
   mutate(grid_id = 1:length(lengths(area_hexagon_grid)))
 ```
 
-## Remove grids with no bus stops
+## Step 3: Remove grids with no bus stops
 
 We count the number of bus stops in each grid and keep grids with bus stops using the code chunks below.
 
@@ -667,7 +669,7 @@ hexagon_grid_sf$busstops = lengths(st_intersects(hexagon_grid_sf, busstop))
 hexagon_w_busstops = filter(hexagon_grid_sf, busstops > 0)
 ```
 
-## Check & Visualise
+## Step 4: Check & Visualise
 
 Let's confirm that all bus stops have been accounted for in our hexagon layer.
 
@@ -682,7 +684,7 @@ Lastly, using [*tm_shape*](https://www.rdocumentation.org/packages/tmap/versions
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode ("plot")
+tmap_mode ("view")
 hex <- tm_shape(hexagon_w_busstops)+
   tm_fill(
     col = "busstops",
@@ -770,38 +772,22 @@ origin_gridwgeom <- inner_join(hexagon_w_busstops,
 
 ## 4.1 Data Classification
 
-Different classification schemes will highlight the areas with the highest and/or lowest values, while others will create classes that cause a more uniform distribution of colors. When your data is sharply skewed or has extreme outliers, you need to consider whether it is important to highlight those areas or to create a more even distribution of colors/sizes.
+Different classification schemes will highlight the areas with the highest and/or lowest values, while others will create classes that cause a more uniform distribution of colors. When the data is sharply skewed or has extreme outliers, we will need to consider whether it is important to highlight those areas or to create a more even distribution of colors/sizes.
 
 Across the 4 peak periods, the distribution of ridership appears to be highly skewed to the right. Consequently, the resulting intervals if the "quantile" style is used might be misleading, with very different values located in the same class. Similarly, "equal" style should be avoided as it might lead to empty classes. Let's visualise using "jenks" and
 
 ## 4.2 Plots
 
-::: panel-tabset
-## Weekday Morning
 
+### 4.2.1 Weekday Morning
+
+::: panel-tabset
+## Quantile
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
 
 tmap_mode ("view")
-
-#plotlogWDM_q <-   tm_shape(origin_gridwgeom) +
-#  tm_fill("logWDM", 
-#          style = "quantile", 
-#          palette = "Blues",
-#          alpha=0.5,
-#          title = "Peak periods Trips",
-#          )+
-#  tm_layout(main.title = "Total trips during peak periods",
-#              main.title.position = "center",
-#              main.title.size = 1.2,
-#              legend.height = 0.45, 
-#              legend.width = 0.35,
-#              frame = TRUE)+
-#  tm_borders(alpha = 0.5) +
-#  tm_compass(size = 2) +
-#  tm_scale_bar() +
-#  tm_grid(alpha =0.2) 
 
 plotlogWDM_q <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
@@ -811,14 +797,24 @@ plotlogWDM_q <- tm_basemap("CartoDB.Positron") +
           title = "Total passenger trips for total peak periods",
           alpha=0.6,
           id="LOC_DESC")
-#  tm_scale_bar() +
-#  tm_grid(alpha =0.2)
-  
+
 plotlogWDM_q
 ```
 
 The choropleths above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, particularly in the West, while higher levels of ridership in the North region are indicated by the darker shades of blue.
 
+Bus stops nearer to the residential estates appeared to be popular during the weekday morning peak period:
+
+-   West: BLK 821, BLK 252, Sunshine Place
+-   North: BLK 314
+-   North-East: BLK 477A, BLK 1, BLK 555, BLK 324
+-   East: BLK 109, BLK 124, BLK 756
+
+Higher passenger traffic were also noted at selected MRT stations such as Harbourfront Station, Farrer Road Station, and Admirality Station.
+
+This is likely due to a large number of people travelling from home to their workplaces/schools on weekday mornings.
+
+## Equal Intervals
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -828,63 +824,220 @@ plotlogWDM_e <- tm_basemap("CartoDB.Positron") +
   tm_fill("logWDM", 
           style = "equal", 
           palette = "Blues",
-          title = "Total passenger trips for total peak periods",
+          title = "Total passenger trips",
           alpha=0.6,
           id="LOC_DESC")
-#  tm_scale_bar() +
-#  tm_grid(alpha =0.2)
   
 plotlogWDM_e
 ```
 
-The map using equal intervals provided more insights. We noted that the bus stop nearer to the MRT stations had higher levels of ridership. In particular, Tiong Bahru Sation, Buona Vista Station, Joo Koon 
+The map using equal intervals provided slightly different insights. We noted that the bus stop nearer to the MRT stations had higher levels of ridership. In particular, more trips originated from Tiong Bahru Station, Buona Vista Station, Tanah Merah Station, Admiralty Station, Harbourfront, and Woodleigh Station. Bus interchanges also appeared to be popular origins, i.e. Bukit Panjang Interchange and Joo Koon Interchange.
 
+## Jenk's
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode ("plot")
+tmap_mode ("view")
 plotlogWDM_j <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
   tm_fill("logWDM", 
           style = "jenks", 
           palette = "Blues",
-          title = "Total passenger trips during weekday morning peak",
+          title = "Total passenger trips",
           alpha=0.6,
           id="LOC_DESC")
-#  tm_scale_bar() +
-#  tm_grid(alpha =0.2)
   
 plotlogWDM_j
 ```
+Using Jenk's partitioning method, the results were largely similar to the other two types of interval classes. Higher ridership were spotted near MRT stations (Buona Vista Station, Buangkok Station, Ranggung Station, Farrer Road Station, Stevens Station, Bedok Reservoir Station) and residential estates (Sunshine Place near Tengah, BLK 109 in Bedok, BLK 477A in Sengkang, BEF BLK 629A in Woodlands, to name a few.
+:::
 
-Using Jenk's partitioning method, we see more clearly which areas have higher ridership. The area after Punggol Road in the East displayed the darkest shade of blue, suggesting that the bus stops in the area has the highest number of trips. Next, Woodlands checkpoint in the North also displayed high ridership.
+### 4.2.2 Weekday Afternoon
+
+:::panel-tabset
+
+## Quantile
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("view")
+plotlogWDA_q <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWDA", 
+          style = "quantile", 
+          palette = "Reds",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWDA_q
+```
+
+A look at the weekday afternoon ridership using the quantile classification yielded the following insights. Other than MRTs and popular bus stops in residental estates identified using Weekday Morning peak period data, we also noted:
+-   More trips originating from schools: Opposite Ngee Ann Poly, Temasek Poly, NIE BLK 2, School of the Arts
+-   More trips originating from industrial estates/business parks: North Link Bldg, Aft Senoko Way, Mapletree Business City
+-   More trips originating from hospitals: Yishun Community Hospital, Changi General Hospital
+-   Others: Seletar Camp
+
+## Equal Intervals
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode ("plot")
-plotlogWDM_sd <- tm_basemap("CartoDB.Positron") +
+tmap_mode ("view")
+plotlogWDA_e <- tm_basemap("CartoDB.Positron") +
   tm_shape(origin_gridwgeom) +
-  tm_fill("logWDM", 
-          style = "sd", 
-          palette = "Blues",
-          title = "Total passenger trips during weekday morning peak",
+  tm_fill("logWDA", 
+          style = "equal", 
+          palette = "Reds",
+          title = "Total passenger trips",
           alpha=0.6,
           id="LOC_DESC")
-#  tm_scale_bar() +
-#  tm_grid(alpha =0.2)
   
-plotlogWDM_sd
+plotlogWDA_e
 ```
 
-## Weekday Morning
+Notably, there were higher concentration of passengers who boarded the bus at Serangoon Station, Harbourfront/VivoCity, Tiong Bahru Station, Admiralty Station, and Punggol Station during weekday afternoons according to the equal interval classification method.
 
-## Weekday Afternoon
+## Jenk's
 
-## Weekday Afternoon
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("view")
+plotlogWDA_j <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWDA", 
+          style = "jenks", 
+          palette = "Reds",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWDA_j
+```
 
-## Weekday Evening
+Similar trends were noted using the Jenk's classification
 :::
+
+### 4.2.3 Weekend/Holiday Morning
+
+:::panel-tabset
+## Quantile
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("view")
+plotlogWEM_q <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEM", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWEM_q
+```
+
+
+## Equal Intervals
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("view")
+plotlogWEM_e <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEM", 
+          style = "equal", 
+          palette = "Blues",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWEM_e
+```
+Equal interval classification highlighted the following bus stops to have the highest ridership during weekend/holiday morning peak period: Harbourfront/Vivocity, Tiong Bahru Station, Orchard Station/Lucky Plaza, Admirality Station, Aft. Punggol Road.
+
+## Jenk's
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("view")
+plotlogWEM_j <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEM", 
+          style = "jenks", 
+          palette = "Blues",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWEM_j
+```
+
+:::
+
+## 4.2.4 Weekend/Holiday Evening
+
+:::panel-tabset
+## Quantile
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode ("view")
+plotlogWEE_q <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEE", 
+          style = "quantile", 
+          palette = "Reds",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWEE_q
+```
+
+
+## Equal Intervals
+
+```{r}
+tmap_mode ("view")
+plotlogWEE_e <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEE", 
+          style = "equal", 
+          palette = "Reds",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWEE_e
+```
+
+
+## Jenk's
+
+```{r}
+tmap_mode ("view")
+plotlogWEE_j <- tm_basemap("CartoDB.Positron") +
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEE", 
+          style = "jenks", 
+          palette = "Reds",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC")
+  
+plotlogWEE_j
+```
+
+
+:::
+
 
 # 5 Local Indicators of Spatial Association Analysis
 

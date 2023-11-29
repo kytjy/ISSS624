@@ -774,15 +774,20 @@ origin_gridwgeom <- inner_join(hexagon_w_busstops,
 
 Different classification schemes highlight areas with the highest and/or lowest values, while others create classes that result in a more uniform distribution of colors. When data is sharply skewed or has extreme outliers, it's important to consider whether the goal is to emphasize those areas or to achieve a more even distribution of colors and sizes.
 
+The main methods of data classification are:
+-   Quantile: each class contains an equal number of features. It assigns the same number of data values to each class. There are no empty classes or classes with too few or too many values
+-   Jenks/Natural breaks: seeks clumps of values that are clustered together in order to form categories that may reflect meaningful groupings of areas
+-   Equal: divides the range of attribute values into equal-sized sub-ranges
+
 Since our variable is less skewed after log transformation, we can explore various classification methods for visualization. This approach may reveal interesting insights that were not immediately apparent before.
 
 ## 4.2 Plots
 
-
-### 4.2.1 Weekday Morning
+### 4.2.1 Weekday Morning Peak Period
 
 ::: panel-tabset
 ## Quantile
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -810,11 +815,14 @@ Bus stops nearer to the residential estates appeared to be popular during the we
 -   North-East: BLK 477A, BLK 1, BLK 555, BLK 324
 -   East: BLK 109, BLK 124, BLK 756
 
-Higher passenger traffic were also noted at selected MRT stations such as Harbourfront Station, Farrer Road Station, and Admirality Station.
+This is likely due to a large number of people commuting from home to their workplaces/schools on weekday mornings.
 
-This is likely due to a large number of people travelling from home to their workplaces/schools on weekday mornings.
+Higher passenger traffic were noted at the bus stops nearer to MRT stations such as Harbourfront Station, Farrer Road Station, Yio Chu Kang Station, and Admirality Station. A possible contributing factor could be the people who are transiting from taking the MRTs to buses to get to their destinations.
+
+Lastly, Woodlands Checkpoint also demonstrated higher ridership. This could potentially be due to the people commuting across the causeway from Malaysia into the Singapore borders.
 
 ## Equal Intervals
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -831,11 +839,12 @@ plotlogWDM_e <- tm_basemap("CartoDB.Positron") +
 plotlogWDM_e
 ```
 
-The map using equal intervals provided slightly different insights. We noted that the bus stop nearer to the MRT stations had higher levels of ridership. In particular, more trips originated from Tiong Bahru Station, Buona Vista Station, Tanah Merah Station, Admiralty Station, Harbourfront, and Woodleigh Station. Bus interchanges also appeared to be popular origins, i.e. Bukit Panjang Interchange and Joo Koon Interchange.
+The map using equal intervals provided slightly different insights. We noted that the bus stop located near to MRT stations had higher levels of ridership. In particular, more trips originated from Tiong Bahru Station, Buona Vista Station, Tanah Merah Station, Admiralty Station, Harbourfront, and Woodleigh Station. Bus interchanges also appeared to be popular origins, i.e. Bukit Panjang Interchange and Joo Koon Interchange.
 
-In general, more homogenuity is noted using the equal interval -- the constrast between hexagon to hexagn is less varied. 
+In general, more homogeneity is noted using the equal interval -- the contrast between hexagon to hexagon is less obvious.
 
 ## Jenk's
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -851,14 +860,15 @@ plotlogWDM_j <- tm_basemap("CartoDB.Positron") +
   
 plotlogWDM_j
 ```
-Using Jenk's partitioning method, the results were largely similar to the other two types of interval classes. Higher ridership were spotted near MRT stations (Buona Vista Station, Buangkok Station, Ranggung Station, Farrer Road Station, Stevens Station, Bedok Reservoir Station) and residential estates (Sunshine Place near Tengah, BLK 109 in Bedok, BLK 477A in Sengkang, BEF BLK 629A in Woodlands, to name a few.
+
+Using Jenk's partitioning method, the results were largely similar to the other two types of interval classes. Higher bus ridership were spotted at bus stops within close proximity to MRT stations (Kranji Station, Buona Vista Station, Buangkok Station, Ranggung Station, Farrer Road Station, Stevens Station, Bedok Reservoir Station) and residential estates (Sunshine Place near Tengah, BLK 109 in Bedok, BLK 477A in Sengkang, Bef. BLK 629A in Woodlands, to name a few).
 :::
 
-### 4.2.2 Weekday Afternoon
+### 4.2.2 Weekday Afternoon Peak Period
 
-:::panel-tabset
-
+::: panel-tabset
 ## Quantile
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -875,11 +885,16 @@ plotlogWDA_q <- tm_basemap("CartoDB.Positron") +
 plotlogWDA_q
 ```
 
-A look at the weekday afternoon ridership using the quantile classification yielded the following insights. Other than MRTs and popular bus stops in residental estates identified using Weekday Morning peak period data, we also noted:
--   More trips originating from schools: Opposite Ngee Ann Poly, Temasek Poly, NIE BLK 2, School of the Arts
--   More trips originating from industrial estates/business parks: North Link Bldg, Aft Senoko Way, Mapletree Business City
+A look at the weekday afternoon ridership using the quantile classification yielded the following insights. 
+
+-   Ridership from Woodlands Checkpoint remained high.
+-   Bus stops in close proximity to MRT tations and popular bus stops in residential estatements remained high.
+-   More trips originating from institutional areas: Opposite Ngee Ann Poly, Temasek Poly, NIE BLK 2, School of the Arts
+-   More trips originating from industrial buildings/business parks: North Link Bldg, Aft Senoko Way, Mapletree Business City, Woodlands Auto Hub, Opp Airline Hse, etc.
 -   More trips originating from hospitals: Yishun Community Hospital, Changi General Hospital
--   Others: Seletar Camp
+-   Seletar Camp also looked to have high passenger levels
+-   The far West seemed to experience low ridership other than the bus stop opposite Tuas Link Station.
+-   Southern part of Singapore, consisting of more commercial areas, appeared to be more clustered as illustrated by the density of the darker red hexagons, compared to the weekday morning peak period.
 
 ## Equal Intervals
 
@@ -921,12 +936,16 @@ plotlogWDA_j <- tm_basemap("CartoDB.Positron") +
 plotlogWDA_j
 ```
 
-Jenk's classification deliver similar insights to the quantile classification.
+Jenk's classification delivered similar insights to the quantile classification, where the higher concentration of ridership can be observed in the Southern downtown areas.
+
+It also highlighted Opp Airline Hse in the far East as a bus stop with high ridership, something not as visible using the equal interval method. 
+
+Alternative methods of commute might be more popular in the West and North-West regions illustrated by the lighter shades of red hexagons.
 :::
 
-### 4.2.3 Weekend/Holiday Morning
+### 4.2.3 Weekend/Holiday Morning Peak Period
 
-:::panel-tabset
+::: panel-tabset
 ## Quantile
 
 ```{r}
@@ -944,7 +963,13 @@ plotlogWEM_q <- tm_basemap("CartoDB.Positron") +
   
 plotlogWEM_q
 ```
+Generally, the distribution of bus ridership looks varied across the island.  
 
+During the weekend/holiday peak period, the ridership for far West region remained relatively low. Interestingly, the bus trips recorded from Seletar area appeared to have dipped compared to the weekday peak periods. Buses in these industrial areas could be oriented towards work-related travel, thus less common on weekends. 
+
+Bus stops nearer to housing estates, shopping malls, and Woodlands Checkpoint demonstrated higher levels of weekend morning ridership. 
+
+The bus stops with the highest boarding passengers are Sunshine Place, Opp BLK 271, BLK 252, Aft. Hasanah Mosque, Buona Vista Station, Harbourfront/Vivocity, Admiralty Station, BLK 555, Bedok Reservoir Station, BLK 22, BLK 109. 
 
 ## Equal Intervals
 
@@ -963,9 +988,11 @@ plotlogWEM_e <- tm_basemap("CartoDB.Positron") +
   
 plotlogWEM_e
 ```
+
 Equal interval classification highlighted the following bus stops to have the highest ridership during weekend/holiday morning peak period: Harbourfront/Vivocity, Tiong Bahru Station, Orchard Station/Lucky Plaza, Admirality Station, Aft. Punggol Road.
 
 ## Jenk's
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -982,11 +1009,12 @@ plotlogWEM_j <- tm_basemap("CartoDB.Positron") +
 plotlogWEM_j
 ```
 
+The findings noted with Jenk's method are similar to the quantile classification.
 :::
 
 ### 4.2.4 Weekend/Holiday Evening
 
-:::panel-tabset
+::: panel-tabset
 ## Quantile
 
 ```{r}
@@ -1005,6 +1033,13 @@ plotlogWEE_q <- tm_basemap("CartoDB.Positron") +
 plotlogWEE_q
 ```
 
+On weekend/holiday evenings, there seemed to be increased ridership at the bus stops near Changi Airport compared to the other peak periods.
+
+Sunshine Plaza remains one of the most frequented bus stops, exhibiting high ridership across all four peak periods. While the exact reason for this is difficult to pinpoint, it's possible that the buses stopping here connect to a wide variety of regions, which could explain the high ridership.
+
+Woodlands Checkpoint also demonstrated high levels of ridership across the different peak periods.
+
+Visually, it looks like there are more bus stops with high ridership across Singapore during the weekend/holiday evening peak period. For example, there seem to be an increase in passenger volume at the Tanah Merah Ferry compared to the other peak periods. 
 
 ## Equal Intervals
 
@@ -1024,6 +1059,7 @@ plotlogWEE_e <- tm_basemap("CartoDB.Positron") +
 plotlogWEE_e
 ```
 
+The bus stops with higher traffic seem to be quite consistent across the different peak periods. This includes Woodlands Checkpoint, Kranji Station, Admiralty Station, Serangoon Station, Aft. Punggol Road, Bukit Panjang MRT, Yio Chu Kang Interchange.
 
 ## Jenk's
 
@@ -1043,10 +1079,13 @@ plotlogWEE_j <- tm_basemap("CartoDB.Positron") +
 plotlogWEE_j
 ```
 
+The findings noted with Jenk's method are similar to the quantile classification.
 
 :::
-
 
 # 5 Local Indicators of Spatial Association Analysis
 
 # 6 Emerging Hot Spot Analysis
+
+# 7 Limitations
+Should be analysed in conjunction with other modes of public transportation

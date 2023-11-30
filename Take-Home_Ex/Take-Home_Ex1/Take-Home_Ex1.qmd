@@ -89,7 +89,9 @@ The following data are used for this study:
 
 ## 3.2.1 Aspatial
 
-::: panel-tabset \## Import into R
+::: panel-tabset
+
+## Import into R
 
 We will be importing the *Passenger Volume by Origin Destination Bus Stops* dataset from August to October 2023, downloaded from LTA DataMall by using `read_csv()` or **readr** package.
 
@@ -1184,7 +1186,11 @@ The results show that the weights of the neighbours have been assigned to 1/8 (0
 
 Inverse distance weights takes into account the decay functions of distance.
 
-We can derive spatial weight matrix based on inverse distance method using the following functions: - [*st_contiguity()*](https://sfdep.josiahparry.com/reference/st_contiguity.html) of sfdep is used to identify the neighbours by using contiguity criteria. The output is a list of neighbours (i.e. nb). - [*st_inverse_distance()*](https://sfdep.josiahparry.com/reference/st_inverse_distance.html) is then used to calculate inverse distance weights of neighbours on the nb list.
+We can derive spatial weight matrix based on inverse distance method using the following functions:
+
+-   [*st_contiguity()*](https://sfdep.josiahparry.com/reference/st_contiguity.html) of sfdep is used to identify the neighbours by using contiguity criteria. The output is a list of neighbours (i.e. nb).
+
+-   [*st_inverse_distance()*](https://sfdep.josiahparry.com/reference/st_inverse_distance.html) is then used to calculate inverse distance weights of neighbours on the nb list.
 
 ```{r}
 wm_idw <- origin_gridwgeom %>%
@@ -1212,7 +1218,9 @@ plot(origin_gridwgeom$area_hexagon_grid, border = "lightgrey")
 #plot(wm_idw, centroid, pch = 19, cex = 0.1, add = TRUE, col = "red")
 ```
 
-### 5.2.2 Computing Global Spatial Autocorrelation Statistics
+## 5.2 Computing Global Spatial Autocorrelation Statistics
+
+### 5.2.1 Moran's I
 
 We will perform Moran's I statistical testing by using [*global_moran_perm()*](https://sfdep.josiahparry.com/reference/global_moran_perm) of *spdep*. The Global Moran's I Permutation Test is a statistical method used in spatial analysis to assess the significance of spatial autocorrelation in a dataset. Spatial autocorrelation refers to the degree to which a variable is correlated with itself across space, indicating patterns such as clustering or dispersion.
 
@@ -1238,16 +1246,17 @@ Note: nsim arugment of *global_moran_perm()* refers to the number of simulations
 set.seed(1234)
 ```
 
-::: panel:tabset
+::: panel-tabset
 ## Weekday Morning
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-global_moran_perm(wm_ad$WDM,
+gmp_WDM <- global_moran_perm(wm_ad$WDM,
                   wm_ad$nb,
                   wm_ad$wt,
                   nsim = 99)
+gmp_WDM
 ```
 
 ## Weekday Afternoon
@@ -1255,10 +1264,11 @@ global_moran_perm(wm_ad$WDM,
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-global_moran_perm(wm_ad$WDA,
+gmp_WDA <- global_moran_perm(wm_ad$WDA,
                   wm_ad$nb,
                   wm_ad$wt,
                   nsim = 99)
+gmp_WDA
 ```
 
 ## Weekend/Holiday Morning
@@ -1266,10 +1276,11 @@ global_moran_perm(wm_ad$WDA,
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-global_moran_perm(wm_ad$WEM,
+gmp_WEM <- global_moran_perm(wm_ad$WEM,
                   wm_ad$nb,
                   wm_ad$wt,
                   nsim = 99)
+gmp_WEM
 ```
 
 ## Weekend/Holiday Evening
@@ -1277,24 +1288,61 @@ global_moran_perm(wm_ad$WEM,
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-global_moran_perm(wm_ad$WEE,
+gmp_WEE <- global_moran_perm(wm_ad$WEE,
                   wm_ad$nb,
                   wm_ad$wt,
                   nsim = 99)
+gmp_WEE
 ```
 :::
 
-Across the 4 peak periods, the permutation test generated low p-values of \<0.05. This indicates that we can reject the null hypothesis and conclude that for each of the 4 peak periods, the overall bus ridership across Singapore is spatially clustered (since positive Moran's I value is obtained).
+Across the 4 peak periods, the permutation test generated low p-values of \<0.05. This indicates that we can reject the null hypothesis at the 95% level of confidence, and conclude that for each of the 4 peak periods, the overall bus ridership across Singapore is spatially clustered (since positive Moran's I value is obtained).
+
+### 5.2.2 Geary's C
 
 ### 5.2.3 Spatial Correlogram
 
 ## 5.3 Local Spatial Autocorrelation Statistics
 
-Local Indicator of Spatial Association (LISA) is a subset of localised geospatial statistics methods for analysing the location-related tendency (such as clusters or outliers) in the attributes of geographically referenced data (points or area). The LISA for each observation gives an indication of the extent of spatial autocorrelation of the data, i.e. how one object is similar or dissimilar to others surrounding it. It evaluates whether the observation (i.e. bus ridership across Singapore) is clustered, dispersed, or random.
+Global spatial autocorrelation provides a broad overview of spatial clustering within a dataset, offering a single value that indicates whether similar values are generally clustered or dispersed across the entire study area. In contrast, local spatial autocorrelation delves into specific locations, identifying where clusters of similar values (hot spots or cold spots) or spatial outliers exist. While global metrics give an overall trend, local metrics provide detailed, location-specific insights, highlighting exact areas of significant spatial clustering or anomaly.
+
+Thus, after we have established through statistical testing that spatial clustering of bus ridership occurs in Singapore, we now seek to detect clusters or outliers and discover if there are any hot or cold spots of high ridership using Local Spatial Autocorrelation Statistics.
 
 ### 5.2.1 Local Moran's I
 
-In this section, we will perform Moran's I statistics testing by using [*moran.test()*](https://r-spatial.github.io/spdep/reference/moran.test.html) of **spdep**. Local Moran's.
+In this section, we will perform Moran's I statistics testing by using [*local_moran()*](https://sfdep.josiahparry.com/reference/local_moran.html) of **sfdep**. The output of *local_moran()* is a sf data.frame, containing the columns below:
+
+-   ii: local moran statistic
+-   eii: expectation of local Moran's I statistic
+-   var_ii: variance of local Moran's I statistic
+-   z_ii: standard deviation of local Moran's I statistic
+-   p_ii: p-value of local Moran's I statistic using pnorm()
+-   p_ii_sim: For `localmoran_perm()`, `rank()` and `punif()` of observed statistic rank for \[0, 1\] p-values using `alternative=`
+-   p_folded_sim: the simulation folded \[0, 0.5\] range ranked p-value, based on [crand.py](https://github.com/pysal/esda/blob/4a63e0b5df1e754b17b5f1205b8cadcbecc5e061/esda/crand.py#L211-L213) of pysal
+-   skewness: For `localmoran_perm`, the output of e1071::skewness() for the permutation samples underlying the standard deviates
+-   kurtosis: For `localmoran_perm`, the output of e1071::kurtosis() for the permutation samples underlying the standard deviates.
+
+[*unnest()*](https://tidyr.tidyverse.org/reference/unnest.html) of **tidyr** package helps expand a list-column containing data frames into rows and columns.
+
+::: panel-tabset
+## Weekday Morning
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+lisa_WDM <- wm_ad %>% 
+  mutate(local_moran = local_moran(
+    origin_gridwgeom$WDM, nb, wt, nsim = 99),
+         .before = 1) %>%
+  unnest(local_moran)
+```
+
+## Weekday Afternoon
+
+## Weekend/Holiday Morning
+
+## Weekend/Holiday Evening
+:::
 
 # 6 Limitations
 

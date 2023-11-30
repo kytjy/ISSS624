@@ -64,7 +64,8 @@ The following packages will be used for this exercise:
 The code chunk below, using `p_load` function of the [**pacman**](https://cran.r-project.org/web/packages/pacman/pacman.pdf) package, ensures that **sfdep**, **sf**, **tmap** and **tidyverse** packages are installed and loaded in R.
 
 ```{r}
-pacman::p_load(sf, sfdep, tmap, tidyverse, patchwork, DT, mapview, leaflet, scales)
+pacman::p_load(sf, sfdep, tmap, tidyverse, knitr,
+               patchwork, DT, mapview, leaflet, scales)
 
 # -   Creates a package list containing the necessary R packages
 # -   Checks if the R packages in the package list have been installed
@@ -766,6 +767,12 @@ origin_gridwgeom <- inner_join(hexagon_w_busstops,
 
 
 ```
+
+::: callout-caution
+## Important
+
+In order to retain the geospatial properties, the left data frame must the sf data.frame (i.e. hexagon_w_busstop).
+:::
 :::
 
 # 4 Geovisualisation & Analysis
@@ -774,10 +781,7 @@ origin_gridwgeom <- inner_join(hexagon_w_busstops,
 
 Different classification schemes highlight areas with the highest and/or lowest values, while others create classes that result in a more uniform distribution of colors. When data is sharply skewed or has extreme outliers, it's important to consider whether the goal is to emphasize those areas or to achieve a more even distribution of colors and sizes.
 
-The main methods of data classification are:
--   Quantile: each class contains an equal number of features. It assigns the same number of data values to each class. There are no empty classes or classes with too few or too many values
--   Jenks/Natural breaks: seeks clumps of values that are clustered together in order to form categories that may reflect meaningful groupings of areas
--   Equal: divides the range of attribute values into equal-sized sub-ranges
+The main methods of data classification are: - Quantile: each class contains an equal number of features. It assigns the same number of data values to each class. There are no empty classes or classes with too few or too many values - Jenks/Natural breaks: seeks clumps of values that are clustered together in order to form categories that may reflect meaningful groupings of areas - Equal: divides the range of attribute values into equal-sized sub-ranges
 
 Since our variable is less skewed after log transformation, we can explore various classification methods for visualization. This approach may reveal interesting insights that were not immediately apparent before.
 
@@ -885,7 +889,7 @@ plotlogWDA_q <- tm_basemap("CartoDB.Positron") +
 plotlogWDA_q
 ```
 
-A look at the weekday afternoon ridership using the quantile classification yielded the following insights. 
+A look at the weekday afternoon ridership using the quantile classification yielded the following insights.
 
 -   Ridership from Woodlands Checkpoint remained high.
 -   Bus stops in close proximity to MRT tations and popular bus stops in residential estatements remained high.
@@ -938,7 +942,7 @@ plotlogWDA_j
 
 Jenk's classification delivered similar insights to the quantile classification, where the higher concentration of ridership can be observed in the Southern downtown areas.
 
-It also highlighted Opp Airline Hse in the far East as a bus stop with high ridership, something not as visible using the equal interval method. 
+It also highlighted Opp Airline Hse in the far East as a bus stop with high ridership, something not as visible using the equal interval method.
 
 Alternative methods of commute might be more popular in the West and North-West regions illustrated by the lighter shades of red hexagons.
 :::
@@ -963,13 +967,14 @@ plotlogWEM_q <- tm_basemap("CartoDB.Positron") +
   
 plotlogWEM_q
 ```
-Generally, the distribution of bus ridership looks varied across the island.  
 
-During the weekend/holiday peak period, the ridership for far West region remained relatively low. Interestingly, the bus trips recorded from Seletar area appeared to have dipped compared to the weekday peak periods. Buses in these industrial areas could be oriented towards work-related travel, thus less common on weekends. 
+Generally, the distribution of bus ridership looks varied across the island.
 
-Bus stops nearer to housing estates, shopping malls, and Woodlands Checkpoint demonstrated higher levels of weekend morning ridership. 
+During the weekend/holiday peak period, the ridership for far West region remained relatively low. Interestingly, the bus trips recorded from Seletar area appeared to have dipped compared to the weekday peak periods. Buses in these industrial areas could be oriented towards work-related travel, thus less common on weekends.
 
-The bus stops with the highest boarding passengers are Sunshine Place, Opp BLK 271, BLK 252, Aft. Hasanah Mosque, Buona Vista Station, Harbourfront/Vivocity, Admiralty Station, BLK 555, Bedok Reservoir Station, BLK 22, BLK 109. 
+Bus stops nearer to housing estates, shopping malls, and Woodlands Checkpoint demonstrated higher levels of weekend morning ridership.
+
+The bus stops with the highest boarding passengers are Sunshine Place, Opp BLK 271, BLK 252, Aft. Hasanah Mosque, Buona Vista Station, Harbourfront/Vivocity, Admiralty Station, BLK 555, Bedok Reservoir Station, BLK 22, BLK 109.
 
 ## Equal Intervals
 
@@ -1039,7 +1044,7 @@ Sunshine Plaza remains one of the most frequented bus stops, exhibiting high rid
 
 Woodlands Checkpoint also demonstrated high levels of ridership across the different peak periods.
 
-Visually, it looks like there are more bus stops with high ridership across Singapore during the weekend/holiday evening peak period. For example, there seem to be an increase in passenger volume at the Tanah Merah Ferry compared to the other peak periods. 
+Visually, it looks like there are more bus stops with high ridership across Singapore during the weekend/holiday evening peak period. For example, there seem to be an increase in passenger volume at the Tanah Merah Ferry compared to the other peak periods.
 
 ## Equal Intervals
 
@@ -1080,12 +1085,217 @@ plotlogWEE_j
 ```
 
 The findings noted with Jenk's method are similar to the quantile classification.
-
 :::
 
-# 5 Local Indicators of Spatial Association Analysis
+# 5 Spatial Association Analysis
 
-# 6 Emerging Hot Spot Analysis
+According to Tobler's First Law of Geography, "everything is related to everything else, but near things are more related than distant things."
 
-# 7 Limitations
+This sub-section will cover the computation of local spatial autocorrelation statistics and spatial complete randomness test for local spatial autocorrelation. The goal of these analyses is to understand whether there are clusters or outliers of bus stop with high or low ridership across Singapore.
+
+## 5.1 Global Spatial Autocorrelation
+
+### 5.1.1 Spatial Weights Matrix
+
+To compute the local spatial autocorrelation statistics, we first need to construct a spatial weights of Singapore. Spatial relationships are multi-directional and multi-lateral. We can use spatial weights to define who the neighbours of the spatial units.
+
+There are two common methods of spatial weights: **contiguity-based** and **distance-based**.
+
+**Contiguity-based**: Neighbours share a common boundary, which can be further distinguished between a *Rook* and a *Queen* criterion of contiguity. *Rook* contiguity defines neighbours by the existence of a common edge between two spatial units. In *Queen* contiguity defines neighbours as spatial units sharing a common edge *or* a common vertex.
+
+**Distance-based**: Assign higher weights to pairs of locations that are closer to each other and lower weights to pairs that are further. This can be further distinguished by fixed weighting, adaptive weighting and inverse-distance weighting schemes. Fixed weighting scheme considers two regions are neighbours if they are within a specified distance from one another. For adaptive weighting scheme, each region will have the same number of neighbours. The number of neighbour is specified beforehand, where k = number of neighbours. Inverse distance method considers that the closer two features are in space, the more likely they are to interact/influence each other.
+
+For this study, we will be using distance-based weight matrix as there are areas where bus stops are sparse (such as Lim Chu Kang and Mandai) and isolated (for example, Tanah Merah Ferry, Changi Naval Base, Resort World Sentosa, Marina Bay Cruise Centre). Consequently, contiguity-based matrix may yield many regions with no neighbours, making it not suitable for our analysis.
+
+::: panel-tabset
+## Fixed Distance Weight Matrix
+
+### Step 1: Determine Cut-Off Distance Limit
+
+First step is to determine the upper distance limit to ensure that each hexagon has at least 1 neighbour.
+
+The following functions can be used:
+
+-   [*st_knn()*](https://sfdep.josiahparry.com/reference/st_knn) of **sfdep** is used to identify neighbors based on k (e.g. k = 8 indicates the nearest eight neighbours). The output is a neighbours list of class nb. If polygon geometry is provided, the centroids of the polygon will be used for calculation.
+-   [*st_nb_dists()*](https://sfdep.josiahparry.com/reference/st_nb_dists.html) of **sfdep** is used to calculate the nearest neighbour distance. The output is a list of distances for each observation's neighbors list.
+-   [*unlist()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unlist) of Base R is then used to return the output as a vector so that the summary statistics of the nearest neighbour distances can be derived.
+
+```{r}
+geo <- sf::st_geometry(origin_gridwgeom)
+nb <- st_knn(geo, 
+             longlat = TRUE)
+dists <- unlist(st_nb_dists(geo, nb))
+```
+
+### Step 2: Derive Summary Stats
+
+We can derive summary statistics of the nearest neighbour distances vector (i.e. dists) by using the code chunk below.
+
+```{r}
+summary(dists)
+```
+
+The maximum nearest neighbour distance is 1000m, thus we will use threshold value of 1001m to ensure each spatial unit has a minimum of 1 neighbour.
+
+### Step 3: Compute fixed distance weight
+
+Now we will go ahead to compute the fixed distance weights by using following functions:
+
+[*st_dists_band()*](https://sfdep.josiahparry.com/reference/st_dist_band.html) of **sfdep** is used to identify neighbors based on a distance band (i.e. 1000m). The output is a list of neighbours (i.e. nb). [*st_weights()*](https://sfdep.josiahparry.com/reference/st_weights.html) is then used to calculate polygon spatial weights of the nb list. Note that the default style argument is set to "W" for row standardized weights, and the default allow_zero is set to TRUE, assigns zero as lagged value to zone without neighbors.
+
+```{r}
+wm_fd <- origin_gridwgeom %>%
+  mutate(nb = st_dist_band(geo,
+                           upper = 1001),
+               wt = st_weights(nb),
+               .before = 1)
+```
+
+### Step 4: Observations
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#kable(head(wm_fd,5))
+summary(wm_fd$nb)
+```
+
+From the result above, we can confirm that all hexagons have at least one neighbour and there are 5 hexagons with 102 neighbours. We can also identify an average of 53 neighbours per hexagon using the distance-based weight matrix.
+
+## Adaptive Distance-Based Weight Matrix
+
+A characteristic of fixed distance weights matrix is that more densely settled areas (town, residential neighbourhoods) tend to have more neigbours while less densely settle areas (military camps, industrial estates) tend to have less neighbours. To overcome the issue of fixed distance weight matrix where there is uneven distribution of neighbours, we can directly control the number of neighbours using k-nearest neighbours by setting the value of k in the code chunk below.
+
+As a rule-of-thumb, we will set k = 8 i.e., all hexagons will have 8 neighbours.
+
+```{r}
+wm_ad <- origin_gridwgeom %>% 
+  mutate(nb = st_knn(geo,
+                     k=8),
+         wt = st_weights(nb),
+               .before = 1)
+
+head(wm_ad, n=3)
+```
+
+The results show that the weights of the neighbours have been assigned to 1/8 (0.125) of the total weight, representing each of the 8 neighbours.
+
+## Inverse Distance Weights (IDW)
+
+Inverse distance weights takes into account the decay functions of distance.
+
+We can derive spatial weight matrix based on inverse distance method using the following functions: - [*st_contiguity()*](https://sfdep.josiahparry.com/reference/st_contiguity.html) of sfdep is used to identify the neighbours by using contiguity criteria. The output is a list of neighbours (i.e. nb). - [*st_inverse_distance()*](https://sfdep.josiahparry.com/reference/st_inverse_distance.html) is then used to calculate inverse distance weights of neighbours on the nb list.
+
+```{r}
+wm_idw <- origin_gridwgeom %>%
+  mutate(nb = st_contiguity(geo),
+         wts = st_inverse_distance(nb, geo,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+
+summary(wm_idw$nb)
+```
+
+Using the inverse distance method resulted in 6 regions with no neighbours, this could be due to the spatial isolation of certain hexagons.
+:::
+
+In summary:
+
+-   The number of neighbours using fixed distance method vary widely from 1 to 102. Consequently, the uneven distribution could affect the spatial autocorrelation analysis.
+-   Inverse distance method led to regions with no neighbours and is computationally intensive as each neighbour
+-   Since each hexagon is equally sized, the adaptive distance-based spatial weight matrix would be best suited for our analysis since each centroid can represent each region well.
+
+```{r}
+centroid <- st_centroid(origin_gridwgeom)
+plot(origin_gridwgeom$area_hexagon_grid, border = "lightgrey")
+#plot(wm_idw, centroid, pch = 19, cex = 0.1, add = TRUE, col = "red")
+```
+
+### 5.2.2 Computing Global Spatial Autocorrelation Statistics
+
+We will perform Moran's I statistical testing by using [*global_moran_perm()*](https://sfdep.josiahparry.com/reference/global_moran_perm) of *spdep*. The Global Moran's I Permutation Test is a statistical method used in spatial analysis to assess the significance of spatial autocorrelation in a dataset. Spatial autocorrelation refers to the degree to which a variable is correlated with itself across space, indicating patterns such as clustering or dispersion.
+
+::: {.callout-note collapse="true"}
+## Interpretation of Moran's I
+
+The Moran I statistic ranges from -1 to 1. If the Moran I is:
+
+-   positive (I\>0): Clustered, observations tend to be similar
+-   negative (I\<0): Disperse, observations tend to be dissimilar
+-   approximately zero: observations arranged randomly over space
+:::
+
+The code chunk below performs Moran's I statistical testing, using the null and alternative hypotheses as follows:
+
+H0: The observed spatial patterns of proportion of bus ridership in Singapore are not clustered (i.e. either random or dispersed). H1: The observed spatial patterns of proportion of bus ridership in Singapore are clustered.
+
+A total of 100 simulations will be performed with a seed number 1234. *set.seed()* function allows us to create reproducible results.
+
+Note: nsim arugment of *global_moran_perm()* refers to the number of simulations is nsim + 1, i.e., for nsim = 99, 100 simulations will be performed.
+
+```{r}
+set.seed(1234)
+```
+
+::: panel:tabset
+## Weekday Morning
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+global_moran_perm(wm_ad$WDM,
+                  wm_ad$nb,
+                  wm_ad$wt,
+                  nsim = 99)
+```
+
+## Weekday Afternoon
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+global_moran_perm(wm_ad$WDA,
+                  wm_ad$nb,
+                  wm_ad$wt,
+                  nsim = 99)
+```
+
+## Weekend/Holiday Morning
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+global_moran_perm(wm_ad$WEM,
+                  wm_ad$nb,
+                  wm_ad$wt,
+                  nsim = 99)
+```
+
+## Weekend/Holiday Evening
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+global_moran_perm(wm_ad$WEE,
+                  wm_ad$nb,
+                  wm_ad$wt,
+                  nsim = 99)
+```
+:::
+
+Across the 4 peak periods, the permutation test generated low p-values of \<0.05. This indicates that we can reject the null hypothesis and conclude that for each of the 4 peak periods, the overall bus ridership across Singapore is spatially clustered (since positive Moran's I value is obtained).
+
+### 5.2.3 Spatial Correlogram
+
+## 5.3 Local Spatial Autocorrelation Statistics
+
+Local Indicator of Spatial Association (LISA) is a subset of localised geospatial statistics methods for analysing the location-related tendency (such as clusters or outliers) in the attributes of geographically referenced data (points or area). The LISA for each observation gives an indication of the extent of spatial autocorrelation of the data, i.e. how one object is similar or dissimilar to others surrounding it. It evaluates whether the observation (i.e. bus ridership across Singapore) is clustered, dispersed, or random.
+
+### 5.2.1 Local Moran's I
+
+In this section, we will perform Moran's I statistics testing by using [*moran.test()*](https://r-spatial.github.io/spdep/reference/moran.test.html) of **spdep**. Local Moran's.
+
+# 6 Limitations
+
 Should be analysed in conjunction with other modes of public transportation

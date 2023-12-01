@@ -64,7 +64,7 @@ The following packages will be used for this exercise:
 The code chunk below, using `p_load` function of the [**pacman**](https://cran.r-project.org/web/packages/pacman/pacman.pdf) package, ensures that **sfdep**, **sf**, **tmap** and **tidyverse** packages are installed and loaded in R.
 
 ```{r}
-pacman::p_load(sf, sfdep, tmap, tidyverse, knitr,
+pacman::p_load(sf, sfdep, tmap, tidyverse, knitr, sp,
                patchwork, DT, leaflet, scales)
 
 # -   Creates a package list containing the necessary R packages
@@ -80,14 +80,14 @@ pacman::p_load(sf, sfdep, tmap, tidyverse, knitr,
 The following data are used for this study:
 
 -   Aspatial:
-    -   *Passenger Volume by Origin Destination Bus Stops* for August, September and October 2023, downloaded from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html) using [API](https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf).
+    -   *Passenger Volume by Origin Destination Bus Stops* for August 2023, downloaded from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html) using [API](https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf).
 -   Geospatial
     -   *Bus Stop Location* from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html). It provides information about all the bus stops currently being serviced by buses, including the bus stop code (identifier) and location coordinates.
-    -   *hexagon*, a [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 250m is provided to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA.
+    -   *hexagon*, a [hexagon](https://desktop.arcgis.com/en/arcmap/latest/tools/spatial-statistics-toolbox/h-whyhexagons.htm) layer of 250m to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA.
 
 ## 3.2 Import & Preparation
 
-## 3.2.1 Aspatial
+### 3.2.1 Aspatial
 
 ::: panel-tabset
 ## Import into R
@@ -96,9 +96,6 @@ We will be importing the *Passenger Volume by Origin Destination Bus Stops* data
 
 ```{r}
 odbus08 <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
-#odbus09 <- read_csv("data/aspatial/origin_destination_bus_202309.csv")
-#odbus10 <- read_csv("data/aspatial/origin_destination_bus_202310.csv")
-
 ```
 
 ## Data Exploration
@@ -125,7 +122,7 @@ Insights:
 
 ### (b) Unique Bus Stops
 
-*n_distinct()* of the **dplyr** package allows us to count the unique bus stops in the data set.
+*n_distinct()* of the **dplyr** package allows us to count the unique originating bus stops in the data set.
 
 ```{r}
 n_distinct(odbus08$ORIGIN_PT_CODE)
@@ -207,7 +204,7 @@ freq<- ggplot(data=peakperiods,
       x = "Peak Period",
       y = "Frequency")
 
-freq + scale_y_continuous(labels=label_comma())
+freq + scale_y_continuous(labels=label_comma()) + scale_x_discrete(labels=c("WDA"="Weekday Afternoon", "WDM"= "Weekday Morning", "WEE"= "Weekend Evening", "WEM"= "Weekend Morning"))
 ```
 
 We can see that passenger volume on weekdays are much higher than over the weekends/holidays.
@@ -226,363 +223,8 @@ peakperiods_wide["WEM"][is.na(peakperiods_wide["WEM"])] <- 0
 
 glimpse(peakperiods_wide)
 ```
-
-Notice that there are 5067 unique origin bus stops.
-
-### (d) Variable Transformation
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-
-# Extract column
-distWDM <- peakperiods_wide$WDM
-# Calculate mean 
-distWDM_mean <- mean(distWDM)
-
-plot_distWDM <- ggplot(
-    data = data.frame(distWDM),
-    aes(x = distWDM)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "black",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distWDM_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 80000, 
-    y = 2000,
-    label = paste("Mean =", round(distWDM_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekday Morning Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  ) +
-  scale_x_continuous(labels = label_number(), n.breaks=8)
-
-# Extract column
-distWDA <- peakperiods_wide$WDA
-# Calculate mean 
-distWDA_mean <- mean(distWDA)
-
-plot_distWDA <- ggplot(
-    data = data.frame(distWDA),
-    aes(x = distWDA)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "black",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distWDA_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 110000, 
-    y = 2000,
-    label = paste("Mean =", round(distWDA_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekday Afternoon Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  ) +
-  scale_x_continuous(labels = label_number(), n.breaks=8)
-
-# Extract column
-distWEM <- peakperiods_wide$WEM
-# Calculate mean 
-distWEM_mean <- mean(distWEM)
-
-plot_distWEM <- ggplot(
-    data = data.frame(distWEM),
-    aes(x = distWEM)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "black",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distWEM_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 23000, 
-    y = 2000,
-    label = paste("Mean =", round(distWEM_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekdend/Holiday Morning Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  ) +
-  scale_x_continuous(labels = label_number(), n.breaks=8)
-
-# Extract column
-distWEE <- peakperiods_wide$WEE
-# Calculate mean 
-distWEE_mean <- mean(distWEE)
-
-plot_distWEE <- ggplot(
-    data = data.frame(distWEE),
-    aes(x = distWEE)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "black",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distWEE_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 29000, 
-    y = 2000, 
-    label = paste("Mean =", round(distWEE_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekend/Holiday Evening Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  ) +
-  scale_x_continuous(labels = label_number(), n.breaks=8)
-
-(plot_distWDM | plot_distWDA)/
-(plot_distWEM | plot_distWEE)
-```
-
-The distribution of passenger trips for the 4 peak periods appear to be highly skewed to the right. Rescaling our data using log transformation can greatly reduce the skewness.
-
-```{r}
-peakperiods_wider <- peakperiods_wide %>% 
-  mutate(logWDM = ifelse(WDM == 0, 0, log(WDM)),
-         logWDA = ifelse(WDA == 0, 0, log(WDA)),
-         logWEM = ifelse(WEM == 0, 0, log(WEM)),
-         logWEE = ifelse(WEE == 0, 0, log(WEE)))
-
-```
-
-Let's visualise the distribution of the 4 peak periods again.
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-# Extract column
-distlogWDM <- peakperiods_wider$logWDM
-# Calculate mean 
-distlogWDM_mean <- mean(distlogWDM)
-
-plot_distlogWDM <- ggplot(
-    data = data.frame(distlogWDM),
-    aes(x = distlogWDM)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "#34414E",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distlogWDM_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 10, 
-    y = 1000,
-    label = paste("Mean =", round(distlogWDM_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekday Morning Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  ) 
-
-# Extract column
-distlogWDA <- peakperiods_wider$logWDA
-# Calculate mean 
-distlogWDA_mean <- mean(distlogWDA)
-
-plot_distlogWDA <- ggplot(
-    data = data.frame(distlogWDA),
-    aes(x = distlogWDA)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "#34414E",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distlogWDA_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 10, 
-    y = 1000,
-    label = paste("Mean =", round(distlogWDA_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekday Afternoon Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  )
-
-# Extract column
-distlogWEM <- peakperiods_wider$logWEM
-# Calculate mean 
-distlogWEM_mean <- mean(distlogWEM)
-
-plot_distlogWEM <- ggplot(
-    data = data.frame(distlogWEM),
-    aes(x = distlogWEM)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "#34414E",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distlogWEM_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 10, 
-    y = 1000,
-    label = paste("Mean =", round(distlogWEM_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekdend/Holiday Morning Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  ) 
-
-# Extract column
-distlogWEE <- peakperiods_wider$logWEE
-# Calculate mean 
-distlogWEE_mean <- mean(distlogWEE)
-
-plot_distlogWEE <- ggplot(
-    data = data.frame(distlogWEE),
-    aes(x = distlogWEE)
-  ) +
-  geom_histogram(
-    bins = 20, 
-    color = "#FFFCF9", 
-    fill = "#34414E",
-    alpha = .3
-  ) +
-  # Add line for mean
-  geom_vline(
-    xintercept = distlogWEE_mean, 
-    color = "#595DE5", 
-    linetype = "dashed", 
-    linewidth = 1
-  ) +
-  # Add line annotations
-  annotate(
-    "text", 
-    x = 10, 
-    y = 1000, 
-    label = paste("Mean =", round(distlogWEE_mean, 3)),
-    color = "#595DE5",
-    size = 3
-  ) +
-  labs(
-    title = "Weekend/Holiday Evening Peak",
-    x = "Bus Trips",
-    y = "Frequency"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust=1)
-  ) 
-
-(plot_distlogWDM | plot_distlogWDA)/
-(plot_distlogWEM | plot_distlogWEE)
-```
 :::
+
 
 ### 3.2.2 Geospatial
 
@@ -668,6 +310,7 @@ hexagon_grid_sf$busstops = lengths(st_intersects(hexagon_grid_sf, busstop))
 
 # Remove if no bus stop in side that grid, ie only keep hexagons with bus stops
 hexagon_w_busstops = filter(hexagon_grid_sf, busstops > 0)
+
 ```
 
 ## Step 4: Check & Visualise
@@ -685,8 +328,8 @@ Lastly, using [*tm_shape*](https://www.rdocumentation.org/packages/tmap/versions
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode ("view")
-hex <- tm_shape(hexagon_w_busstops)+
+tmap_mode ("plot")
+tm_shape(hexagon_w_busstops)+
   tm_fill(
     col = "busstops",
     palette = "Blues",
@@ -700,7 +343,6 @@ hex <- tm_shape(hexagon_w_busstops)+
     )
   )+
   tm_borders(col = "grey40", lwd = 0.7)
-hex
 ```
 :::
 
@@ -712,7 +354,7 @@ Code chunk below populates the grid ID (i.e. grid_id) of hexagon_w_busstops sf d
 
 ```{r}
 bs_wgrids <- st_intersection(busstop, hexagon_w_busstops) %>% 
-  select(BUS_STOP_N,BUS_ROOF_N,LOC_DESC, grid_id, busstops) %>% 
+  select(BUS_STOP_N,BUS_ROOF_N,LOC_DESC, grid_id) %>% 
   st_drop_geometry
 
 ```
@@ -734,7 +376,7 @@ duplicate2 <- bs_wgrids %>%
 duplicate2
 ```
 
-Results displayed 4 genuine duplicated records. We remove these to prevent double-counting.
+Results displayed 4 seemingly genuine duplicated records, with same bus stop number, roof, and location description. We remove these to prevent double-counting.
 
 The code chunk below helps retain unique records.
 
@@ -742,26 +384,396 @@ The code chunk below helps retain unique records.
 bs_wgrids <- unique(bs_wgrids)
 ```
 
-### (c) Populate PeakPeriods with Grid Details
+### (b) Populate PeakPeriods with Grid Details
 
-We can now append the grid ID from bs_wgrids data frame onto peakperiods_wide data frame. Recall we previously identified 5 bus stops outside Singapore, *filter()* allows us to exclude the 5 outside Singapore.
+We can now append the grid ID from bs_wgrids data frame onto peakperiods_wide data frame using *left_join*. Recall we previously identified 5 bus stops outside Singapore, *filter()* allows us to exclude the 5 outside Singapore. `LOC_DESC` = *first(*`LOC_DESC`*)* geta the first location description for each grid_id group, this allows us to have a rough reference of the name of the bus stop when visualising later.
 
 ```{r}
-origin_grid <- left_join(peakperiods_wider, bs_wgrids,
+origin_grid <- left_join(peakperiods_wide, bs_wgrids,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>% 
   rename(ORIGIN_BS = ORIGIN_PT_CODE) %>% 
+  filter(!ORIGIN_BS %in% c(46239, 46609, 47701, 46211, 46219)) %>%  # retains SG bus stops 
   group_by(grid_id) %>% 
-  # retains SG bus stops
-  filter(!ORIGIN_BS %in% c(46239, 46609, 47701, 46211, 46219))
+  summarise(
+    LOC_DESC = first(LOC_DESC),
+    WDA = sum(WDA),
+    WDM = sum(WDM),
+    WEM = sum(WEM),
+    WEE = sum(WEE)
+  ) %>% 
+  filter(!is.na(grid_id))
 
 glimpse(origin_grid)
 ```
 
-### (d) Retrieve Geometry
+## Variable Transformation
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Weekday Morning
+# Extract column
+distWDM <- origin_grid$WDM
+# Calculate mean 
+distWDM_mean <- mean(distWDM)
+
+plot_distWDM <- ggplot(
+    data = data.frame(distWDM),
+    aes(x = distWDM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWDM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 55000, 
+    y = 1200,
+    label = paste("Mean =", round(distWDM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+# Weekday Afternoon
+# Extract column
+distWDA <- origin_grid$WDA
+# Calculate mean 
+distWDA_mean <- mean(distWDA)
+
+plot_distWDA <- ggplot(
+    data = data.frame(distWDA),
+    aes(x = distWDA)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWDA_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 140000, 
+    y = 1200,
+    label = paste("Mean =", round(distWDA_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Afternoon Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+# Weekend Morning
+# Extract column
+distWEM <- origin_grid$WEM
+# Calculate mean 
+distWEM_mean <- mean(distWEM)
+
+plot_distWEM <- ggplot(
+    data = data.frame(distWEM),
+    aes(x = distWEM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWEM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 33000, 
+    y = 1200,
+    label = paste("Mean =", round(distWEM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekdend/Holiday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+# Weekend Evening
+# Extract column
+distWEE <- origin_grid$WEE
+# Calculate mean 
+distWEE_mean <- mean(distWEE)
+
+plot_distWEE <- ggplot(
+    data = data.frame(distWEE),
+    aes(x = distWEE)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "black",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distWEE_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 39000, 
+    y = 1200, 
+    label = paste("Mean =", round(distWEE_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekend/Holiday Evening Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) +
+  scale_x_continuous(labels = label_number(), n.breaks=8)
+
+(plot_distWDM | plot_distWDA)/
+(plot_distWEM | plot_distWEE)
+```
+
+The distribution of passenger trips for the 4 peak periods at a hexagon level appear to be highly skewed to the right. Rescaling our data using log transformation can greatly reduce the skewness.
+
+```{r}
+origin_grid_wider <- origin_grid %>% 
+  mutate(logWDM = ifelse(WDM == 0, 0, log(WDM)),
+         logWDA = ifelse(WDA == 0, 0, log(WDA)),
+         logWEM = ifelse(WEM == 0, 0, log(WEM)),
+         logWEE = ifelse(WEE == 0, 0, log(WEE)))
+
+```
+
+Let's visualise the distribution of the 4 peak periods again.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Weekday Morning
+# Extract column
+distlogWDM <- origin_grid_wider$logWDM
+# Calculate mean 
+distlogWDM_mean <- mean(distlogWDM)
+
+plot_distlogWDM <- ggplot(
+    data = data.frame(distlogWDM),
+    aes(x = distlogWDM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWDM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 12, 
+    y = 300,
+    label = paste("Mean =", round(distlogWDM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) 
+
+# Weekday Afternoon
+# Extract column
+distlogWDA <- origin_grid_wider$logWDA
+# Calculate mean 
+distlogWDA_mean <- mean(distlogWDA)
+
+plot_distlogWDA <- ggplot(
+    data = data.frame(distlogWDA),
+    aes(x = distlogWDA)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWDA_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 12, 
+    y = 300,
+    label = paste("Mean =", round(distlogWDA_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekday Afternoon Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  )
+
+# Weekend Morning
+# Extract column
+distlogWEM <- origin_grid_wider$logWEM
+# Calculate mean 
+distlogWEM_mean <- mean(distlogWEM)
+
+plot_distlogWEM <- ggplot(
+    data = data.frame(distlogWEM),
+    aes(x = distlogWEM)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWEM_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 10, 
+    y = 300,
+    label = paste("Mean =", round(distlogWEM_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekdend/Holiday Morning Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) 
+
+# Weekend Evening
+# Extract column
+distlogWEE <- origin_grid_wider$logWEE
+# Calculate mean 
+distlogWEE_mean <- mean(distlogWEE)
+
+plot_distlogWEE <- ggplot(
+    data = data.frame(distlogWEE),
+    aes(x = distlogWEE)
+  ) +
+  geom_histogram(
+    bins = 20, 
+    color = "#FFFCF9", 
+    fill = "#34414E",
+    alpha = .3
+  ) +
+  # Add line for mean
+  geom_vline(
+    xintercept = distlogWEE_mean, 
+    color = "#595DE5", 
+    linetype = "dashed", 
+    linewidth = 1
+  ) +
+  # Add line annotations
+  annotate(
+    "text", 
+    x = 10, 
+    y = 300, 
+    label = paste("Mean =", round(distlogWEE_mean, 3)),
+    color = "#595DE5",
+    size = 3
+  ) +
+  labs(
+    title = "Weekend/Holiday Evening Peak",
+    x = "Bus Trips",
+    y = "Frequency"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust=1)
+  ) 
+
+(plot_distlogWDM | plot_distlogWDA)/
+(plot_distlogWEM | plot_distlogWEE)
+```
+
+## Retrieve Geometry
 
 ```{r}
 origin_gridwgeom <- inner_join(hexagon_w_busstops,
-                               origin_grid, 
+                               origin_grid_wider, 
                            by = "grid_id")
 ```
 
@@ -788,114 +800,141 @@ The main methods of data classification are:
 
 Since our variable is less skewed after log transformation, we can explore various classification methods for visualization. This approach may reveal interesting insights that were not immediately apparent before.
 
-## 4.2 Plots
-
-### 4.2.1 Weekday Morning Peak Period
+## 4.2 Visualising Bus Ridership
 
 ::: panel-tabset
-## Quantile
+## Weekday Morning Peak Period
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
 
-tmap_mode ("view")
+tmap_mode ("plot")
 
-plotlogWDM_q <- tm_basemap("CartoDB.Positron") +
+plotlogWDM_q <- 
   tm_shape(origin_gridwgeom) +
   tm_fill("logWDM", 
           style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips",
-          alpha=0.6,
-          id="LOC_DESC")
+          alpha=0.6) +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Quantile Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
 
-plotlogWDM_q
-```
-
-The grids above are partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, particularly in the West, while higher levels of ridership in the North region are indicated by the darker shades of blue.
-
-Bus stops nearer to the residential estates appeared to be popular during the weekday morning peak period:
-
--   West: BLK 821, BLK 252, Sunshine Place
--   North: BLK 314
--   North-East: BLK 477A, BLK 1, BLK 555, BLK 324
--   East: BLK 109, BLK 124, BLK 756
-
-This is likely due to a large number of people commuting from home to their workplaces/schools on weekday mornings.
-
-Higher passenger traffic were noted at the bus stops nearer to MRT stations such as Harbourfront Station, Farrer Road Station, Yio Chu Kang Station, and Admirality Station. A possible contributing factor could be the people who are transiting from taking the MRTs to buses to get to their destinations.
-
-Lastly, Woodlands Checkpoint also demonstrated higher ridership. Woodlands Checkpoint is one of Singapore's two land border checkpoints, facilitating the movement of ground traffic between Singapore and Malaysia. This could potentially be due to the people commuting across the causeway from Malaysia into the Singapore borders.
-
-## Equal Intervals
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWDM_e <- tm_basemap("CartoDB.Positron") +
+plotlogWDM_e <-
   tm_shape(origin_gridwgeom) +
   tm_fill("logWDM", 
           style = "equal", 
           palette = "Blues",
           title = "Total passenger trips",
           alpha=0.6,
-          id="LOC_DESC")
-  
-plotlogWDM_e
-```
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Equal Interval Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
 
-The map using equal intervals provided slightly different insights. We noted that the bus stop located near to MRT stations had higher levels of ridership. In particular, more trips originated from Tiong Bahru Station, Buona Vista Station, Tanah Merah Station, Admiralty Station, Harbourfront, and Woodleigh Station. Bus interchanges also appeared to be popular origins, i.e. Bukit Panjang Interchange and Joo Koon Interchange.
-
-In general, more homogeneity is noted using the equal interval -- the contrast between hexagon to hexagon is less obvious.
-
-## Jenk's
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWDM_j <- tm_basemap("CartoDB.Positron") +
+plotlogWDM_j <- 
   tm_shape(origin_gridwgeom) +
   tm_fill("logWDM", 
           style = "jenks", 
           palette = "Blues",
           title = "Total passenger trips",
           alpha=0.6,
-          id="LOC_DESC")
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Jenks Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
   
-plotlogWDM_j
+tmap_arrange(plotlogWDM_q, plotlogWDM_e, plotlogWDM_j, asp=1, ncol=3)
 ```
 
+The leftmost map above is partitioned using the quantile intervals. We can observe that the bus trips are unevenly distributed across Singapore. There are lighter shares of blue (indicating lower levels of ridership) originating from the edges of the country, particularly in the West, while higher levels of ridership in the North region are indicated by the darker shades of blue.
+
+Bus stops nearer to the residential estates appeared to be popular during the weekday morning peak period. This is likely due to a large number of people commuting from home to their workplaces/schools on weekday mornings.
+
+Higher passenger traffic were noted at the bus stops nearer to MRT stations such as Harbourfront Station, Farrer Road Station, Yio Chu Kang Station, and Admirality Station. A possible contributing factor could be the people who are transiting from taking the MRTs to buses to get to their destinations.
+
+Lastly, Woodlands Checkpoint also demonstrated higher ridership. Woodlands Checkpoint is one of Singapore's two land border checkpoints, facilitating the movement of ground traffic between Singapore and Malaysia. This could potentially be due to the people commuting across the causeway between Malaysia and Singapore.
+
+The map using equal intervals provided similar insights. We noted that the bus stop located near to MRT stations had higher levels of ridership. In particular, more trips originated from Tiong Bahru Station, Buona Vista Station, Tanah Merah Station, Admiralty Station, Harbourfront, and Woodleigh Station. Bus interchanges also appeared to be popular origins, i.e. Bukit Panjang Interchange and Joo Koon Interchange. In general, more homogeneity is noted using the equal interval -- the contrast between hexagon to hexagon is less obvious.
+
 Using Jenk's partitioning method, the results were largely similar to the other two types of interval classes. Higher bus ridership were spotted at bus stops within close proximity to MRT stations (Kranji Station, Buona Vista Station, Buangkok Station, Ranggung Station, Farrer Road Station, Stevens Station, Bedok Reservoir Station) and residential estates (Sunshine Place near Tengah, BLK 109 in Bedok, BLK 477A in Sengkang, Bef. BLK 629A in Woodlands, to name a few).
-:::
 
-### 4.2.2 Weekday Afternoon Peak Period
-
-::: panel-tabset
-## Quantile
+## Weekday Afternoon Peak Period
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWDA_q <- tm_basemap("CartoDB.Positron") +
+
+tmap_mode ("plot")
+
+plotlogWDA_q <- 
   tm_shape(origin_gridwgeom) +
   tm_fill("logWDA", 
           style = "quantile", 
           palette = "Reds",
           title = "Total passenger trips",
+          alpha=0.6) +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Quantile Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
+
+plotlogWDA_e <-
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWDA", 
+          style = "equal", 
+          palette = "Reds",
+          title = "Total passenger trips",
           alpha=0.6,
-          id="LOC_DESC")
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Equal Interval Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
+
+plotlogWDA_j <- 
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWDA", 
+          style = "jenks", 
+          palette = "Reds",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Jenks Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
   
-plotlogWDA_q
+tmap_arrange(plotlogWDA_q, plotlogWDA_e, plotlogWDA_j, asp=1, ncol=3)
 ```
 
 A look at the weekday afternoon ridership using the quantile classification yielded the following insights.
 
 -   Ridership from Woodlands Checkpoint remained high.
--   Bus stops in close proximity to MRT tations and popular bus stops in residential estatements remained high.
+-   Bus stops in close proximity to MRT stations and popular bus stops in residential estates continued to have high passenger volumes.
 -   More trips originating from institutional areas: Opposite Ngee Ann Poly, Temasek Poly, NIE BLK 2, School of the Arts
 -   More trips originating from industrial buildings/business parks: North Link Bldg, Aft Senoko Way, Mapletree Business City, Woodlands Auto Hub, Opp Airline Hse, etc.
 -   More trips originating from hospitals: Yishun Community Hospital, Changi General Hospital
@@ -903,192 +942,146 @@ A look at the weekday afternoon ridership using the quantile classification yiel
 -   The far West seemed to experience low ridership other than the bus stop opposite Tuas Link Station.
 -   Southern part of Singapore, consisting of more commercial areas, appeared to be more clustered as illustrated by the density of the darker red hexagons, compared to the weekday morning peak period.
 
-## Equal Intervals
+Using the Equal Interval classification, there were notably higher concentration of passengers who boarded the bus at Serangoon Station, Harbourfront/VivoCity, Tiong Bahru Station, Admiralty Station, and Punggol Station during weekday afternoons according to the equal interval classification method. Similar to the map for weekday morning peak period, the equal interval seemed to produce more homogeneous classifications.
+
+Jenk's classification delivered similar insights to the quantile classification, where the higher concentration of ridership can be observed in the Southern downtown areas. It also highlighted Opp Airline Hse in the far East as a bus stop with high ridership, something not as visible using the equal interval method. Alternative methods of commute might be more popular in the West and North-West regions illustrated by the lighter shades of red hexagons.
+
+## Weekend/Holiday Morning Peak Period
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWDA_e <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
-  tm_fill("logWDA", 
-          style = "equal", 
-          palette = "Reds",
-          title = "Total passenger trips",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotlogWDA_e
-```
 
-Notably, there were higher concentration of passengers who boarded the bus at Serangoon Station, Harbourfront/VivoCity, Tiong Bahru Station, Admiralty Station, and Punggol Station during weekday afternoons according to the equal interval classification method.
+tmap_mode ("plot")
 
-Similar to the map for weekday morning peak period, the equal interval seemed to produce more homogeneous classifications.
-
-## Jenk's
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWDA_j <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
-  tm_fill("logWDA", 
-          style = "jenks", 
-          palette = "Reds",
-          title = "Total passenger trips",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotlogWDA_j
-```
-
-Jenk's classification delivered similar insights to the quantile classification, where the higher concentration of ridership can be observed in the Southern downtown areas.
-
-It also highlighted Opp Airline Hse in the far East as a bus stop with high ridership, something not as visible using the equal interval method.
-
-Alternative methods of commute might be more popular in the West and North-West regions illustrated by the lighter shades of red hexagons.
-:::
-
-### 4.2.3 Weekend/Holiday Morning Peak Period
-
-::: panel-tabset
-## Quantile
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWEM_q <- tm_basemap("CartoDB.Positron") +
+plotlogWEM_q <- 
   tm_shape(origin_gridwgeom) +
   tm_fill("logWEM", 
           style = "quantile", 
           palette = "Blues",
           title = "Total passenger trips",
+          alpha=0.6) +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Quantile Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
+
+plotlogWEM_e <-
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEM", 
+          style = "equal", 
+          palette = "Blues",
+          title = "Total passenger trips",
           alpha=0.6,
-          id="LOC_DESC")
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Equal Interval Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
+
+plotlogWEM_j <- 
+  tm_shape(origin_gridwgeom) +
+  tm_fill("logWEM", 
+          style = "jenks", 
+          palette = "Blues",
+          title = "Total passenger trips",
+          alpha=0.6,
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Jenks Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
   
-plotlogWEM_q
+tmap_arrange(plotlogWEM_q, plotlogWEM_e, plotlogWEM_j, asp=1, ncol=3)
 ```
 
 Generally, the distribution of bus ridership looks varied across the island.
 
-During the weekend/holiday peak period, the ridership for far West region remained relatively low. Interestingly, the bus trips recorded from Seletar area appeared to have dipped compared to the weekday peak periods. Buses in these industrial areas could be oriented towards work-related travel, thus less common on weekends.
+The map partitioned using the quantile intervals showed that during the weekend/holiday peak period, the ridership for far West region remained relatively low. Interestingly, the bus trips recorded from Seletar area appeared to have dipped compared to the weekday peak periods. This suggests that buses in these industrial areas could be oriented towards work-related travel, thus less common on weekends.
 
-Bus stops nearer to housing estates, shopping malls, and Woodlands Checkpoint demonstrated higher levels of weekend morning ridership.
+Bus stops nearer to housing estates, shopping malls, and Woodlands Checkpoint demonstrated higher levels of weekend morning ridership. The bus stops with the highest boarding passengers are Sunshine Place, Opp BLK 271, BLK 252, Aft. Hasanah Mosque, Buona Vista Station, Harbourfront/Vivocity, Admiralty Station, BLK 555, Bedok Reservoir Station, BLK 22, BLK 109.
 
-The bus stops with the highest boarding passengers are Sunshine Place, Opp BLK 271, BLK 252, Aft. Hasanah Mosque, Buona Vista Station, Harbourfront/Vivocity, Admiralty Station, BLK 555, Bedok Reservoir Station, BLK 22, BLK 109.
+The map using interval classification looked more monochromatic, there is less contrast with a more uniform appearance. The following bus stops have been identified to have the highest ridership during weekend/holiday morning peak period: Harbourfront/Vivocity, Tiong Bahru Station, Orchard Station/Lucky Plaza, Admirality Station, Aft. Punggol Road.
 
-## Equal Intervals
+Jenk's method identified more hot spots across the island than the other two methods.
 
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWEM_e <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
-  tm_fill("logWEM", 
-          style = "equal", 
-          palette = "Blues",
-          title = "Total passenger trips",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotlogWEM_e
-```
-
-Equal interval classification highlighted the following bus stops to have the highest ridership during weekend/holiday morning peak period: Harbourfront/Vivocity, Tiong Bahru Station, Orchard Station/Lucky Plaza, Admirality Station, Aft. Punggol Road.
-
-## Jenk's
+## Weekend/Holiday Evening
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWEM_j <- tm_basemap("CartoDB.Positron") +
-  tm_shape(origin_gridwgeom) +
-  tm_fill("logWEM", 
-          style = "jenks", 
-          palette = "Blues",
-          title = "Total passenger trips",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotlogWEM_j
-```
 
-The findings noted with Jenk's method are similar to the quantile classification.
-:::
+tmap_mode ("plot")
 
-### 4.2.4 Weekend/Holiday Evening
-
-::: panel-tabset
-## Quantile
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWEE_q <- tm_basemap("CartoDB.Positron") +
+plotlogWEE_q <- 
   tm_shape(origin_gridwgeom) +
   tm_fill("logWEE", 
           style = "quantile", 
-          palette = "Reds",
+          palette = "Blues",
           title = "Total passenger trips",
-          alpha=0.6,
-          id="LOC_DESC")
-  
-plotlogWEE_q
-```
+          alpha=0.6) +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Quantile Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
 
-On weekend/holiday evenings, there seemed to be increased ridership at the bus stops near Changi Airport compared to the other peak periods.
-
-Sunshine Plaza remains one of the most frequented bus stops, exhibiting high ridership across all four peak periods. While the exact reason for this is difficult to pinpoint, it's possible that the buses stopping here connect to a wide variety of regions, which could explain the high ridership.
-
-Woodlands Checkpoint also demonstrated high levels of ridership across the different peak periods.
-
-Visually, it looks like there are more bus stops with high ridership across Singapore during the weekend/holiday evening peak period. For example, there seem to be an increase in passenger volume at the Tanah Merah Ferry compared to the other peak periods.
-
-## Equal Intervals
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWEE_e <- tm_basemap("CartoDB.Positron") +
+plotlogWEE_e <-
   tm_shape(origin_gridwgeom) +
   tm_fill("logWEE", 
           style = "equal", 
-          palette = "Reds",
+          palette = "Blues",
           title = "Total passenger trips",
           alpha=0.6,
-          id="LOC_DESC")
-  
-plotlogWEE_e
-```
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Equal Interval Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
 
-The bus stops with higher traffic seem to be quite consistent across the different peak periods. This includes Woodlands Checkpoint, Kranji Station, Admiralty Station, Serangoon Station, Aft. Punggol Road, Bukit Panjang MRT, Yio Chu Kang Interchange.
-
-## Jenk's
-
-```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-tmap_mode ("view")
-plotlogWEE_j <- tm_basemap("CartoDB.Positron") +
+plotlogWEE_j <- 
   tm_shape(origin_gridwgeom) +
   tm_fill("logWEE", 
           style = "jenks", 
-          palette = "Reds",
+          palette = "Blues",
           title = "Total passenger trips",
           alpha=0.6,
-          id="LOC_DESC")
+          id="LOC_DESC") +
+  tm_borders(alpha = 0.5)+
+  tm_layout(main.title="Jenks Classification",
+            main.title.size = 0.8,
+            main.title.position = "center",
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE)
   
-plotlogWEE_j
+tmap_arrange(plotlogWEE_q, plotlogWEE_e, plotlogWEE_j, asp=1, ncol=3)
 ```
 
-The findings noted with Jenk's method are similar to the quantile classification.
+On weekend/holiday evenings, there seemed to be increased ridership at the bus stops near Changi Airport compared to the other peak periods as witnessed in the first plot using the quantile classification method. Sunshine Plaza remains one of the most frequented bus stops, exhibiting high ridership across all four peak periods. While the exact reason for this is difficult to pinpoint, it's possible that the buses stopping here connect to a wide variety of regions, which could explain the high ridership. Woodlands Checkpoint also demonstrated high levels of ridership across the different peak periods.
+
+Visually, it looks like there are more bus stops with high ridership across Singapore during the weekend/holiday evening peak period. For example, there seem to be an increase in passenger volume at the Tanah Merah Ferry compared to the other peak periods.
+
+Using the equal interval classification method, the bus stops with higher traffic seem to be quite consistent across the different peak periods. This includes Woodlands Checkpoint, Kranji Station, Admiralty Station, Serangoon Station, Aft. Punggol Road, Bukit Panjang MRT, Yio Chu Kang Interchange.
+
+The Jenk's method seems to suggest that hot spots are mostly congregated in the core of Singapore, with cold spots along the periphery of Singapore.
 :::
+
+While the choropleths were useful for quickly visualizing results, the different plots reveal that varying data classification methods can lead to different findings. To draw objective conclusions, we should supplement our initial findings with geospatial analysis.
 
 # 5 Spatial Association Analysis
 
@@ -1138,7 +1131,7 @@ We can derive summary statistics of the nearest neighbour distances vector (i.e.
 summary(dists)
 ```
 
-The maximum nearest neighbour distance is 1000m, thus we will use threshold value of 1001m to ensure each spatial unit has a minimum of 1 neighbour.
+The maximum nearest neighbour distance is 2291.3m, thus we will use threshold value of 2292m to ensure each spatial unit has a minimum of 1 neighbour.
 
 ### Step 3: Compute fixed distance weight
 
@@ -1149,7 +1142,7 @@ Now we will go ahead to compute the fixed distance weights by using following fu
 ```{r}
 wm_fd <- origin_gridwgeom %>%
   mutate(nb = st_dist_band(geo,
-                           upper = 1001),
+                           upper = 2992),
                wt = st_weights(nb),
                .before = 1)
 ```
@@ -1163,7 +1156,15 @@ wm_fd <- origin_gridwgeom %>%
 summary(wm_fd$nb)
 ```
 
-From the result above, we can confirm that all hexagons have at least one neighbour and there are 5 hexagons with 102 neighbours. We can also identify an average of 53 neighbours per hexagon using the distance-based weight matrix.
+From the result above, we can confirm that all hexagons have at least one neighbour and there are 3 well-connected hexagons with 110 neighbours. We can also identify an average of 71 neighbours per hexagon using the distance-based weight matrix.
+
+```{r}
+#wm_fd_sp <- as(wm_fd, "Spatial")
+
+#centroid <- st_centroid(origin_gridwgeom)
+#plot(origin_gridwgeom$area_hexagon_grid, border = "lightgrey")
+#plot(wm_fd_sp$polygons, centroid, pch = 19, cex = 0.1, add = TRUE, col = "red")
+```
 
 ## Adaptive Distance-Based Weight Matrix
 
@@ -1189,35 +1190,40 @@ Inverse distance weights takes into account the decay functions of distance.
 
 We can derive spatial weight matrix based on inverse distance method using the following functions:
 
--   [*st_contiguity()*](https://sfdep.josiahparry.com/reference/st_contiguity.html) of sfdep is used to identify the neighbours by using contiguity criteria. The output is a list of neighbours (i.e. nb).
-
+-   [*st_knn()*](https://sfdep.josiahparry.com/reference/st_knn) of **sfdep** is used to identify neighbors based on k (e.g. k = 8 indicates the nearest eight neighbours). The output is a neighbours list of class nb. If polygon geometry is provided, the centroids of the polygon will be used for calculation.
 -   [*st_inverse_distance()*](https://sfdep.josiahparry.com/reference/st_inverse_distance.html) is then used to calculate inverse distance weights of neighbours on the nb list.
+
+For our analysis, we will set the number of neighbours to **8**.
 
 ```{r}
 wm_idw <- origin_gridwgeom %>%
-  mutate(nb = st_contiguity(geo),
+  mutate(nb = st_knn(geo,
+                     k=8),
          wts = st_inverse_distance(nb, geo,
                                    scale = 1,
                                    alpha = 1),
          .before = 1)
 
-summary(wm_idw$nb)
+head(wm_idw, n=3)
+
 ```
 
-Using the inverse distance method resulted in 6 regions with no neighbours, this could be due to the spatial isolation of certain hexagons.
-:::
-
-In summary:
-
--   The number of neighbours using fixed distance method vary widely from 1 to 102. Consequently, the uneven distribution could affect the spatial autocorrelation analysis.
--   Inverse distance method led to regions with no neighbours and is computationally intensive as each neighbour
--   Since each hexagon is equally sized, the adaptive distance-based spatial weight matrix would be best suited for our analysis since each centroid can represent each region well.
+The inverse distance approach is best suited for continuous data or for modeling scenarios where spatial proximity increases the likelihood of interaction or influence between two features. Nevertheless, this method treats every feature as a potential neighbor to every other feature, which can lead to a significant computational burden, especially in the case of large datasets where the volume of calculations required becomes substantial.
 
 ```{r}
+#mpsz_sp <- as(wm_idw, "Spatial")
+
 centroid <- st_centroid(origin_gridwgeom)
 plot(origin_gridwgeom$area_hexagon_grid, border = "lightgrey")
 #plot(wm_idw, centroid, pch = 19, cex = 0.1, add = TRUE, col = "red")
 ```
+:::
+
+**In summary:**
+
+-   The number of neighbours using fixed distance method vary widely from 1 to 102. Consequently, the uneven distribution could affect the spatial autocorrelation analysis.
+-   Inverse distance method is computationally intensive as each feature is potentially a neighbour of every other feature.
+-   Since each hexagon is equally sized, the adaptive distance-based spatial weight matrix would be best suited for our analysis since each centroid can represent each region well.
 
 ## 5.2 Computing Global Spatial Autocorrelation Statistics
 
@@ -1356,10 +1362,6 @@ gmp_logWEE
 :::
 
 Across the 4 peak periods, the permutation test generated low p-values of \<0.05. This indicates that we can reject the null hypothesis at the 95% level of confidence, and conclude that for each of the 4 peak periods, the overall bus ridership across Singapore is spatially clustered (since positive Moran's I value is obtained). The higher Moran's I values for logged-transformed variables suggests a higher level of clustering compared to the original ridership values.
-
-### 5.2.2 Geary's C
-
-### 5.2.3 Spatial Correlogram
 
 ## 5.3 Local Spatial Autocorrelation Statistics
 
@@ -1535,7 +1537,7 @@ plotp_lisaWDM <-
     tm_fill("p_ii_sim",
             breaks = c(0, 0.001, 0.01, 0.05, 1),
             palette="-Blues",
-            labels = c(-Inf, "0.01", "0.05", "Not sig")) +
+            labels = c("0.001", "0.01", "0.05", "Not sig")) +
   tm_borders(alpha = 0.5) +
   tm_view(set.zoom.limits = c(6,8)) +
   tm_layout(main.title = "p-value of Local Moran's I of Bus Ridership for Weekday Mornings",
@@ -1812,7 +1814,7 @@ tm_shape(lisa_sig_WDM) +
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-lisa_sig_logWDM <- lisa_logWDM  %>%
+lisa_sig_logWDM <-lisa_logWDM  %>%
   filter(p_ii_sim < 0.05)
 tmap_mode("view")
 tm_shape(lisa_logWDM) +
@@ -1960,6 +1962,6 @@ tm_shape(lisa_sig_logWEE) +
 ```
 :::
 
-# 6 Limitations
+# 6 Recommendations
 
 Should be analysed in conjunction with other modes of public transportation

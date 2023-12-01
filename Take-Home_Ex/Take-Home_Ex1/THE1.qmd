@@ -65,7 +65,7 @@ The code chunk below, using `p_load` function of the [**pacman**](https://cran.r
 
 ```{r}
 pacman::p_load(sf, sfdep, tmap, tidyverse, knitr,
-               patchwork, DT, mapview, leaflet, scales)
+               patchwork, DT, leaflet, scales)
 
 # -   Creates a package list containing the necessary R packages
 # -   Checks if the R packages in the package list have been installed
@@ -90,10 +90,9 @@ The following data are used for this study:
 ## 3.2.1 Aspatial
 
 ::: panel-tabset
-
 ## Import into R
 
-We will be importing the *Passenger Volume by Origin Destination Bus Stops* dataset from August to October 2023, downloaded from LTA DataMall by using `read_csv()` or **readr** package.
+We will be importing the *Passenger Volume by Origin Destination Bus Stops* dataset for August 2023, downloaded from LTA DataMall by using *read_csv()* or **readr** package.
 
 ```{r}
 odbus08 <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
@@ -110,8 +109,6 @@ odbus08 <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 
 ```{r}
 glimpse(odbus08)
-#glimpse(odbus09)
-#glimpse(odbus10)
 ```
 
 Insights:
@@ -124,7 +121,7 @@ Insights:
     -   *ORIGIN_PT_CODE*: Origin bus stop ID
     -   *DESTINATION_PT_CODE*: Destination bus stop ID
     -   *TOTAL_TRIPS*: Number of trips
--   We also note that values in *ORIGIN_PT_CODE* and *DESTINATON_PT_CODE* are in numeric data type.
+-   We also note that values in *ORIGIN_PT_CODE* and *DESTINATON_PT_CODE* are in numeric data type. These should be in factor data type for further processing and georeferencing.
 
 ### (b) Unique Bus Stops
 
@@ -585,6 +582,7 @@ plot_distlogWEE <- ggplot(
 (plot_distlogWDM | plot_distlogWDA)/
 (plot_distlogWEM | plot_distlogWEE)
 ```
+:::
 
 ### 3.2.2 Geospatial
 
@@ -828,7 +826,7 @@ This is likely due to a large number of people commuting from home to their work
 
 Higher passenger traffic were noted at the bus stops nearer to MRT stations such as Harbourfront Station, Farrer Road Station, Yio Chu Kang Station, and Admirality Station. A possible contributing factor could be the people who are transiting from taking the MRTs to buses to get to their destinations.
 
-Lastly, Woodlands Checkpoint also demonstrated higher ridership. This could potentially be due to the people commuting across the causeway from Malaysia into the Singapore borders.
+Lastly, Woodlands Checkpoint also demonstrated higher ridership. Woodlands Checkpoint is one of Singapore's two land border checkpoints, facilitating the movement of ground traffic between Singapore and Malaysia. This could potentially be due to the people commuting across the causeway from Malaysia into the Singapore borders.
 
 ## Equal Intervals
 
@@ -1239,7 +1237,9 @@ The Moran I statistic ranges from -1 to 1. If the Moran I is:
 
 The code chunk below performs Moran's I statistical testing, using the null and alternative hypotheses as follows:
 
-H0: The observed spatial patterns of proportion of bus ridership in Singapore are not clustered (i.e. either random or dispersed). H1: The observed spatial patterns of proportion of bus ridership in Singapore are clustered.
+*H0*: The observed spatial patterns of proportion of bus ridership in Singapore are not clustered (i.e. either random or dispersed).
+
+*H1*: The observed spatial patterns of proportion of bus ridership in Singapore are clustered.
 
 A total of 100 simulations will be performed using the original and logged values with a seed number 1234. *set.seed()* function allows us to create reproducible results.
 
@@ -1253,6 +1253,7 @@ set.seed(1234)
 ## Weekday Morning
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1263,7 +1264,8 @@ gmp_WDM <- global_moran_perm(wm_ad$WDM,
 gmp_WDM
 ```
 
-**logged-transformed Data**
+**Log-Transformed Variable**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1274,10 +1276,10 @@ gmp_logWDM <- global_moran_perm(wm_ad$logWDM,
 gmp_logWDM
 ```
 
-
 ## Weekday Afternoon
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1287,7 +1289,9 @@ gmp_WDA <- global_moran_perm(wm_ad$WDA,
                   nsim = 99)
 gmp_WDA
 ```
-**logged-transformed Data**
+
+**Log-Transformed Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1298,11 +1302,10 @@ gmp_logWDA <- global_moran_perm(wm_ad$logWDA,
 gmp_logWDA
 ```
 
-
-
 ## Weekend/Holiday Morning
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1312,7 +1315,9 @@ gmp_WEM <- global_moran_perm(wm_ad$WEM,
                   nsim = 99)
 gmp_WEM
 ```
-**logged-transformed Data**
+
+**Log-Transformed Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1326,6 +1331,7 @@ gmp_logWEM
 ## Weekend/Holiday Evening
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1335,7 +1341,9 @@ gmp_WEE <- global_moran_perm(wm_ad$WEE,
                   nsim = 99)
 gmp_WEE
 ```
-**logged-transformed Data**
+
+**Log-Transformed Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1379,6 +1387,7 @@ In this section, we will perform Moran's I statistics testing by using [*local_m
 ## Weekday Morning
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1391,7 +1400,8 @@ lisa_WDM <- wm_ad %>%
 head(lisa_WDM, n=5)
 ```
 
-**logged-transformed Data**
+**Log-Transformed Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1404,10 +1414,10 @@ lisa_logWDM <- wm_ad %>%
 head(lisa_logWDM, n=5)
 ```
 
-
 ## Weekday Afternoon
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1420,7 +1430,8 @@ lisa_WDA <- wm_ad %>%
 head(lisa_WDA, n=5)
 ```
 
-**logged-transformed Data**
+**Log-Transformed Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1433,10 +1444,10 @@ lisa_logWDA <- wm_ad %>%
 head(lisa_logWDA, n=5)
 ```
 
-
 ## Weekend/Holiday Morning
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1449,7 +1460,8 @@ lisa_WEM <- wm_ad %>%
 head(lisa_WEM, n=5)
 ```
 
-**logged-transformed Data**
+**Log-Transformed Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1462,10 +1474,10 @@ lisa_logWEM <- wm_ad %>%
 head(lisa_logWEM, n=5)
 ```
 
-
 ## Weekend/Holiday Evening
 
 **Original Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1478,7 +1490,8 @@ lisa_WEE <- wm_ad %>%
 head(lisa_WEE, n=5)
 ```
 
-**logged-transformed Data**
+**Log-Transformed Data**
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1490,17 +1503,17 @@ lisa_logWEE <- wm_ad %>%
 
 head(lisa_logWEE, n=5)
 ```
-
 :::
 
 ### 5.3.2 Visualising Local Moran's I & p-value
-To better understand which areas are outliers/clusters, we will use choropleth mapping functions of **tmap** package to visualise the local Moran’s I values and the associated p-values by using the code chunks below.
 
+To better understand which areas are outliers/clusters, we will use choropleth mapping functions of **tmap** package to visualise the local Moran's I values and the associated p-values by using the code chunks below.
 
 **Weekday Morning**
-:::panel-tabset
 
+::: panel-tabset
 ## Original Values
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1530,11 +1543,12 @@ plotp_lisaWDM <-
 
 tmap_arrange(plot_lisaWDM, plotp_lisaWDM, asp=1, ncol=2) 
 ```
+
 The plot on the left shows regions of positive (blue) and negative (orange) Moran's I statistics, indicating positive and negative clustering relationships. In particular, bus stops at Woodlands Checkpoint have the highest Local Moran's I statistics.
 
 On the right, we see that the p-values are significant at 5% significance level for the regions in the 3 darker shades of blue. We see that areas in the far West, North-West, and far East have statistically significant p-values for the cluster/outlier spatial relationship that they see.
 
-## logged Variables
+## Log-Transformed Variable
 
 ```{r}
 #| code-fold: true
@@ -1565,40 +1579,221 @@ plotp_lisalogWDM <-
 
 tmap_arrange(plot_lisalogWDM, plotp_lisalogWDM, asp=1, ncol=2) 
 ```
-We obtain different insights using the log-transformed variables to calculate Local Moran's I. NorthWest region, particularly around Lim Chu Kang / Sungei Buloh. The plot on the right suggests that with p-value <0.05, the high spatial clustering observed in the area is also statistically significant. 
 
+We obtain different insights using the log-transformed variables to calculate Local Moran's I. NorthWest region, particularly around Lim Chu Kang / Sungei Buloh. The plot on the right suggests that with p-value \<0.05, the high spatial clustering observed in the area is also statistically significant.
 :::
 
 **Weekday Afternoon**
 
+::: panel-tabset
+## Original Values
 
-:::panel-tabset
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 
+tmap_mode("plot")
+
+plot_lisaWDA <-
+  tm_shape(lisa_WDA) +
+    tm_fill("ii",
+            style="pretty",
+            palette="RdBu") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+plotp_lisaWDA <- 
+  tm_shape(lisa_WDA) +
+    tm_fill("p_ii_sim",
+            breaks = c(0, 0.001, 0.01, 0.05, 1),
+            palette="-Blues",
+            labels = c(-Inf, "0.01", "0.05", "Not sig")) +
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "p-value of Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+tmap_arrange(plot_lisaWDA, plotp_lisaWDA, asp=1, ncol=2)
+```
+
+## Log-Transformed Variable
+
+```{r}
+
+#| code-fold: true
+#| code-summary: "Show the code"
+
+tmap_mode("plot")
+
+plot_lisalogWDA <-
+  tm_shape(lisa_logWDA) +
+    tm_fill("ii",
+            style="pretty",
+            palette="RdBu") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+plotp_lisalogWDA <- 
+  tm_shape(lisa_logWDA) +
+    tm_fill("p_ii_sim",
+            breaks = c(0, 0.001, 0.01, 0.05, 1),
+            palette="-Blues",
+            labels = c("0.001", "0.01", "0.05", "Not sig")) +
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "p-value of Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+tmap_arrange(plot_lisalogWDA, plotp_lisalogWDA, asp=1, ncol=2) 
+```
 :::
 
 **Weekend/Holiday Morning**
 
-:::panel-tabset
+::: panel-tabset
+## Original Values
 
+```{r}
+tmap_mode("plot")
+
+plot_lisaWEM <-
+  tm_shape(lisa_WEM) +
+    tm_fill("ii",
+            style="pretty",
+            palette="RdBu") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "Local Moran's I of Bus Ridership for Weekend/Holiday Mornings",
+            main.title.size = 0.7)
+
+plotp_lisaWEM <- 
+  tm_shape(lisa_WEM) +
+    tm_fill("p_ii_sim",
+            breaks = c(0, 0.001, 0.01, 0.05, 1),
+            palette="-Blues",
+            labels = c(-Inf, "0.01", "0.05", "Not sig")) +
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "p-value of Local Moran's I of Bus Ridership for Weekend/Holiday Mornings",
+            main.title.size = 0.7)
+
+tmap_arrange(plot_lisaWEM, plotp_lisaWEM, asp=1, ncol=2)
+```
+
+## Log-Transformed Variable
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+tmap_mode("plot")
+
+plot_lisalogWEM <-
+  tm_shape(lisa_logWEM) +
+    tm_fill("ii",
+            style="pretty",
+            palette="RdBu") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+plotp_lisalogWEM <- 
+  tm_shape(lisa_logWEM) +
+    tm_fill("p_ii_sim",
+            breaks = c(0, 0.001, 0.01, 0.05, 1),
+            palette="-Blues",
+            labels = c("0.001", "0.01", "0.05", "Not sig")) +
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "p-value of Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+tmap_arrange(plot_lisalogWEM, plotp_lisalogWEM, asp=1, ncol=2) 
+```
 :::
 
 **Weekend/Holiday Evening**
 
-:::panel-tabset
-
-:::
-
-### 5.3.3 Visualising LISA Map
-Median for untransformed variables because of right skew
-Mean for transformed variables
-
-
-**Weekday Morning**
-:::panel-tabset
-
+::: panel-tabset
 ## Original Values
 
 ```{r}
+tmap_mode("plot")
+
+plot_lisaWEE <-
+  tm_shape(lisa_WEE) +
+    tm_fill("ii",
+            style="pretty",
+            palette="RdBu") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "Local Moran's I of Bus Ridership for Weekend/Holiday Mornings",
+            main.title.size = 0.7)
+
+plotp_lisaWEE <- 
+  tm_shape(lisa_WEE) +
+    tm_fill("p_ii_sim",
+            breaks = c(0, 0.001, 0.01, 0.05, 1),
+            palette="-Blues",
+            labels = c(-Inf, "0.01", "0.05", "Not sig")) +
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "p-value of Local Moran's I of Bus Ridership for Weekend/Holiday Mornings",
+            main.title.size = 0.7)
+
+tmap_arrange(plot_lisaWEE, plotp_lisaWEE, asp=1, ncol=2)
+```
+
+## Log-Transformed Variable
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+tmap_mode("plot")
+
+plot_lisalogWEE <-
+  tm_shape(lisa_logWEE) +
+    tm_fill("ii",
+            style="pretty",
+            palette="RdBu") + 
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+plotp_lisalogWEE <- 
+  tm_shape(lisa_logWEE) +
+    tm_fill("p_ii_sim",
+            breaks = c(0, 0.001, 0.01, 0.05, 1),
+            palette="-Blues",
+            labels = c("0.001", "0.01", "0.05", "Not sig")) +
+  tm_borders(alpha = 0.5) +
+  tm_view(set.zoom.limits = c(6,8)) +
+  tm_layout(main.title = "p-value of Local Moran's I of Bus Ridership for Weekday Afternoons",
+            main.title.size = 0.7)
+
+tmap_arrange(plot_lisalogWEE, plotp_lisalogWEE, asp=1, ncol=2) 
+```
+:::
+
+### 5.3.3 Visualising LISA Map
+
+Median for untransformed variables because of right skew Mean for transformed variables
+
+**Weekday Morning**
+
+::: panel-tabset
+## Original Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 lisa_sig_WDM <- lisa_WDM  %>%
   filter(p_ii_sim < 0.05)
 tmap_mode("view")
@@ -1612,9 +1807,11 @@ tm_shape(lisa_sig_WDM) +
   tm_borders(alpha = 0.4)
 ```
 
-## logged Variables
+## Log-Transformed Variable
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 lisa_sig_logWDM <- lisa_logWDM  %>%
   filter(p_ii_sim < 0.05)
 tmap_mode("view")
@@ -1627,14 +1824,141 @@ tm_shape(lisa_sig_logWDM) +
           id="LOC_DESC") + 
   tm_borders(alpha = 0.4)
 ```
-
 :::
 
-The plot demonstrates that the statistically significant Moran's I values are depicted in salmon for high-high autocorrelation and in teal for low-low autocorrelation, indicating clusters. Areas displaying low-low autocorrelation are primarily observed around the edges of the island, notably in the West, North-West, and East regions. In the context of our study, these areas experience low bus ridership and are surrounded by bus stops that also have low ridership. This pattern could suggest that on weekday mornings, these areas either have less human traffic or that residents prefer other forms of transportation.
+The plot demonstrates that the statistically significant Moran's I values are depicted in salmon for high-high autocorrelation and in teal for low-low autocorrelation, indicating clusters. Areas displaying low-low autocorrelation are primarily observed around the edges of the island, notably in the West, North-West, and East regions. In the context of our study, these areas experience low bus ridership and are surrounded by bus stops that also have low ridership. This pattern could suggest that on weekday mornings, these areas either have less human traffic or that residents prefer other forms of transportation. More clusters are also seen using the log-transformed variables, where neighbouring hexagons demonstrate similar autocorrelation.
 
 High-high autocorrelation areas, where both an area and its neighboring areas have high bus ridership, are scattered across the island. These are predominantly found near transit hubs such as Choa Chu Kang Station, Aft. Bukit Panjang Station, Woodlands Checkpoint, and Buona Vista. Additionally, some residential estates, including Ang Mo Kio BLK 324, BLK 431 and BLK 355 near Clementi, also exhibit high-high autocorrelation. This trend could be attributed to people traveling to work from their homes or switching transportation modes, opting for buses to reach their destinations.
 
 Several outliers are identified in purple and yellow. The Low-High regions (in purple) are generally found in proximity to high-high regions (in salmon). Conversely, High-Low regions (in yellow) appear to be located near low-low regions (in teal).
+
+**Weekday Afternoons**
+
+::: panel-tabset
+## Original Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+lisa_sig_WDA <- lisa_WDA  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("view")
+tm_shape(lisa_WDA) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig_WDA) +
+  tm_fill("median",
+          alpha=0.6,
+          id="LOC_DESC") + 
+  tm_borders(alpha = 0.4)
+```
+
+## Log-Transformed Variable
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+lisa_sig_logWDA <- lisa_logWDA  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("view")
+tm_shape(lisa_logWDA) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig_logWDA) +
+  tm_fill("mean",
+          alpha=0.6,
+          id="LOC_DESC") + 
+  tm_borders(alpha = 0.4)
+```
+
+For the weekday afternoon peak period, areas exhibiting high-high autocorrelation include transit hubs such as Opp. LakeSide Station, Bef. Khatib Station, Compassvale Station, Serangoon Station, Downtown Station, and others. This trend mirrors that of weekday mornings, where transit hubs experience high bus ridership, likely due to passengers switching between different modes of transportation.
+
+Using the log-transformed variable, the stretch along Orchard Road from Orchard Station to War Memorial Park, and CBD area in the South have also been highlighted as a high-high cluster.
+
+During these afternoon peak periods, there appears to be less statistically significant autocorrelation, particularly in areas like the Loyang region, including Changi Prison and Laguna National Country Club. Notably, using the untransformed values, the Woodlands Checkpoint area does not demonstrate the statistically significant high-high relationship expected from the previous `Section 4.2.2 Geovisualisation` or in comparison to weekday mornings. This observation might indicate that there is more human traffic moving from Malaysia to Singapore in the mornings, resulting in higher bus ridership originating from the checkpoints.
+:::
+
+**Weekend/Holidays Morning**
+
+::: panel-tabset
+## Original Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+lisa_sig_WEM <- lisa_WEM  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("view")
+tm_shape(lisa_WEM) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig_WEM) +
+  tm_fill("median",
+          alpha=0.6,
+          id="LOC_DESC") + 
+  tm_borders(alpha = 0.4)
+```
+
+There are a lot more low-low regions on weekend/holiday mornings, particularly on the 2 ends of the island. Peripheral edges
+
+## Log-Transformed Variable
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+lisa_sig_logWEM <- lisa_logWEM  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("view")
+tm_shape(lisa_logWEM) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig_logWEM) +
+  tm_fill("mean",
+          alpha=0.6,
+          id="LOC_DESC") + 
+  tm_borders(alpha = 0.4)
+```
+:::
+
+**Weekend/Holidays Evening**
+
+::: panel-tabset
+## Original Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+lisa_sig_WEE <- lisa_WEE  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("view")
+tm_shape(lisa_WEE) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig_WEE) +
+  tm_fill("median",
+          alpha=0.6,
+          id="LOC_DESC") + 
+  tm_borders(alpha = 0.4)
+```
+
+## Log-Transformed Variable
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+lisa_sig_logWEE <- lisa_logWEE  %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("view")
+tm_shape(lisa_logWEE) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(lisa_sig_logWEE) +
+  tm_fill("mean",
+          alpha=0.6,
+          id="LOC_DESC") + 
+  tm_borders(alpha = 0.4)
+```
+:::
 
 # 6 Limitations
 

@@ -19,7 +19,6 @@ editor: visual
     -   Hexagons: bus stops in JB, 1 bus stop \@ tip of SG causeway that will be cut off if we use MPSZ.
     -   Have to select spatial weights for analysis. Diff geo context and config will need to apply diff spatial weights.
 
-
 Gravity Model **we calculated this in HOE3!** - Vi = push factor \@ origin (can be 1 variable or multiple variables), Wj = pull factor \@ destination, Sij = distance decay
 
 Retail Model - Bij = propensity / porbability that people will go or not go to a location
@@ -44,7 +43,6 @@ Retail Model - Bij = propensity / porbability that people will go or not go to a
 -   OD Flow Calibration
     -   Ordinary least square (OLS), log-normal, Poisson and negative binomial (NB) regression methods
     -   Calibration: process of adjusting parameters in the model to try and get the estimates to agree with the observed data as much as possible. Adjusting the parameters is the sort of iterative process that computers are particularly good at and the goodness-of-fit statistics can be used to indicate when the optimum solution is found. Historically this process required a researcher with the requisite programming skills to write a computer algorithm to iteratively adjust each parameter, check the goodness-of-fit, and then start all over again until the goodness-of-fit statistic was maximised/minimised.
-    
 
 # 2 Getting Started
 
@@ -71,6 +69,7 @@ Prev output should be saved as rds format.
 mpsz <- read_rds("data/rds/mpsz.rds")
 mpsz
 ```
+
 **Note:** output is a sf tibble dataframe object class.
 
 ## 3.1 Converting from sf data.table to SpatialPolygonsDataFrame
@@ -103,8 +102,10 @@ head(dist, n=c(10, 10))
 # Large matrix size: 332*332=110224
 ```
 
-Observations:
+***Observations:***
+
 -   Output dist is a matrix object class of R
+
 -   Column heanders and row headers are not labeled with the planning subzone codes.
 
 ## 3.3 Labelling column and row heanders of a distance matrix
@@ -129,8 +130,7 @@ distPair <- melt(dist) %>%
 head(distPair, 10)
 ```
 
-Observations:
--   Within-zone (intrazone) distance = 0.
+***Observations:*** Within-zone (intrazone) distance = 0.
 
 ## 3.5 Updating intra-zonal distances
 
@@ -142,6 +142,7 @@ distPair %>%
 ```
 
 50 is arbitruary, cannot overshoot the minimum. 175/2 (for each radius of the nucleus) = 80 (rounded down to 50
+
 ```{r}
 distPair$dist <- ifelse(distPair$dist == 0,
                         50, 
@@ -160,6 +161,7 @@ distPair <- distPair %>%
 ```
 
 Save the dataframe for future use.
+
 ```{r}
 write_rds(distPair, "data/rds/distPair.rds") 
 ```
@@ -177,8 +179,11 @@ flow_data <- od_data %>%
 
 head(flow_data, 10)
 ```
+
 ## 4.1 Separating intra-flow from passenger volume df
+
 Add three new fields in `flow_data` dataframe
+
 ```{r}
 flow_data$FlowNoIntra <- ifelse(
   flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
@@ -189,12 +194,14 @@ flow_data$offset <- ifelse(
 ```
 
 ## 4.2 Combining passenger volume data with distance value
+
 ```{r}
 flow_data$ORIGIN_SZ <- as.factor(flow_data$ORIGIN_SZ)
 flow_data$DESTIN_SZ <- as.factor(flow_data$DESTIN_SZ)
 ```
 
 *left_join()* of dplyr will be used to flow_data dataframe and distPair dataframe. The output is called flow_data1.
+
 ```{r}
 flow_data1 <- flow_data %>%
   left_join (distPair,
@@ -223,7 +230,9 @@ pop <- pop %>%
 ```
 
 ## 5.3 Preparing Origin Attrbute
+
 People on their journey to school (pri & sec sch) / journey to work
+
 ```{r}
 flow_data1 <- flow_data1 %>%
   left_join(pop,
@@ -250,12 +259,12 @@ flow_data1 <- flow_data1 %>%
 write_rds(flow_data1, "data/rds/SIM_data")
 ```
 
-morning = push factor is origin 
-evening = pull factor is destination bc ppl want to go home
+morning = push factor is origin evening = pull factor is destination bc ppl want to go home
 
 # 6 Calibrating Spatial Interaction Models
 
-## 6.1  Importing the modelling data
+## 6.1 Importing the modelling data
+
 ```{r}
 SIM_data <- read_rds("data/rds/SIM_data.rds")
 
@@ -264,17 +273,17 @@ summary(SIM_data)
 
 ## 6.2 Visualising the dependent variable
 
-## Distribution of the dependent variable (i.e. TRIPS) by using histogram ##
+**Distribution of the dependent variable (i.e. TRIPS) by using histogram**
+
 ```{r}
 ggplot(data = SIM_data,
        aes(x = TRIPS)) +
   geom_histogram()
 ```
 
-Observations:
--   Distribution is highly skewed and not resemble bell shape or also known as normal distribution.
+***Observations:*** Distribution is highly skewed and not resemble bell shape or also known as normal distribution.
 
-## Relation between the dependent variable and one of the key independent variable in Spatial Interaction Model, namely distance ##
+**Relation between the dependent variable and one of the key independent variable in Spatial Interaction Model, namely distance**
 
 ```{r}
 ggplot(data = SIM_data,
@@ -283,8 +292,8 @@ ggplot(data = SIM_data,
   geom_point() +
   geom_smooth(method = lm)
 ```
-Observation:
--   Notice that their relationship hardly resemble linear relationship.
+
+***Observation:*** Notice that their relationship hardly resemble linear relationship.
 
 On the other hand, if we plot the scatter plot by using the log transformed version of both variables, we can see that their relationship is more resemble linear relationship.
 
@@ -305,11 +314,15 @@ In the code chunk below, summary() of Base R is used to compute the summary stat
 ```{r}
 summary(SIM_data)
 ```
-Observations:
+
+***Observations:***
+
 -   Variables `ORIGIN_AGE7_12`, `ORIGIN_AGE13_24`, `ORIGIN_AGE25_64`, `DESTIN_AGE7_12`, `DESTIN_AGE13_24`, `DESTIN_AGE25_64` consist of 0 values.
+
 -   In view of this, code chunk below will be used to replace zero values to 0.99.
 
 **Feature engineering**
+
 ```{r}
 SIM_data$DESTIN_AGE7_12 <- ifelse(
   SIM_data$DESTIN_AGE7_12 == 0,
@@ -332,17 +345,19 @@ SIM_data$ORIGIN_AGE25_64 <- ifelse(
 ```
 
 Check again:
+
 ```{r}
 summary(SIM_data)
 ```
-Observation:
--   All the 0 values have been replaced by 0.99.
+
+***Observation:*** All the 0 values have been replaced by 0.99.
 
 ## 6.4 Unconstrained Spatial Interaction Model
 
 `glm()` have various kinds of regression. This example we use poisson & log.
 
 formula should be using a `+`
+
 ```{r}
 uncSIM <- glm(formula = TRIPS ~ 
                 log(ORIGIN_AGE25_64) + 
@@ -353,10 +368,11 @@ uncSIM <- glm(formula = TRIPS ~
               na.action = na.exclude)
 uncSIM
 ```
-:::{.callout-note}
+
+::: callout-note
 ## Important
-distance = -1.5 
-definitely have to have -ve because it is inverse distance.
+
+distance = -1.5 definitely have to have -ve because it is inverse distance.
 :::
 
 ## 6.5 R-squared function
@@ -376,9 +392,11 @@ CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values)
 
 r2_mcfadden(uncSIM)
 ```
+
 0.446 is good. (why ah)
 
 ## 6.6 Origin (Production) constrained SIM
+
 Fit an origin constrained SIM by using the code3 chunk below
 
 ```{r}
@@ -433,12 +451,12 @@ summary(dbcSIM)
 ```{r}
 CalcRSquared(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
 ```
-Relatively greater improvement in the R^2 value.
+
+Relatively greater improvement in the R\^2 value.
 
 # 7 Model Comparison
 
-:::panel-tabset
-
+::: panel-tabset
 ## Create model list
 
 ```{r}
@@ -454,14 +472,13 @@ model_list <- list(unconstrained=uncSIM,
 compare_performance(model_list,
                     metrics = "RMSE")
 ```
+
 The print above reveals that doubly constrained SIM is the best model among all the four SIMs because it has the smallest RMSE value of 1487.111.
 :::
 
-
 # 8 Visualising Fitted
 
-:::panel-tabset
-
+::: panel-tabset
 ## Extract fitted values
 
 ```{r}
@@ -488,7 +505,6 @@ SIM_data <- SIM_data %>%
   rename(orcTRIPS = "orcSIM$fitted.values")
 ```
 
-
 ## Repeat for Destination Constrained SIM (decSIM)
 
 ```{r}
@@ -499,7 +515,6 @@ SIM_data <- SIM_data %>%
   cbind(df) %>%
   rename(decTRIPS = "decSIM$fitted.values")
 ```
-
 
 ## Repeat for Doubly Constrained SIM (dbcSIM)
 
@@ -546,5 +561,5 @@ ggarrange(unc_p, orc_p, dec_p, dbc_p,
           ncol = 2,
           nrow = 2)
 ```
-Looking at the plots, unconstrained a lot of dispersion.
-double constrained is best
+
+Looking at the plots, unconstrained a lot of dispersion. double constrained is best

@@ -10,3 +10,541 @@ execute:
 editor: visual
 ---
 
+::: {.callout-note collapse="true"}
+## Notes from Class
+
+-   For THE1:
+    -   Reproducibility: just need to change first line for another month
+    -   Change chrome limit
+    -   Hexagons: bus stops in JB, 1 bus stop \@ tip of SG causeway that will be cut off if we use MPSZ.
+    -   Have to select spatial weights for analysis. Diff geo context and config will need to apply diff spatial weights.
+
+
+Gravity Model **we calculated this in HOE3!** - Vi = push factor \@ origin (can be 1 variable or multiple variables), Wj = pull factor \@ destination, Sij = distance decay
+
+Retail Model - Bij = propensity / porbability that people will go or not go to a location
+:::
+
+# 1 Spatial Interaction Models
+
+-   Chracteristics of Spatial Interaction Data
+    -   Complementarity:
+        -   Supply = originating bus stop
+        -   Demand = destination bus stop
+    -   Intervening Opportunity:
+        -   Economic reasons (job opportunity) = pull factor, utility value (recreational reasons)
+    -   Transferability:
+        -   Eg: people coming into SG for concerts
+        -   Willingness to pay for transport cost
+-   Family of Gravity Models
+    -   Unconstrained (Totally constrained)
+    -   Origin Constrained
+    -   Destination Constrained
+    -   Doubly Constrained
+-   OD Flow Calibration
+    -   Ordinary least square (OLS), log-normal, Poisson and negative binomial (NB) regression methods
+    -   Calibration: process of adjusting parameters in the model to try and get the estimates to agree with the observed data as much as possible. Adjusting the parameters is the sort of iterative process that computers are particularly good at and the goodness-of-fit statistics can be used to indicate when the optimum solution is found. Historically this process required a researcher with the requisite programming skills to write a computer algorithm to iteratively adjust each parameter, check the goodness-of-fit, and then start all over again until the goodness-of-fit statistic was maximised/minimised.
+    
+
+# 2 Getting Started
+
+```{r}
+pacman::p_load(tmap, sf, sp, DT, 
+               performance, reshape2,
+               ggpubr, tidyverse)
+```
+
+-   tmap: thematic maps
+-   sf: handle geospatial data
+-   sp: older R package that has been replaced by *sf*
+-   DT: data tables
+-   performance: statistical models
+-   reshape2: great grandfather of tidyr, can handle matrix. tidyverse works on data frames and cannot handle matrix well.
+-   ggpubr: used to create multiple plots into 1
+-   tidyverse: compose of basic R packages for data science work.
+
+# 3 Computing Distance Matrix
+
+Prev output should be saved as rds format.
+
+```{r}
+mpsz <- read_rds("data/rds/mpsz.rds")
+mpsz
+```
+**Note:** output is a sf tibble dataframe object class.
+
+## 3.1 Converting from sf data.table to SpatialPolygonsDataFrame
+
+```{r}
+mpsz_sp <- as(mpsz, "Spatial")
+mpsz_sp
+
+# same as:
+# mpsz_sz <- mpsz %>% 
+#   as.Spatial()
+
+# to call: mpsz@data$column to pick up values
+```
+
+```{r}
+#mpsz_sp_selected <- mpsz_sp %>% 
+#  select(mpsz@data$SUBZONE_N)
+```
+
+## 3.2 Computing the distance matrix
+
+```{r}
+dist <- spDists(mpsz_sp, 
+                longlat = FALSE)
+
+head(dist, n=c(10, 10))
+
+# longlat = TRUE = great circle
+# Large matrix size: 332*332=110224
+```
+
+Observations:
+-   Output dist is a matrix object class of R
+-   Column heanders and row headers are not labeled with the planning subzone codes.
+
+## 3.3 Labelling column and row heanders of a distance matrix
+
+Replace columns and rows names with subzones names so we can create tibble data frame later. Data frame will help us understand data better.
+
+```{r}
+sz_names <- mpsz$SUBZONE_C
+
+colnames(dist) <- paste0(sz_names)
+rownames(dist) <- paste0(sz_names)
+```
+
+## 3.4 Pivoting distance value by SUBZONE_C
+
+Be mindful not to sort the data to maintain the sequence!
+
+```{r}
+distPair <- melt(dist) %>%
+  rename(dist = value)
+
+head(distPair, 10)
+```
+
+Observations:
+-   Within-zone (intrazone) distance = 0.
+
+## 3.5 Updating intra-zonal distances
+
+```{r}
+# cached on memory, not saved in environment
+distPair %>%
+  filter(dist > 0) %>%
+  summary() #to see what is the minimum distance
+```
+
+50 is arbitruary, cannot overshoot the minimum. 175/2 (for each radius of the nucleus) = 80 (rounded down to 50
+```{r}
+distPair$dist <- ifelse(distPair$dist == 0,
+                        50, 
+                        distPair$dist)
+```
+
+```{r}
+# Check the result data.frame.
+distPair %>%
+  summary()
+
+# Rename origin & destination fields
+distPair <- distPair %>%
+  rename(orig = Var1,
+         dest = Var2)
+```
+
+Save the dataframe for future use.
+```{r}
+write_rds(distPair, "data/rds/distPair.rds") 
+```
+
+# 4 Preparing flow data
+
+```{r}
+od_data <- read_rds("data/rds/od_data.rds")
+```
+
+```{r}
+flow_data <- od_data %>%
+  group_by(ORIGIN_SZ, DESTIN_SZ) %>% 
+  summarize(TRIPS = sum(MORNING_PEAK)) 
+
+head(flow_data, 10)
+```
+## 4.1 Separating intra-flow from passenger volume df
+Add three new fields in `flow_data` dataframe
+```{r}
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0, flow_data$TRIPS)
+flow_data$offset <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ, 
+  0.000001, 1)
+```
+
+## 4.2 Combining passenger volume data with distance value
+```{r}
+flow_data$ORIGIN_SZ <- as.factor(flow_data$ORIGIN_SZ)
+flow_data$DESTIN_SZ <- as.factor(flow_data$DESTIN_SZ)
+```
+
+*left_join()* of dplyr will be used to flow_data dataframe and distPair dataframe. The output is called flow_data1.
+```{r}
+flow_data1 <- flow_data %>%
+  left_join (distPair,
+             by = c("ORIGIN_SZ" = "orig",
+                    "DESTIN_SZ" = "dest"))
+```
+
+# 5 Preparing Origin and Destination Attributes
+
+## 5.1 Importing population data
+
+```{r}
+pop <- read_csv("data/aspatial/pop.csv")
+```
+
+## 5.2 Geospatial Data Wrangling
+
+```{r}
+pop <- pop %>%
+  left_join(mpsz,
+            by = c("PA" = "PLN_AREA_N",
+                   "SZ" = "SUBZONE_N")) %>%
+  select(1:6) %>%
+  rename(SZ_NAME = SZ,
+         SZ = SUBZONE_C)
+```
+
+## 5.3 Preparing Origin Attrbute
+People on their journey to school (pri & sec sch) / journey to work
+```{r}
+flow_data1 <- flow_data1 %>%
+  left_join(pop,
+            by = c(ORIGIN_SZ = "SZ")) %>%
+  rename(ORIGIN_AGE7_12 = AGE7_12,
+         ORIGIN_AGE13_24 = AGE13_24,
+         ORIGIN_AGE25_64 = AGE25_64) %>%
+  select(-c(PA, SZ_NAME))
+```
+
+## 5.4 Preparing destination attribute
+
+```{r}
+flow_data1 <- flow_data1 %>%
+  left_join(pop,
+            by = c(DESTIN_SZ = "SZ")) %>%
+  rename(DESTIN_AGE7_12 = AGE7_12,
+         DESTIN_AGE13_24 = AGE13_24,
+         DESTIN_AGE25_64 = AGE25_64) %>%
+  select(-c(PA, SZ_NAME))
+```
+
+```{r}
+write_rds(flow_data1, "data/rds/SIM_data")
+```
+
+morning = push factor is origin 
+evening = pull factor is destination bc ppl want to go home
+
+# 6 Calibrating Spatial Interaction Models
+
+## 6.1  Importing the modelling data
+```{r}
+SIM_data <- read_rds("data/rds/SIM_data.rds")
+
+summary(SIM_data)
+```
+
+## 6.2 Visualising the dependent variable
+
+## Distribution of the dependent variable (i.e. TRIPS) by using histogram ##
+```{r}
+ggplot(data = SIM_data,
+       aes(x = TRIPS)) +
+  geom_histogram()
+```
+
+Observations:
+-   Distribution is highly skewed and not resemble bell shape or also known as normal distribution.
+
+## Relation between the dependent variable and one of the key independent variable in Spatial Interaction Model, namely distance ##
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = dist,
+           y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+Observation:
+-   Notice that their relationship hardly resemble linear relationship.
+
+On the other hand, if we plot the scatter plot by using the log transformed version of both variables, we can see that their relationship is more resemble linear relationship.
+
+```{r}
+ggplot(data = SIM_data,
+       aes(x = log(dist),
+           y = log(TRIPS))) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+## 6.3 Checking for variables with zero values
+
+Since **Poisson** Regression is based of log and log 0 is undefined, it is important for us to **ensure that no 0 values in the explanatory variables**.
+
+In the code chunk below, summary() of Base R is used to compute the summary statistics of all variables in SIM_data data frame.
+
+```{r}
+summary(SIM_data)
+```
+Observations:
+-   Variables `ORIGIN_AGE7_12`, `ORIGIN_AGE13_24`, `ORIGIN_AGE25_64`, `DESTIN_AGE7_12`, `DESTIN_AGE13_24`, `DESTIN_AGE25_64` consist of 0 values.
+-   In view of this, code chunk below will be used to replace zero values to 0.99.
+
+**Feature engineering**
+```{r}
+SIM_data$DESTIN_AGE7_12 <- ifelse(
+  SIM_data$DESTIN_AGE7_12 == 0,
+  0.99, SIM_data$DESTIN_AGE7_12)
+SIM_data$DESTIN_AGE13_24 <- ifelse(
+  SIM_data$DESTIN_AGE13_24 == 0,
+  0.99, SIM_data$DESTIN_AGE13_24)
+SIM_data$DESTIN_AGE25_64 <- ifelse(
+  SIM_data$DESTIN_AGE25_64 == 0,
+  0.99, SIM_data$DESTIN_AGE25_64)
+SIM_data$ORIGIN_AGE7_12 <- ifelse(
+  SIM_data$ORIGIN_AGE7_12 == 0,
+  0.99, SIM_data$ORIGIN_AGE7_12)
+SIM_data$ORIGIN_AGE13_24 <- ifelse(
+  SIM_data$ORIGIN_AGE13_24 == 0,
+  0.99, SIM_data$ORIGIN_AGE13_24)
+SIM_data$ORIGIN_AGE25_64 <- ifelse(
+  SIM_data$ORIGIN_AGE25_64 == 0,
+  0.99, SIM_data$ORIGIN_AGE25_64)
+```
+
+Check again:
+```{r}
+summary(SIM_data)
+```
+Observation:
+-   All the 0 values have been replaced by 0.99.
+
+## 6.4 Unconstrained Spatial Interaction Model
+
+`glm()` have various kinds of regression. This example we use poisson & log.
+
+formula should be using a `+`
+```{r}
+uncSIM <- glm(formula = TRIPS ~ 
+                log(ORIGIN_AGE25_64) + 
+                log(DESTIN_AGE25_64) +
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+uncSIM
+```
+:::{.callout-note}
+## Important
+distance = -1.5 
+definitely have to have -ve because it is inverse distance.
+:::
+
+## 6.5 R-squared function
+
+In order to measure how much variation of the trips can be accounted by the model we will write a function to calculate R-Squared value.
+
+```{r}
+# Helper function
+CalcRSquared <- function(observed,estimated){
+  r <- cor(observed,estimated)
+  R2 <- r^2
+  R2
+}
+
+# Compute R-squared
+CalcRSquared(uncSIM$data$TRIPS, uncSIM$fitted.values)
+
+r2_mcfadden(uncSIM)
+```
+0.446 is good. (why ah)
+
+## 6.6 Origin (Production) constrained SIM
+Fit an origin constrained SIM by using the code3 chunk below
+
+```{r}
+orcSIM <- glm(formula = TRIPS ~ 
+                 ORIGIN_SZ +
+                 log(DESTIN_AGE25_64) +
+                 log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+summary(orcSIM)
+```
+
+Examine how the constraints hold for destinations this time.
+
+```{r}
+CalcRSquared(orcSIM$data$TRIPS, orcSIM$fitted.values)
+```
+
+## 6.7 Destination Constrained
+
+```{r}
+decSIM <- glm(formula = TRIPS ~ 
+                DESTIN_SZ + 
+                log(ORIGIN_AGE25_64) + 
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+summary(decSIM)
+```
+
+We can examine how the constraints hold for destinations this time.
+
+```{r}
+CalcRSquared(decSIM$data$TRIPS, decSIM$fitted.values)
+```
+
+# 6.8 Doubly Constrained
+
+```{r}
+dbcSIM <- glm(formula = TRIPS ~ 
+                ORIGIN_SZ + 
+                DESTIN_SZ + 
+                log(dist),
+              family = poisson(link = "log"),
+              data = SIM_data,
+              na.action = na.exclude)
+summary(dbcSIM)
+```
+
+```{r}
+CalcRSquared(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
+```
+Relatively greater improvement in the R^2 value.
+
+# 7 Model Comparison
+
+:::panel-tabset
+
+## Create model list
+
+```{r}
+model_list <- list(unconstrained=uncSIM,
+                   originConstrained=orcSIM,
+                   destinationConstrained=decSIM,
+                   doublyConstrained=dbcSIM)
+```
+
+## Compute RMSE
+
+```{r}
+compare_performance(model_list,
+                    metrics = "RMSE")
+```
+The print above reveals that doubly constrained SIM is the best model among all the four SIMs because it has the smallest RMSE value of 1487.111.
+:::
+
+
+# 8 Visualising Fitted
+
+:::panel-tabset
+
+## Extract fitted values
+
+```{r}
+df <- as.data.frame(uncSIM$fitted.values) %>%
+  round(digits = 0)
+```
+
+## Join values to SIM_data data frame
+
+```{r}
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(uncTRIPS = "uncSIM$fitted.values")
+```
+
+## Repeat for Origin Constrained SIM (orcSIM)
+
+```{r}
+df <- as.data.frame(orcSIM$fitted.values) %>%
+  round(digits = 0)
+
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(orcTRIPS = "orcSIM$fitted.values")
+```
+
+
+## Repeat for Destination Constrained SIM (decSIM)
+
+```{r}
+df <- as.data.frame(decSIM$fitted.values) %>%
+  round(digits = 0)
+
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(decTRIPS = "decSIM$fitted.values")
+```
+
+
+## Repeat for Doubly Constrained SIM (dbcSIM)
+
+```{r}
+df <- as.data.frame(dbcSIM$fitted.values) %>%
+  round(digits = 0)
+
+SIM_data <- SIM_data %>%
+  cbind(df) %>%
+  rename(dbcTRIPS = "dbcSIM$fitted.values")
+```
+:::
+
+# 9 Plot
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+unc_p <- ggplot(data = SIM_data,
+                aes(x = uncTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+orc_p <- ggplot(data = SIM_data,
+                aes(x = orcTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+dec_p <- ggplot(data = SIM_data,
+                aes(x = decTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+dbc_p <- ggplot(data = SIM_data,
+                aes(x = dbcTRIPS,
+                    y = TRIPS)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+ggarrange(unc_p, orc_p, dec_p, dbc_p,
+          ncol = 2,
+          nrow = 2)
+```
+Looking at the plots, unconstrained a lot of dispersion.
+double constrained is best

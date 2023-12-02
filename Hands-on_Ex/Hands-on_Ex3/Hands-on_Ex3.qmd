@@ -138,6 +138,16 @@ mpsz <- st_read(dsn = "data/geospatial",
 mpsz
 ```
 
+```{r}
+mpsz <- st_read(dsn = "data/geospatial",
+                   layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+mpsz <- write_rds(mpsz, "data/rds/mpsz.rds")
+```
+
 ## Geospatial data wrangling
 
 ### Combine Busstop and mpsz

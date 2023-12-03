@@ -54,7 +54,7 @@ This will include the following tasks:
 The following packages will be used for this exercise:
 
 | Package                                                                                 | Description                                                                          |
-|------------------------------|------------------------------------------|
+|-----------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | [**sf**](https://r-spatial.github.io/sf/)                                               | For importing, managing, and handling geospatial data                                |
 | [**sfdep**](https://sfdep.josiahparry.com/)                                             | Used to compute spatial weights, global and local spatial autocorrelation statistics |
 | [**tmap**](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) | For thematic mapping                                                                 |
@@ -62,7 +62,7 @@ The following packages will be used for this exercise:
 | [**knitr**](https://cran.r-project.org/web/packages/knitr/index.html)                   | For dynamic report generation                                                        |
 | [**patchwork**](https://patchwork.data-imaginist.com/)                                  | For plot manipulation                                                                |
 | [**leaflet**](https://rstudio.github.io/leaflet/)                                       | For interactive maps                                                                 |
-| [**scales**](https://scales.r-lib.org/)                                                | For scaling graphs                                                                   |
+| [**scales**](https://scales.r-lib.org/)                                                 | For scaling graphs                                                                   |
 
 ## Code
 
@@ -93,10 +93,9 @@ The following data are used for this study:
 
 ## 3.2 Import & Preparation
 
-### 3.2.1 Aspatial
+### **3.2.1 Aspatial**
 
-::: panel-tabset
-## Import into R
+#### **3.2.1.1 Import into R**
 
 We will be importing the *Passenger Volume by Origin Destination Bus Stops* dataset for August 2023, downloaded from LTA DataMall by using *read_csv()* or **readr** package.
 
@@ -104,9 +103,9 @@ We will be importing the *Passenger Volume by Origin Destination Bus Stops* data
 odbus08 <- read_csv("data/aspatial/origin_destination_bus_202308.csv")
 ```
 
-## Data Exploration
+#### **3.2.1.2 Data Exploration**
 
-### (a) Attributes
+**(a) Attributes**
 
 *glimpse()* of the **dplyr** package allows us to see all columns and their data type in the data frame.
 
@@ -126,7 +125,7 @@ Insights:
     -   *TOTAL_TRIPS*: Number of trips
 -   We also note that values in *ORIGIN_PT_CODE* and *DESTINATON_PT_CODE* are in numeric data type. These should be in factor data type for further processing and georeferencing.
 
-### (b) Unique Bus Stops
+**(b) Unique Bus Stops**
 
 *n_distinct()* of the **dplyr** package allows us to count the unique originating bus stops in the data set.
 
@@ -134,11 +133,11 @@ Insights:
 n_distinct(odbus08$ORIGIN_PT_CODE)
 ```
 
-The results reveal that there are 5067 distinct origin bus stops.
+The results reveal that there are 5067 distinct origin bus stops based on August 2023 passenger data.
 
-## Data Wrangling
+#### **3.2.1.3 Data Wrangling**
 
-### (a) Convert Data Type
+**(a) Convert Data Type**
 
 *as.factor()* can be used to convert the variables ORIGIN_PT_CODE and DESTINATON_PT_CODE from numeric to categorical data type. We use glimpse() again to check the results.
 
@@ -151,9 +150,11 @@ glimpse(odbus08)
 
 Note that both of them are in factor data type now.
 
-### (b) Duplicates Check
+**(b) Duplicates Check**
 
 Before moving on to the next step, it is a good practice for us to check for duplicated records to prevent double counting of passenger trips.
+
+The code chunk below identifies all rows in the odbus08 dataframe that have an exact duplicate (i.e., another row with the same values in all columns) using *group_by_all()*.
 
 ```{r}
 duplicate <- odbus08 %>% 
@@ -166,7 +167,7 @@ duplicate
 
 Results confirm that there are no duplicated records found.
 
-### (c) Extracting the Study Data
+**(c) Extracting the Study Data**
 
 In our study, we would like to know patterns for 4 peak hour periods. Therefore, we can create a new variable *period* using the *ifelse()* that states whether an observation occurred during peak period using the code chunk below.
 
@@ -206,14 +207,14 @@ freq<- ggplot(data=peakperiods,
        aes(x=period,y=TRIPS))+
   geom_bar(stat="identity") +
   theme(legend.position="none")+
-  labs(title = "Frequency of Trip for each Peak Period",
+  labs(title = "Frequency of Trip for each Peak Period for August 2023",
       x = "Peak Period",
       y = "Frequency")
 
 freq + scale_y_continuous(labels=label_comma()) + scale_x_discrete(labels=c("WDA"="Weekday Afternoon", "WDM"= "Weekday Morning", "WEE"= "Weekend Evening", "WEM"= "Weekend Morning"))
 ```
 
-We can see that passenger volume on weekdays are much higher than over the weekends/holidays.
+We can see that passenger volume on weekdays are much higher than over the weekends/holidays for the month of August.
 
 Transpose each peak period `period` as a columns using *pivot_wider()* of **tidyr** package will allow us to create further variables at a bus stop level. We replace NA values with 0 to reflect when there are no traffic for certain periods.
 
@@ -233,14 +234,12 @@ Each peak period has its own column, as seen using the *glimpse()* function of *
 ```{r}
 glimpse(peakperiods_wide)
 ```
-:::
 
-### 3.2.2 Geospatial
+### **3.2.2 Geospatial**
 
-::: panel-tabset
-## Import into R
+#### **3.2.2.1 Import into R**
 
-### (a) Bus Stop Shapefile
+**(a) Bus Stop Shapefile**
 
 In this section, we import BusStop shapefile into RStudio using *st_read()* function of **sf** package. This data provides the locations of all bus stops as at Q2 of 2023. `crs = 3414` ensures coordinate reference system (CRS) is 3414, which is the [EPSG](https://epsg.io/) code for the SVY21 projection used in Singapore.
 
@@ -254,15 +253,15 @@ The imported shape file is simple features object of sf. From the output, we can
 
 Recall that there are 5067 origin bus stops from the `peakperiods_wide` table, compared to the 5161 bus stops from LTA's BusStop shape file. This could be due to timing difference -- LTA's `BusStop` shapefile is as of July 2023, while `peakperiod` is based on Aug 2023.
 
-*qtm()* allows us to quickly map the points to visualise the results.
+[*qtm()*](https://www.rdocumentation.org/packages/tmap/versions/3.3-4/topics/qtm) of **tmap** allows us to quickly map the points to visualise the results.
 
 ```{r}
 qtm(busstop)
 ```
 
-Note that there are 5 bus stops located outside Singapore, they are bus stops 46239, 46609, 47701, 46211, and 46219.
+Note that there are 5 bus stops located outside Singapore, they are bus stops **46239, 46609, 47701, 46211, and 46219**.
 
-### (b) Hexagon Layer
+**(b) Hexagon Layer**
 
 A hexagonal grid is used to replace the relative coarse and irregular Master Plan 2019 Planning Sub-zone GIS data set of URA. Hexagons have a number of advantages over these other shapes:
 
@@ -315,6 +314,8 @@ hexagon_grid_sf = st_sf(area_hexagon_grid) %>%
 
 We count the number of bus stops in each grid and keep grids with bus stops using the code chunks below.
 
+[*st_intersects*](https://postgis.net/docs/ST_Intersects.html) is used to identify the bus stops falling inside each hexagon, while [*lengths*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) returns the number of bus stops inside each hexagon.
+
 ```{r}
 # Create a column containing the count of bus stops in each grid
 hexagon_grid_sf$busstops = lengths(st_intersects(hexagon_grid_sf, busstop))
@@ -326,7 +327,7 @@ hexagon_w_busstops = filter(hexagon_grid_sf, busstops > 0)
 
 ## Step 4: Check & Visualise
 
-Let's confirm that all bus stops have been accounted for in our hexagon layer.
+Let's confirm that all bus stops have been accounted for in our hexagon layer by totalling the number of bus stop in all the hexagons. We use *sum()* to perform this.
 
 ```{r}
 sum(hexagon_w_busstops$busstops)
@@ -357,11 +358,15 @@ tm_shape(hexagon_w_busstops)+
 ```
 :::
 
-## Geospatial Data Wrangling
+#### **3.2.2.2 Geospatial Data Wrangling**
 
-### (a) Combining Busstop and hexagon layer
+**(a) Combining Busstop and hexagon layer**
 
-Code chunk below populates the grid ID (i.e. grid_id) of hexagon_w_busstops sf data frame into busstop sf data frame.
+Code chunk below populates the grid ID (i.e. grid_id) of `hexagon_w_busstops` sf data frame into `busstop` sf data frame using the following functions:
+
+-   `st_intersection()` is used to perform point and polygon overly and the output will be in point sf object.
+-   `select()` of dplyr package is then use to retain preferred variables from the data frames.
+-   `st_stop_geometry()` removes the geometry data to manipulate it like a regular dataframe using `tidyr` and `dplyr` functions
 
 ```{r}
 bs_wgrids <- st_intersection(busstop, hexagon_w_busstops) %>% 
@@ -369,12 +374,6 @@ bs_wgrids <- st_intersection(busstop, hexagon_w_busstops) %>%
   st_drop_geometry
 
 ```
-
-::: callout-note
--   `st_intersection()` is used to perform point and polygon overly and the output will be in point sf object.
--   `select()` of dplyr package is then use to retain preferred variables from the data frames.
--   `st_stop_geometry()` removes the geometry data to manipulate it like a regular dataframe using `tidyr` and `dplyr` functions
-:::
 
 Before we proceed, let's perform a duplicates check on `bs_wgrids`.
 
@@ -395,9 +394,9 @@ The code chunk below helps retain unique records.
 bs_wgrids <- unique(bs_wgrids)
 ```
 
-### (b) Populate PeakPeriods with Grid Details
+**(b) Populate PeakPeriods with Grid Details**
 
-We can now append the grid ID from bs_wgrids data frame onto peakperiods_wide data frame using *left_join*. Recall we previously identified 5 bus stops outside Singapore, *filter()* allows us to exclude the 5 outside Singapore. `LOC_DESC` = *first(*`LOC_DESC`*)* geta the first location description for each grid_id group, this allows us to have a rough reference of the name of the bus stop when visualising later.
+We can now append the grid ID from bs_wgrids data frame onto peakperiods_wide data frame using *left_join*. Recall we previously identified 5 bus stops outside Singapore, *filter()* allows us to exclude the 5 outside Singapore. `LOC_DESC` = *first(*`LOC_DESC`*)* geta the first location description for each grid_id group, this allows us to have a rough reference of the name of the bus stop when visualising later. *sum()* totals up the passenger trips at the hexagonal level. Lastly, we retain only the grids with passenger trip records and bus stop information.
 
 ```{r}
 origin_grid <- left_join(peakperiods_wide, bs_wgrids,
@@ -414,10 +413,13 @@ origin_grid <- left_join(peakperiods_wide, bs_wgrids,
   ) %>% 
   filter(!is.na(grid_id))
 
+# View results
 glimpse(origin_grid)
 ```
 
-## Variable Transformation
+#### **3.2.2.3 Variable Transformation**
+
+Let's visualise the distribution of passenger trips using a histogram with the **ggplot2** package.
 
 ```{r}
 #| code-fold: true
@@ -595,7 +597,9 @@ plot_distWEE <- ggplot(
 (plot_distWEM | plot_distWEE)
 ```
 
-The distribution of passenger trips for the 4 peak periods at a hexagon level appear to be highly skewed to the right. Rescaling our data using log transformation can greatly reduce the skewness.
+The distribution of passenger trips for the 4 peak periods at a hexagon level appear to be highly skewed to the right. Rescaling our data using log transformation can greatly reduce the skewness and make patterns more evident for analysis.
+
+*ifelse()* in the code chunk below checks for 0 values and performs log-transformation if the value is non-zero. This is crucial because log of 0 is undefined.
 
 ```{r}
 origin_grid_wider <- origin_grid %>% 
@@ -780,7 +784,9 @@ plot_distlogWEE <- ggplot(
 (plot_distlogWEM | plot_distlogWEE)
 ```
 
-## Retrieve Geometry
+#### **3.2.2.4 Retrieve Geometry**
+
+Now, we can finally add in the geometry for each hexagon grid using an *inner_join()* between `hexagon_w_busstops` (geospatial data) and `origin_grid_wider` (aspatial data). This ensures that only common grids in the two data sets are retained.
 
 ```{r}
 origin_gridwgeom <- inner_join(hexagon_w_busstops,
@@ -793,7 +799,6 @@ origin_gridwgeom <- inner_join(hexagon_w_busstops,
 
 In order to retain the geospatial properties, the left data frame must the sf data.frame (i.e. hexagon_w_busstop).
 :::
-:::
 
 # 4 Geovisualisation & Analysis
 
@@ -803,15 +808,17 @@ Different classification schemes highlight areas with the highest and/or lowest 
 
 The main methods of data classification are:
 
--   Quantile: each class contains an equal number of features. It assigns the same number of data values to each class. There are no empty classes or classes with too few or too many values
+-   **Quantile**: each class contains an equal number of features. It assigns the same number of data values to each class. There are no empty classes or classes with too few or too many values
 
--   Jenks/Natural breaks: seeks clumps of values that are clustered together in order to form categories that may reflect meaningful groupings of areas
+-   **Jenks/Natural breaks**: seeks clumps of values that are clustered together in order to form categories that may reflect meaningful groupings of areas
 
--   Equal: divides the range of attribute values into equal-sized sub-ranges
+-   **Equal**: divides the range of attribute values into equal-sized sub-ranges
 
 Since our variable is less skewed after log transformation, we can explore various classification methods for visualization. This approach may reveal interesting insights that were not immediately apparent before.
 
 ## 4.2 Visualising Bus Ridership
+
+We will visualise the spatial distribution of ridership for each peak period using a choropleth. This is performed using the code chunk below.
 
 ::: panel-tabset
 ## Weekday Morning Peak Period
@@ -831,7 +838,7 @@ plotlogWDM_q <-
           alpha=0.6) +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Quantile Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -847,7 +854,7 @@ plotlogWDM_e <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Equal Interval Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -863,7 +870,7 @@ plotlogWDM_j <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Jenks Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -876,13 +883,11 @@ The leftmost map above is partitioned using the quantile intervals. We can obser
 
 Bus stops nearer to the residential estates appeared to be popular during the weekday morning peak period. This is likely due to a large number of people commuting from home to their workplaces/schools on weekday mornings.
 
-Higher passenger traffic were noted at the bus stops nearer to MRT stations such as Harbourfront Station, Farrer Road Station, Yio Chu Kang Station, and Admirality Station. A possible contributing factor could be the people who are transiting from taking the MRTs to buses to get to their destinations.
-
 Lastly, Woodlands Checkpoint also demonstrated higher ridership. Woodlands Checkpoint is one of Singapore's two land border checkpoints, facilitating the movement of ground traffic between Singapore and Malaysia. This could potentially be due to the people commuting across the causeway between Malaysia and Singapore.
 
-The map using equal intervals provided similar insights. We noted that the bus stop located near to MRT stations had higher levels of ridership. In particular, more trips originated from Tiong Bahru Station, Buona Vista Station, Tanah Merah Station, Admiralty Station, Harbourfront, and Woodleigh Station. Bus interchanges also appeared to be popular origins, i.e. Bukit Panjang Interchange and Joo Koon Interchange. In general, more homogeneity is noted using the equal interval -- the contrast between hexagon to hexagon is less obvious.
+The map using equal intervals had more homogeneity -- the contrast between hexagon to hexagon is less obvious. There appears to be more spots of dark blue, indicating more areas with high ridership.
 
-Using Jenk's partitioning method, the results were largely similar to the other two types of interval classes. Higher bus ridership were spotted at bus stops within close proximity to MRT stations (Kranji Station, Buona Vista Station, Buangkok Station, Ranggung Station, Farrer Road Station, Stevens Station, Bedok Reservoir Station) and residential estates (Sunshine Place near Tengah, BLK 109 in Bedok, BLK 477A in Sengkang, Bef. BLK 629A in Woodlands, to name a few).
+Using Jenk's partitioning method, the results were largely similar to the other two types of interval classes.
 
 ## Weekday Afternoon Peak Period
 
@@ -901,7 +906,7 @@ plotlogWDA_q <-
           alpha=0.6) +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Quantile Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -917,7 +922,7 @@ plotlogWDA_e <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Equal Interval Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -933,7 +938,7 @@ plotlogWDA_j <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Jenks Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -945,15 +950,11 @@ tmap_arrange(plotlogWDA_q, plotlogWDA_e, plotlogWDA_j, asp=1, ncol=3)
 A look at the weekday afternoon ridership using the quantile classification yielded the following insights.
 
 -   Ridership from Woodlands Checkpoint remained high.
--   Bus stops in close proximity to MRT stations and popular bus stops in residential estates continued to have high passenger volumes.
--   More trips originating from institutional areas: Opposite Ngee Ann Poly, Temasek Poly, NIE BLK 2, School of the Arts
--   More trips originating from industrial buildings/business parks: North Link Bldg, Aft Senoko Way, Mapletree Business City, Woodlands Auto Hub, Opp Airline Hse, etc.
--   More trips originating from hospitals: Yishun Community Hospital, Changi General Hospital
+-   More trips originating from industrial/business parks: Mapletree Business City, Woodlands Auto Hub, Opp Airline Hse, etc.
 -   Seletar Camp also looked to have high passenger levels
--   The far West seemed to experience low ridership other than the bus stop opposite Tuas Link Station.
 -   Southern part of Singapore, consisting of more commercial areas, appeared to be more clustered as illustrated by the density of the darker red hexagons, compared to the weekday morning peak period.
 
-Using the Equal Interval classification, there were notably higher concentration of passengers who boarded the bus at Serangoon Station, Harbourfront/VivoCity, Tiong Bahru Station, Admiralty Station, and Punggol Station during weekday afternoons according to the equal interval classification method. Similar to the map for weekday morning peak period, the equal interval seemed to produce more homogeneous classifications.
+Using the Equal Interval classification, there were notably higher concentration of passengers trips across the island, producing more homogeneous classifications.
 
 Jenk's classification delivered similar insights to the quantile classification, where the higher concentration of ridership can be observed in the Southern downtown areas. It also highlighted Opp Airline Hse in the far East as a bus stop with high ridership, something not as visible using the equal interval method. Alternative methods of commute might be more popular in the West and North-West regions illustrated by the lighter shades of red hexagons.
 
@@ -974,7 +975,7 @@ plotlogWEM_q <-
           alpha=0.6) +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Quantile Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -990,7 +991,7 @@ plotlogWEM_e <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Equal Interval Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -1006,7 +1007,7 @@ plotlogWEM_j <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Jenks Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -1017,13 +1018,9 @@ tmap_arrange(plotlogWEM_q, plotlogWEM_e, plotlogWEM_j, asp=1, ncol=3)
 
 Generally, the distribution of bus ridership looks varied across the island.
 
-The map partitioned using the quantile intervals showed that during the weekend/holiday peak period, the ridership for far West region remained relatively low. Interestingly, the bus trips recorded from Seletar area appeared to have dipped compared to the weekday peak periods. This suggests that buses in these industrial areas could be oriented towards work-related travel, thus less common on weekends.
+The map partitioned using the quantile intervals showed that during the weekend/holiday peak period, the ridership for far West region remained relatively low. Interestingly, the bus trips recorded from Seletar area appeared to have dipped compared to the weekday peak periods. This suggests that buses in these industrial areas could be oriented towards work-related travel, thus less common on weekends. Bus stops nearer to housing estates, shopping malls, and Woodlands Checkpoint demonstrated higher levels of weekend morning ridership.
 
-Bus stops nearer to housing estates, shopping malls, and Woodlands Checkpoint demonstrated higher levels of weekend morning ridership. The bus stops with the highest boarding passengers are Sunshine Place, Opp BLK 271, BLK 252, Aft. Hasanah Mosque, Buona Vista Station, Harbourfront/Vivocity, Admiralty Station, BLK 555, Bedok Reservoir Station, BLK 22, BLK 109.
-
-The map using interval classification looked more monochromatic, there is less contrast with a more uniform appearance. The following bus stops have been identified to have the highest ridership during weekend/holiday morning peak period: Harbourfront/Vivocity, Tiong Bahru Station, Orchard Station/Lucky Plaza, Admirality Station, Aft. Punggol Road.
-
-Jenk's method identified more hot spots across the island than the other two methods.
+The map using interval classification looked more monochromatic, there is less contrast with a more uniform appearance. On the other hand, Jenk's method identified more hot spots across the island than the other two methods.
 
 ## Weekend/Holiday Evening
 
@@ -1042,7 +1039,7 @@ plotlogWEE_q <-
           alpha=0.6) +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Quantile Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -1058,7 +1055,7 @@ plotlogWEE_e <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Equal Interval Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -1074,7 +1071,7 @@ plotlogWEE_j <-
           id="LOC_DESC") +
   tm_borders(alpha = 0.5)+
   tm_layout(main.title="Jenks Classification",
-            main.title.size = 0.8,
+            main.title.size = 0.7,
             main.title.position = "center",
             legend.height = 0.35, 
             legend.width = 0.25,
@@ -1087,7 +1084,7 @@ On weekend/holiday evenings, there seemed to be increased ridership at the bus s
 
 Visually, it looks like there are more bus stops with high ridership across Singapore during the weekend/holiday evening peak period. For example, there seem to be an increase in passenger volume at the Tanah Merah Ferry compared to the other peak periods.
 
-Using the equal interval classification method, the bus stops with higher traffic seem to be quite consistent across the different peak periods. This includes Woodlands Checkpoint, Kranji Station, Admiralty Station, Serangoon Station, Aft. Punggol Road, Bukit Panjang MRT, Yio Chu Kang Interchange.
+Using the equal interval classification method, the general areas of bus stops with higher traffic seem to be quite consistent across the different peak periods.
 
 The Jenk's method seems to suggest that hot spots are mostly congregated in the core of Singapore, with cold spots along the periphery of Singapore.
 :::
@@ -1231,7 +1228,7 @@ The Moran I statistic ranges from -1 to 1. If the Moran I is:
 -   approximately zero: observations arranged randomly over space
 :::
 
-The code chunk below performs Moran's I statistical testing, using the null and alternative hypotheses as follows:
+The code chunk below performs Moran's I statistical testing with the adaptive weight matrix (i.e. `wm_ad`), using the null and alternative hypotheses as follows:
 
 *H0*: The observed spatial patterns of proportion of bus ridership in Singapore are not clustered (i.e. either random or dispersed). *H1*: The observed spatial patterns of proportion of bus ridership in Singapore are clustered.
 
@@ -1570,7 +1567,6 @@ plotp_lisalogWDM <-
 tmap_arrange(plot_lisaWDM, plotp_lisaWDM, plot_lisalogWDM, plotp_lisalogWDM, asp=2, ncol=2, nrow = 2) 
 ```
 
-
 ## Weekday Afternoon
 
 ```{r}
@@ -1644,7 +1640,6 @@ plotp_lisalogWDA <-
 tmap_arrange(plot_lisaWDA, plotp_lisaWDA, plot_lisalogWDA, plotp_lisalogWDA, asp=2, ncol=2)
 ```
 
-
 ## Weekend/Holiday Morning
 
 ```{r}
@@ -1716,7 +1711,6 @@ plotp_lisalogWEM <-
 
 tmap_arrange(plot_lisaWEM, plotp_lisaWEM, plot_lisalogWEM, plotp_lisalogWEM, asp=2, ncol=2, nrow = 2)
 ```
-
 
 ## Weekend/Holiday Evening
 
@@ -1793,7 +1787,9 @@ tmap_arrange(plot_lisaWEE, plotp_lisaWEE, plot_lisalogWEE, plotp_lisalogWEE, asp
 ```
 :::
 
-The plot on the top-left shows regions of positive (blue) and negative (orange) Moran's I statistics, indicating positive and negative clustering relationships. In particular, bus stops near transit hubs like Woodlands Checkpoint, Clementi Station, and Punggol Station have high Local Moran's I statistics.
+The plot on the top-left shows regions of positive (in blue) and negative (in red) Moran's I statistics, indicating positive and negative clustering relationships. In particular, bus stops near transit hubs like Clementi Station, Tampines Interchange, and Punggol Station have high Local Moran's I statistics across all four peak periods. On the contrary, Woodlands Checkpoint seems to only experience high Moran's I on weekday mornings.
+
+Notably, the Boon Lay MRT region displayed negative Local Moran's (in red) throughout the four peak periods, indicating that the volume of passenger trips at this area is dissimilar to its neighbours.
 
 On the top-right, we see that the p-values are significant at 5% significance level for the regions in the 3 darker shades of blue. We see that areas in the far West, North-West, and far East have statistically significant p-values for the cluster/outlier spatial relationship that they see.
 
@@ -1838,7 +1834,11 @@ tm_shape(lisa_WDM) +
 tm_shape(lisa_sig_WDM) +
   tm_fill("median",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WDM")) + 
   tm_borders(alpha = 0.4)
 
 ```
@@ -1860,7 +1860,11 @@ tm_shape(lisa_logWDM) +
 tm_shape(lisa_sig_logWDM) +
   tm_fill("mean",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WDM")) + 
   tm_borders(alpha = 0.4)
 
 ```
@@ -1892,7 +1896,11 @@ tm_shape(lisa_WDA) +
 tm_shape(lisa_sig_WDA) +
   tm_fill("median",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WDA")) +  
   tm_borders(alpha = 0.4)
 
 ```
@@ -1914,13 +1922,19 @@ tm_shape(lisa_logWDA) +
 tm_shape(lisa_sig_logWDA) +
   tm_fill("mean",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WDA")) + 
   tm_borders(alpha = 0.4)
 
 ```
 :::
 
-For the weekday afternoon peak period, areas exhibiting high-high autocorrelation include transit hubs such as Opp. LakeSide Station, Bef. Khatib Station, Compassvale Station, Serangoon Station, Downtown Station, and others. This trend mirrors that of weekday mornings, where transit hubs experience high bus ridership, likely due to passengers switching between different modes of transportation. Bus stop near area of attraction (like the Singapore Zoo) also showed high-high autocorrelation on weekday afternoons, compared to the weekday morning peak period.
+For the weekday afternoon peak period, areas exhibiting high-high autocorrelation include transit hubs such as Opp. LakeSide Station, Bef. Khatib Station, Compassvale Station, Serangoon Station, Downtown Station, and others. This trend mirrors that of weekday mornings, where transit hubs experience high bus ridership, likely due to passengers switching between different modes of transportation.
+
+Bus stop near area of attraction (like the Singapore Zoo) also showed high-low autocorrelation on weekday afternoons, compared to the high-high autocorrelation experienced on weekday morning peak period. This suggests that it's ridership remains high but lower ridership recorded in the surrounding regions.
 
 Using the log-transformed variable, the stretch along Orchard Road from Orchard Station to War Memorial Park, and CBD area in the South have also been highlighted as a high-high cluster.
 
@@ -1946,7 +1960,11 @@ tm_shape(lisa_WEM) +
 tm_shape(lisa_sig_WEM) +
   tm_fill("median",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WEM")) + 
   tm_borders(alpha = 0.4)
 
 ```
@@ -1968,7 +1986,11 @@ tm_shape(lisa_logWEM) +
 tm_shape(lisa_sig_logWEM) +
   tm_fill("mean",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WEM")) +
   tm_borders(alpha = 0.4)
 ```
 :::
@@ -1976,8 +1998,6 @@ tm_shape(lisa_sig_logWEM) +
 There are a lot more low-low regions on weekend/holiday mornings, suggesting generally lower levels of ridership compared to the weekday peak periods. These clusters were noted along the peripheral edges. This is in line with the observations made in our barplot in Section 3.2.1. Another difference with the weekday peak periods is the low-low autocorrelation noted at the Science Park area evidenced by the cluster of teal hexagons in the South-West region.
 
 There are also notably less high-high clusters in the West, specifically in the Jurong West / Boon Lay areas, and more of such clusters in the South-East region (i.e. Bras Basah and Marine Parade). There is also seemingly an influx of passengers from the Tanah Merah Ferry Terminal on weekend/holiday mornings, in contrast to the low-low autocorrelation for weekday-mornings.
-
-Compared to the high-high autocorrelation noted during weekday afternoon peak period, Singapore Zoo showed a High-Low autocorrelation on weekend mornings instead, suggesting that it's ridership remains high but lower ridership recorded in the surrounding regions.
 
 **Weekend/Holidays Evening**
 
@@ -2000,7 +2020,11 @@ tm_shape(lisa_WEE) +
 tm_shape(lisa_sig_WEE) +
   tm_fill("median",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WEE")) + 
   tm_borders(alpha = 0.4)
 
 ```
@@ -2022,7 +2046,11 @@ tm_shape(lisa_logWEE) +
 tm_shape(lisa_sig_logWEE) +
   tm_fill("mean",
           alpha=0.6,
-          id="LOC_DESC") + 
+          id="LOC_DESC",
+          popup.vars = c("Location Description: " = "LOC_DESC",
+                         "Grid ID: " = "grid_id",
+                         "No. of Bus Stops:" = "busstops",
+                         "No. of Passenger Trips :" = "WEE")) + 
   tm_borders(alpha = 0.4)
 
 ```
@@ -2032,7 +2060,7 @@ Using the untransformed passenger volume, the bus stops in the West, North-West,
 
 More clusters are shown with the log-transformed passenger volume. In particular, Hougang Central, Paya Lebar / Joo Chiat region, Toa Payoh Central, Tiong Bahru and Clementi were not previously highlighted as high-high clusters before.
 
-# 6 Conclusions
+# 6 Conclusion
 
 Our analysis of the originating bus stops of passenger trips has yielded several insights into statistically significant clusters and outliers based on the four peak hour periods. Overall, our analysis revealed clearly uneven distributions of bus ridership across Singapore. There is consistent high-high clusters around bus stops near transit hubs and residential neighborhoods across the four identified peak periods. In contrast, peripheral areas, predominantly composed of industrial estates, displayed low-low tendencies. Our analysis has also showed that variable transformation for a data with skewed distribution can deliver more in-dept results.
 
@@ -2045,3 +2073,9 @@ Future work can consider the following:
 -   It is also crucial to consider the population densities and socio-economic status of each region, as these factors might affect bus ridership compared to other modes of transport.
 
 -   Exploring the connectivity of available buses at each bus stop might also yield interesting insights. For example, feeder buses within a neighborhood might be more widely used compared to buses traveling long distances to secluded areas with less demand.
+
+# 7 References
+
+epsg.io (2023). *EPSG: 3414 SVY21 / Singapore TM.* <https://epsg.io/3414>
+
+ArcGIS Pro 3.2 (2023). *How Cluster and Outlier Analysis (Anselin Local Moran's I) works.* <https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-statistics/h-how-cluster-and-outlier-analysis-anselin-local-m.htm>

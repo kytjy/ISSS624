@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -172,7 +206,22 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1.1 Background</a></li>
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">1.2 Objectives</a></li>
+  </ul></li>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link" data-scroll-target="#loading-packages">2 Loading Packages</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3 Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#od-data" id="toc-od-data" class="nav-link" data-scroll-target="#od-data">3.1 OD Data</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -197,7 +246,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">December 6, 2023</p>
+      <p class="date-modified">December 7, 2023</p>
     </div>
   </div>
     
@@ -206,8 +255,289 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="overview" class="level1">
+<h1>1 Overview</h1>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">1.1 Background</h2>
+</section>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">1.2 Objectives</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Aim</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Tasks</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>The specific tasks of this take-home exercise are as follows:</p>
+<section id="geospatial-data-science" class="level3">
+<h3 class="anchored" data-anchor-id="geospatial-data-science"><strong>Geospatial Data Science</strong></h3>
+<ul>
+<li><p>Derive an analytical hexagon data of 325m (this distance is the perpendicular distance between the centre of the hexagon and its edges) to represent the <a href="https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf">traffic analysis zone (TAZ)</a>.</p></li>
+<li><p>With reference to the time intervals provided in the table below, construct an O-D matrix of commuter flows for a time interval of your choice by integrating <em>Passenger Volume by Origin Destination Bus Stops</em> and <em>Bus Stop Location</em> from <a href="https://datamall.lta.gov.sg/content/datamall/en.html">LTA DataMall</a>. The O-D matrix must be aggregated at the analytics hexagon level</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Peak hour period</th>
+<th>Bus tap on time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Weekday morning peak</td>
+<td>6am to 9am</td>
+</tr>
+<tr class="even">
+<td>Weekday afternoon peak</td>
+<td>5pm to 8pm</td>
+</tr>
+<tr class="odd">
+<td>Weekend/holiday morning peak</td>
+<td>11am to 2pm</td>
+</tr>
+<tr class="even">
+<td>Weekend/holiday evening peak</td>
+<td>4pm to 7pm</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>Display the O-D flows of the passenger trips by using appropriate geovisualisation methods (not more than 5 maps).</p></li>
+<li><p>Describe the spatial patterns revealed by the geovisualisation (not more than 100 words per visual).</p></li>
+<li><p>Assemble at least three propulsive and three attractiveness variables by using aspatial and geospatial from publicly available sources.</p></li>
+<li><p>Compute a distance matrix by using the analytical hexagon data derived earlier.</p></li>
+</ul>
+</section>
+<section id="spatial-interaction-modelling" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-interaction-modelling"><strong>Spatial Interaction Modelling</strong></h3>
+<ul>
+<li><p>Calibrate spatial interactive models to determine factors affecting urban commuting flows at the selected time interval.</p></li>
+<li><p>Present the modelling results by using appropriate geovisualisation and graphical visualisation methods. (Not more than 5 visuals)</p></li>
+<li><p>With reference to the Spatial Interaction Model output tables, maps and data visualisation prepared, describe the modelling results. (not more than 100 words per visual).</p></li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="loading-packages" class="level1">
+<h1>2 Loading Packages</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Packages</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>The following packages will be used for this exercise:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html"><strong>tmap</strong></a></td>
+<td>For thematic mapping</td>
+</tr>
+<tr class="even">
+<td><a href="https://r-spatial.github.io/sf/"><strong>sf</strong></a> &amp; <a href=""><strong>sp</strong></a></td>
+<td>For importing, integrating, processing, and transforming geospatial data</td>
+</tr>
+<tr class="odd">
+<td><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a></td>
+<td>For non-spatial data wrangling</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/knitr/"><strong>knitr</strong></a></td>
+<td>For dynamic report generation</td>
+</tr>
+<tr class="odd">
+<td><a href="https://scales.r-lib.org/"><strong>scales</strong></a></td>
+<td>For scaling graphs</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tmap, sf, sp, </span>
+<span id="cb1-2"><a href="#cb1-2"></a>               tidyverse, DT, performance, </span>
+<span id="cb1-3"><a href="#cb1-3"></a>               reshape2, ggpubr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-preparation" class="level1">
+<h1>3 Data Preparation</h1>
+<p>For the purpose of this assignment, the following data will be used:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th>Type</th>
+<th>Name</th>
+<th>As of Date</th>
+<th>Format</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Aspatial</td>
+<td>Passenger Volume by Origin Destination Bus Stops</td>
+<td>Oct 2023</td>
+<td>.csv</td>
+<td><a href="https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html">LTA DataMall</a></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Aspatial</td>
+<td>School Directory and Information (General information of schools)</td>
+<td>Mar 2022</td>
+<td>.csv</td>
+<td><a href="https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view">Data.gov.sg</a></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Aspatial</td>
+<td>HDB Property Information (Geocoded)</td>
+<td>Sep 2021</td>
+<td>.csv</td>
+<td>Courtesy of Prof T. S. Kam</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Geospatial</td>
+<td>Bus Stop Location</td>
+<td>Jul 2023</td>
+<td>.shp</td>
+<td><a href="https://datamall.lta.gov.sg/content/datamall/en/static-data.html">LTA DataMall</a></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Geospatial</td>
+<td>Train Station</td>
+<td>Feb 2023</td>
+<td>.shp</td>
+<td><a href="https://datamall.lta.gov.sg/content/datamall/en/static-data.html">LTA DataMall</a></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Geospatial</td>
+<td>Train Station Exit Point</td>
+<td>Aug 2023</td>
+<td>.shp</td>
+<td><a href="https://datamall.lta.gov.sg/content/datamall/en/static-data.html">LTA DataMall</a></td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Geospatial</td>
+<td>Master Plan 2019 Subzone Boundary</td>
+<td>2019</td>
+<td>.shp</td>
+<td>Courtesy of Prof T.S. Kam</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Geospatial</td>
+<td><p>Business, entertn, F&amp;B, FinServ, Leisure&amp;Recreation and Retails</p>
+<p>(Geospatial data sets of the locations of business establishments, entertainments, food and beverage outlets, financial centres, leisure and recreation centres, retail and services stores/outlets compiled for urban mobility study)</p></td>
+<td></td>
+<td>.shp</td>
+<td>Courtesy of Prof T.S. Kam</td>
+</tr>
+</tbody>
+</table>
+<section id="od-data" class="level2">
+<h2 class="anchored" data-anchor-id="od-data">3.1 OD Data</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Importing csv</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Attributes</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Extracting Study Data</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p><em>Passenger Volume by Origin Destination Bus Stops</em> dataset for October 2023, downloaded from LTA DataMall by using read_csv() or readr package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>odbus <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/origin_destination_bus_202310.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p><em>glimpse()</em> of the <strong>dplyr</strong> package allows us to see all columns and their data type in the data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">glimpse</span>(odbus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 5,694,297
+Columns: 7
+$ YEAR_MONTH          &lt;chr&gt; "2023-10", "2023-10", "2023-10", "2023-10", "2023-…
+$ DAY_TYPE            &lt;chr&gt; "WEEKENDS/HOLIDAY", "WEEKDAY", "WEEKENDS/HOLIDAY",…
+$ TIME_PER_HOUR       &lt;dbl&gt; 16, 16, 14, 14, 17, 17, 17, 7, 14, 14, 10, 20, 20,…
+$ PT_TYPE             &lt;chr&gt; "BUS", "BUS", "BUS", "BUS", "BUS", "BUS", "BUS", "…
+$ ORIGIN_PT_CODE      &lt;chr&gt; "04168", "04168", "80119", "80119", "44069", "2028…
+$ DESTINATION_PT_CODE &lt;chr&gt; "10051", "10051", "90079", "90079", "17229", "2014…
+$ TOTAL_TRIPS         &lt;dbl&gt; 3, 5, 3, 5, 4, 1, 24, 2, 1, 7, 3, 2, 5, 1, 1, 1, 1…</code></pre>
+</div>
+</div>
+<p><strong>Observations:</strong></p>
+<ul>
+<li>There are 7 variables in the odbus tibble data, they are:
+<ul>
+<li>YEAR_MONTH: Month in which data is collected</li>
+<li>DAY_TYPE: Weekdays or weekends/holidays</li>
+<li>TIME_PER_HOUR: Hour which the passenger trip is based on, in intervals from 0 to 23 hours</li>
+<li>PT_TYPE: Type of public transport, i.e.&nbsp;bus</li>
+<li>ORIGIN_PT_CODE: Origin bus stop ID</li>
+<li>DESTINATION_PT_CODE: Destination bus stop ID</li>
+</ul></li>
+<li>TOTAL_TRIPS: Number of trips We also note that values in ORIGIN_PT_CODE and DESTINATON_PT_CODE are in numeric data type. These should be in factor data type for further processing and georeferencing.</li>
+</ul>
+<p><em>as.factor()</em> can be used to convert the variables ORIGIN_PT_CODE and DESTINATON_PT_CODE from numeric to categorical data type. We use glimpse() again to check the results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>odbus<span class="sc">$</span>ORIGIN_PT_CODE <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(odbus<span class="sc">$</span>ORIGIN_PT_CODE)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>odbus<span class="sc">$</span>DESTINATION_PT_CODE <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(odbus<span class="sc">$</span>DESTINATION_PT_CODE)</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="fu">glimpse</span>(odbus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 5,694,297
+Columns: 7
+$ YEAR_MONTH          &lt;chr&gt; "2023-10", "2023-10", "2023-10", "2023-10", "2023-…
+$ DAY_TYPE            &lt;chr&gt; "WEEKENDS/HOLIDAY", "WEEKDAY", "WEEKENDS/HOLIDAY",…
+$ TIME_PER_HOUR       &lt;dbl&gt; 16, 16, 14, 14, 17, 17, 17, 7, 14, 14, 10, 20, 20,…
+$ PT_TYPE             &lt;chr&gt; "BUS", "BUS", "BUS", "BUS", "BUS", "BUS", "BUS", "…
+$ ORIGIN_PT_CODE      &lt;fct&gt; 04168, 04168, 80119, 80119, 44069, 20281, 20281, 1…
+$ DESTINATION_PT_CODE &lt;fct&gt; 10051, 10051, 90079, 90079, 17229, 20141, 20141, 1…
+$ TOTAL_TRIPS         &lt;dbl&gt; 3, 5, 3, 5, 4, 1, 24, 2, 1, 7, 3, 2, 5, 1, 1, 1, 1…</code></pre>
+</div>
+</div>
+<p>Note that both of them are in factor data type now.</p>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<p>In our study, we would like to know study the 4 peak hour periods identified. Therefore, we can create a new variable <code>period</code> using the <em>ifelse()</em> that states whether an observation occurred during peak period using the code chunk below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>peak <span class="ot">&lt;-</span> odbus <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="co"># Weekday morning peak</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="fu">mutate</span>(<span class="at">period=</span> <span class="fu">ifelse</span>(DAY_TYPE<span class="sc">==</span><span class="st">"WEEKDAY"</span> <span class="sc">&amp;</span> (TIME_PER_HOUR <span class="sc">&gt;=</span> <span class="dv">6</span> <span class="sc">&amp;</span> TIME_PER_HOUR <span class="sc">&lt;=</span> <span class="dv">9</span>), <span class="st">"WDM"</span>, </span>
+<span id="cb7-4"><a href="#cb7-4"></a>                        <span class="co"># Weekday afternoon peak</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>                        <span class="fu">ifelse</span>(DAY_TYPE<span class="sc">==</span><span class="st">"WEEKDAY"</span> <span class="sc">&amp;</span> (TIME_PER_HOUR <span class="sc">&gt;=</span> <span class="dv">17</span> <span class="sc">&amp;</span> TIME_PER_HOUR <span class="sc">&lt;=</span> <span class="dv">20</span>), <span class="st">"WDA"</span>, </span>
+<span id="cb7-6"><a href="#cb7-6"></a>                               <span class="co"># Weekend/holiday morning peak</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>                               <span class="fu">ifelse</span>(DAY_TYPE<span class="sc">==</span><span class="st">"WEEKENDS/HOLIDAY"</span> <span class="sc">&amp;</span> (TIME_PER_HOUR <span class="sc">&gt;=</span> <span class="dv">11</span> <span class="sc">&amp;</span> TIME_PER_HOUR <span class="sc">&lt;=</span> <span class="dv">14</span>), <span class="st">"WEM"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8"></a>                                      <span class="co"># Weekend/holiday evening peak</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>                                      <span class="fu">ifelse</span>(DAY_TYPE<span class="sc">==</span><span class="st">"WEEKENDS/HOLIDAY"</span> <span class="sc">&amp;</span> (TIME_PER_HOUR <span class="sc">&gt;=</span> <span class="dv">16</span> <span class="sc">&amp;</span> TIME_PER_HOUR <span class="sc">&lt;=</span> <span class="dv">19</span>), <span class="st">"WEE"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10"></a>                                             <span class="co"># Return off-peak if neither of the peak hour periods</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>                                             <span class="st">"Off-peak"</span>))))) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">select</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">8</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-13"><a href="#cb7-13"></a>  <span class="co"># filter helps to keep records that occurred during period periods</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>  <span class="fu">filter</span>(period <span class="sc">!=</span><span class="st">"Off-peak"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-15"><a href="#cb7-15"></a>  <span class="co"># aggregate the total passenger trips for each origin bus stop</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>  <span class="fu">group_by</span>(ORIGIN_PT_CODE, DESTINATION_PT_CODE, period) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-17"><a href="#cb7-17"></a>  <span class="fu">summarise</span>(<span class="at">TRIPS=</span><span class="fu">sum</span>(TOTAL_TRIPS))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

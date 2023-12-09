@@ -1,5 +1,5 @@
 ---
-title: "In-class Exercise 4: "
+title: "In-class Exercise 4: Geospatial Data Science with R"
 date: "09 December 2023"
 date-modified: "last-modified"
 editor: visual
@@ -16,3 +16,218 @@ format:
     code-summary: "Show the code"
     code-line-numbers: true
 ---
+
+# 1. Objective
+
+-   Perform geocoding data downloaded from data.gov.sg
+-   Calibrate Geographically Weighted Poisson Regression
+
+# 2. Getting Starting
+
+httr used to communicate with web server.
+
+```{r}
+pacman::p_load(tidyverse, sf, httr,
+               tmap)
+```
+
+# 3. Geocoding using SLA API
+
+
+```{r}
+#| eval: false 
+#| echo: false
+
+url <- "https://onemap.gov.sg/api/common/elastic/search"
+
+csv <- read_csv("data/aspatial/GeneralInformationofschools.csv")
+postcodes <-  csv$`postal_code`
+
+found <-  data.frame()
+not_found <- data.frame()
+
+for(postcode in postcodes){
+  query <- list('searchVal'=postcode,'returnGeom'='Y','getAddrDetails'='Y', 'pageNum'='1')
+  res <-  GET(url, query=query)
+  
+  if((content(res)$found)!=0){
+    found <- rbind(found,data.frame(content(res))[4:13])
+  } else{
+        not_found=data.frame(postcode)
+      }
+}
+
+```
+
+Next, the code chunk below will be used to combine both *found* and *not_found* data.frames into a single tibble data.frame called *merged*. At the same time, we will write *merged* and *not_found* tibble data.frames into csv file format for subseuent use.
+
+```{r}
+#| eval: false 
+#| echo: false
+merged = merge(csv, found, by.x='postal_code', by.y='results.POSTAL', all=TRUE)
+write.csv(merged, file="data/aspatial/schools.csv")
+write.csv(not_found, file="data/aspatial/not_found.csv")
+```
+
+
+# 4. Converting an aspatial data into a single feature tibble data.frame
+
+## 4.1 Importing and tidying *schools* data
+
+```{r}
+schools <- read_csv("data/aspatial/schools.csv") %>% 
+  rename(latitude=results.LATITUDE,
+         longitude=results.LONGITUDE) %>% 
+  select(postal_code, school_name, latitude, longitude)
+
+```
+## 4.2 Converting an aspatial data into sf tibble data.frame
+
+Next, convert the aspatial data into a simple feature tibble data called schools_sf.
+
+```{r}
+schools_sf <- st_as_sf(schools, 
+                       coords=c("longitude","latitude"), 
+                       crs=4326) %>% 
+  st_transform(crs=3414)
+```
+
+3 variables in output sf tibble data frame. Lon&lat combined into 1 point column.
+
+### 4.3 Plotting a point simple feature layer
+
+To ensure that *schools* sf tibble data.fame has been projected and converted correctly, plot the schools point data for visual inspection.
+
+```{r}
+
+#| code-fold: true
+#| code-summary: "Show the code"
+
+tmap_mode("view")
+tm_shape(schools_sf) +
+  tm_dots()+
+tm_view(set.zoom.limits = c(11,14)) # to fix the map extent, so cannot zoom in too much
+tmap_mode("plot")
+```
+
+
+# 5. Preparing
+
+```{r}
+mpsz <- st_read(dsn="data/geospatial",                   
+                layer="MPSZ-2019")%>%   
+  st_transform(crs = 3414)
+```
+
+
+```{r}
+mpsz$`SCHOOL_COUNT` <- lengths(
+  st_intersects(
+    mpsz, schools_sf #must be in the same projection system
+  )
+)
+```
+
+```{r}
+summary(mpsz$SCHOOL_COUNT)
+```
+
+```{r}
+business_sf <- st_read(dsn = "data/geospatial",
+                   layer = "Business") 
+```
+
+```{r}
+tmap_mode("plot")
+tmap_options(check.and.fix = TRUE) # to close any gaps
+tm_shape(mpsz) + # plot polygon first = boundary map
+  tm_polygons()+
+tm_shape(business_sf)+
+  tm_dots()
+```
+
+
+
+# 6. Data Integration & Wrangling
+
+
+```{r}
+#flow_data <-  flow_data %>% 
+#  left_join(mpsz_tidy,
+#            by= c("DESTIN_SZ" = "SUBZONE_C"))
+```
+# 7. Model Calibration
+
+```{r}
+pacman::p_load(tmap, sf, performance,
+               ggpubr, tidyverse)
+```
+
+```{r}
+flow_data <- read_rds("data/rds/flow_data_tidy.rds")
+glimpse(flow_data)
+```
+```{r}
+flow_data$FlowNoIntra <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ,
+  0, flow_data$MORNING_PEAK)
+flow_data$offset <- ifelse(
+  flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ,
+  0.000001, 1)
+
+inter_zonal_flow <- flow_data %>% 
+  filter(FlowNoIntra >0)
+
+inter_zonal_flow <- inter_zonal_flow %>% 
+  rename(TRIPS = MORNING_PEAK,
+         DIST = dist)
+```
+
+# 8. Origin (Production) Constrained SIM
+
+```{r}
+orcSIM_Poisson <- glm(formula = TRIPS ~
+                        ORIGIN_SZ +
+                        log(SCHOOL_COUNT) +
+                        log(RETAIL_COUNT) +
+                        log(DIST) -1, # -1 to remove intersect for origin-constrained and destination-constrained
+                      family = poisson(link="log"),
+                      data= inter_zonal_flow,
+                      na.action= na.exclude) # excludes any NAs in the data
+summary(orcSIM_Poisson)
+```
+
+Check the log variables, 1st col should always be positive to attract people. 
+Distance must be -ve bc it is inverse relationship. ie people less willing to travel with longer dist = distance decay
+p-values should be < 0.05 to accept as part of the conceptual models.
+if > 0.05 = not statistically significant.
+
+
+## 8.1. Goodness-of-Fit
+```{r}
+CalcRSquared <- function(observed, estimated) {
+  r <- cor(observed, estimated)
+  R2 <- r^2
+  R2
+}
+
+CalcRSquared(orcSIM_Poisson$data$TRIPS, orcSIM_Poisson$fitted.values)
+
+```
+Used residuals in the orcSIM_Poisson table to see which one is useful
+
+
+## 8.2 Root mean square error
+```{r}
+performance_rmse(orcSIM_Poisson,
+                 normalized=FALSE) #only use raw values rather than standardised variables
+```
+
+# 9. Doubly Constrained
+
+Dont need to -1 because no destination attractiveness
+
+
+# 10. Model Comparison
+
+Find out outlier, see how model is affected if outlier is removed.

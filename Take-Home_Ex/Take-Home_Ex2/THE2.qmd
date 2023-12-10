@@ -3,6 +3,7 @@ title: "Take-home Exercise 2: Applied Spatial Interaction Models: A case study o
 date: "07 December 2023"
 date-modified: "last-modified"
 editor: visual
+toc-depth: 4
 execute:
   freeze: auto
   echo: true #all the codes will appear
@@ -18,6 +19,22 @@ format:
 
 # 1 Overview
 
+-   Chapter 16
+-   MPSZ contains too many catchments areas, way too coarse. Areas could be very big but the areas peole reside in could be very small.
+-   MAUP - modified area unit problem - to address the limitations of formal admin boundaries
+-   Chapter 15: low and high flows - serves as exploratory purpose to see spatial interaction
+    -   Can we build model to explain this? Use SIM.
+    -   Poisson regression (response variable should be in +ve and integers)
+    -   GLM (generalised linear regression model)
+    -   prepare 1 set of data for origin and destination (could be origin-constrained or destination-constrained)
+    -   Passenger volume by origin (prepare flow data at analytical hexagon layer) --\> HOE3
+    -   Train station & train stn exit point: should choose either one
+    -   Sch directory --\> attractiveness: to derive school location to come up with more specific indicators (HOE3 uses population but should use attractiveness)
+    -   Property --\> total dwelling units (proxy for population) (propulsive factor)
+    -   Biz/entertainment --\> used for journey to work for model. Dont have to use all eg shops only open at 10am. Might have to remove certain categories like theatres.
+-   WDM (ppl go work) - attractiveness = schools, workplaces
+-   Calibrate different models and compapre to see which one gives the best performance
+
 ## 1.1 Background
 
 ## 1.2 Objectives
@@ -29,9 +46,9 @@ format:
 
 The specific tasks of this take-home exercise are as follows:
 
-### **Geospatial Data Science**
+### Geospatial Data Science
 
--   Derive an analytical hexagon data of 325m (this distance is the perpendicular distance between the centre of the hexagon and its edges) to represent the [traffic analysis zone (TAZ)](https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf).
+-   Derive an analytical hexagon data of 375m (this distance is the perpendicular distance between the centre of the hexagon and its edges) to represent the [traffic analysis zone (TAZ)](https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf).
 
 -   With reference to the time intervals provided in the table below, construct an O-D matrix of commuter flows for a time interval of your choice by integrating *Passenger Volume by Origin Destination Bus Stops* and *Bus Stop Location* from [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en.html). The O-D matrix must be aggregated at the analytics hexagon level
 
@@ -50,7 +67,7 @@ The specific tasks of this take-home exercise are as follows:
 
 -   Compute a distance matrix by using the analytical hexagon data derived earlier.
 
-### **Spatial Interaction Modelling**
+### Spatial Interaction Modelling
 
 -   Calibrate spatial interactive models to determine factors affecting urban commuting flows at the selected time interval.
 
@@ -66,26 +83,20 @@ The specific tasks of this take-home exercise are as follows:
 
 The following packages will be used for this exercise:
 
-+-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | Package                                                                                 | Description                                                              |
-+=========================================================================================+==========================================================================+
+|---------------------------------------|---------------------------------|
 | [**tmap**](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) | For thematic mapping                                                     |
-+-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | [**sf**](https://r-spatial.github.io/sf/) & [**sp**]()                                  | For importing, integrating, processing, and transforming geospatial data |
-+-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | [**tidyverse**](https://www.tidyverse.org/)                                             | For non-spatial data wrangling                                           |
-+-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | [**knitr**](https://cran.r-project.org/web/packages/knitr/)                             | For dynamic report generation                                            |
-+-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------+
 | [**scales**](https://scales.r-lib.org/)                                                 | For scaling graphs                                                       |
-+-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------+
 
 ## Code
 
 ```{r}
 pacman::p_load(tmap, sf, sp, 
                tidyverse, DT, performance, 
-               reshape2, ggpubr)
+               reshape2, ggpubr, stplanr)
 ```
 :::
 
@@ -93,27 +104,17 @@ pacman::p_load(tmap, sf, sp,
 
 For the purpose of this assignment, the following data will be used:
 
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-|   | Type       | Name                                                                                                                                                                                                                                   | As of Date | Format | Source                                                                                                   |
-+===+============+========================================================================================================================================================================================================================================+============+========+==========================================================================================================+
-| 1 | Aspatial   | Passenger Volume by Origin Destination Bus Stops                                                                                                                                                                                       | Oct 2023   | .csv   | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html)                        |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-| 2 | Aspatial   | School Directory and Information (General information of schools)                                                                                                                                                                      | Mar 2022   | .csv   | [Data.gov.sg](https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view) |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-| 3 | Aspatial   | HDB Property Information (Geocoded)                                                                                                                                                                                                    | Sep 2021   | .csv   | Courtesy of Prof T. S. Kam                                                                               |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-| 4 | Geospatial | Bus Stop Location                                                                                                                                                                                                                      | Jul 2023   | .shp   | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-| 5 | Geospatial | Train Station                                                                                                                                                                                                                          | Feb 2023   | .shp   | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-| 6 | Geospatial | Train Station Exit Point                                                                                                                                                                                                               | Aug 2023   | .shp   | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-| 7 | Geospatial | Master Plan 2019 Subzone Boundary                                                                                                                                                                                                      | 2019       | .shp   | Courtesy of Prof T.S. Kam                                                                                |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
-| 8 | Geospatial | Business, entertn, F&B, FinServ, Leisure&Recreation and Retails                                                                                                                                                                        |            | .shp   | Courtesy of Prof T.S. Kam                                                                                |
-|   |            |                                                                                                                                                                                                                                        |            |        |                                                                                                          |
-|   |            | (Geospatial data sets of the locations of business establishments, entertainments, food and beverage outlets, financial centres, leisure and recreation centres, retail and services stores/outlets compiled for urban mobility study) |            |        |                                                                                                          |
-+---+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------+--------+----------------------------------------------------------------------------------------------------------+
+|     |            |                                                                                                                                                                                                                                                                                                                                 |                |            |                                                                                                          |
+|-----------|-----------|----------------|-----------|-----------|-----------|
+|     | **Type**   | **Name**                                                                                                                                                                                                                                                                                                                        | **As of Date** | **Format** | **Source**                                                                                               |
+| 1   | Aspatial   | Passenger Volume by Origin Destination Bus Stops                                                                                                                                                                                                                                                                                | Oct 2023       | .csv       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html)                        |
+| 2   | Aspatial   | School Directory and Information (General information of schools)                                                                                                                                                                                                                                                               | Mar 2022       | .csv       | [Data.gov.sg](https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view) |
+| 3   | Aspatial   | HDB Property Information (Geocoded)                                                                                                                                                                                                                                                                                             | Sep 2021       | .csv       | Courtesy of Prof T. S. Kam                                                                               |
+| 4   | Geospatial | Bus Stop Location                                                                                                                                                                                                                                                                                                               | Jul 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
+| 5   | Geospatial | Train Station                                                                                                                                                                                                                                                                                                                   | Feb 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
+| 6   | Geospatial | Train Station Exit Point                                                                                                                                                                                                                                                                                                        | Aug 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
+| 7   | Geospatial | Master Plan 2019 Subzone Boundary                                                                                                                                                                                                                                                                                               | 2019           | .shp       | Courtesy of Prof T.S. Kam                                                                                |
+| 8   | Geospatial | Business (incl. industrial parks), entertn, F&B, FinServ, Leisure&Recreation and Retails (Geospatial data sets of the locations of business establishments, entertainments, food and beverage outlets, financial centres, leisure and recreation centres, retail and services stores/outlets compiled for urban mobility study) |                | .shp       | Courtesy of Prof T.S. Kam                                                                                |
 
 ## 3.1 OD Data
 
@@ -158,27 +159,394 @@ Note that both of them are in factor data type now.
 
 ## Extracting Study Data
 
-In our study, we would like to know study the 4 peak hour periods identified. Therefore, we can create a new variable `period` using the *ifelse()* that states whether an observation occurred during peak period using the code chunk below.
+In our study, we would like to know study the 1 of the peak hour periods identified. We will be analysing the **Weekday Morning** peak periods thereafter. Therefore, we can employ a combination of the following functions to obtain the relevant data:
+
+Summary of the functions used as follow:
+
+-   *filter()*: Retains rows that satisfies our condition (i.e. Weekday Morning peak period)
+
+-   *select()* of **dplyr** package: Retains the desired variables for further analysis.
+
+-   *group_by()* and *summarise()*: Aggregates the total trips at each combination of origin bus stop, destination bus stop, and peak period.
 
 ```{r}
-peak <- odbus %>%
-  # Weekday morning peak
-  mutate(period= ifelse(DAY_TYPE=="WEEKDAY" & (TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9), "WDM", 
-                        # Weekday afternoon peak
-                        ifelse(DAY_TYPE=="WEEKDAY" & (TIME_PER_HOUR >= 17 & TIME_PER_HOUR <= 20), "WDA", 
-                               # Weekend/holiday morning peak
-                               ifelse(DAY_TYPE=="WEEKENDS/HOLIDAY" & (TIME_PER_HOUR >= 11 & TIME_PER_HOUR <= 14), "WEM",
-                                      # Weekend/holiday evening peak
-                                      ifelse(DAY_TYPE=="WEEKENDS/HOLIDAY" & (TIME_PER_HOUR >= 16 & TIME_PER_HOUR <= 19), "WEE",
-                                             # Return off-peak if neither of the peak hour periods
-                                             "Off-peak"))))) %>% 
-  select(5:8) %>% 
-  # filter helps to keep records that occurred during period periods
-  filter(period !="Off-peak") %>% 
-  # aggregate the total passenger trips for each origin bus stop
-  group_by(ORIGIN_PT_CODE, DESTINATION_PT_CODE, period) %>% 
+WDMpeak <- odbus %>%
+  filter(DAY_TYPE=="WEEKDAY" & (TIME_PER_HOUR >= 6 & TIME_PER_HOUR <= 9)) %>% 
+  dplyr::select(5:7)  %>% 
+  group_by(ORIGIN_PT_CODE, DESTINATION_PT_CODE) %>% 
   summarise(TRIPS=sum(TOTAL_TRIPS))
 ```
 
+Let's check the output using the *glimpse()* function of dplyr.
 
+```{r}
+glimpse(WDMpeak)
+```
 :::
+
+## 3.2 Geospatial Data
+
+### 3.2.1 Importing Geospatial Data
+
+For the purpose of this exercise, two geospatial data will be used. They are:
+
+-   MPSZ-2019: This data provides the sub-zone boundary of URA Master Plan 2019.
+-   BusStop: This data provides the location of bus stop as at Jul 2023.
+-   Analytical hexagon: Hexagonal grids of 375m (this distance is the perpendicular distance between the centre of the hexagon and its edges) to represent the traffic analysis zone.
+-   
+
+In this section, we import the shapefiles into RStudio using *st_read()* function of sf package. *st_transform()* function of **sf** package is used to transform the projection to coordinate reference system (CRS) 3414, which is the EPSG code for the SVY21 projection used in Singapore.
+
+::: panel-tabset
+## Master Plan Subzone
+
+```{r}
+mpsz <- st_read(dsn="data/geospatial",                   
+                layer="MPSZ-2019")%>%   
+  st_transform(crs = 3414)
+```
+
+In the code chunk below, *tm_shape()* of **tmap** package is used to define the input data (i.e mpsz) and tm_polygons() is used to draw the planning subzone polygons.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false 
+#| echo: false
+
+tmap_mode("plot")
+
+tm_shape(mpsz) +
+  tm_polygons()
+```
+
+## Bus Stop
+
+```{r}
+busstop <- st_read(dsn = "data/geospatial",
+                   layer = "BusStop") %>% 
+  st_transform(crs = 3414)
+
+```
+
+Busstop represents sf point objects for 5161 bus stop in Singapore.
+
+To visualise the points of the bus stops, we can use *tm_shape()* of tmap package with each bus stop point displayed as dots. *tmap_mode* allows us to view static maps with `plot` and interactive maps with `view`.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false 
+#| echo: false
+
+tmap_mode("plot")
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(busstop) +
+  tm_dots()+
+tm_view(set.zoom.limits = c(11,14)) # to fix the map extent, so cannot zoom in too much
+```
+
+Note that there are 5 bus stops located outside Singapore, they are bus stops **46239, 46609, 47701, 46211, and 46219**. The code chunk below uses *filter()* to exclude the 5 bus stops outside Singapore.
+
+```{r}
+busstop <- busstop %>%   
+  filter(!BUS_STOP_N %in% c(46239, 46609, 47701, 46211, 46219))
+```
+
+## Analytical Hexagon
+
+A hexagonal grid is used to represent the traffic analysis zones, which helps to model travel demand through capturing the spatial aspects of trip origins and destinations.
+
+**Step 1: Create Hexagonal Grids**
+
+We first create a hexagonal grid layer of 375m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [*st_make_grid*](https://r-spatial.github.io/sf/reference/st_make_grid.html), [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below, and *row_number()* to assign an ID to each hexagon.
+
+::: {.callout-note collapse="true"}
+## *st_make_grid* Arguments
+
+*st_make_grid* function is used to create a grid over a spatial object. It takes 4 arguments, they are:
+
+-   x: sf object; the input spatial data
+
+-   cellsize: for hexagonal cells the distance between opposite edges in the unit of the crs the spatial data is using. In this case, we take cellsize to be 325m \* 2 = 650m
+
+![](images/hex.PNG){width="276"}
+
+-   what: character; one of: `"polygons"`, `"corners"`, or `"centers"`
+-   square: indicates whether you are a square grid (TRUE) or hexagon grid (FALSE)
+:::
+
+```{r}
+area_hexagon_grid = st_make_grid(busstop, 
+                                 750, 
+                                 what = "polygons", 
+                                 square = FALSE,
+                                 crs = 3414) %>% 
+  st_sf() %>% 
+  mutate(grid_id = row_number())
+  
+```
+
+**Step 2: Remove grids with no bus stops**
+
+We count the number of bus stops in each grid and retain only the grids with bus stops using the code chunks below.
+
+[*st_intersects*](https://postgis.net/docs/ST_Intersects.html) is used to identify the bus stops falling inside each hexagon, while [*lengths*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) returns the number of bus stops inside each hexagon.
+
+```{r}
+# Create a column containing the count of bus stops in each grid
+area_hexagon_grid$busstops = lengths(st_intersects(area_hexagon_grid, busstop))
+
+# Retain hexagons with bus stops
+area_hexagon_grid = filter(area_hexagon_grid, busstops > 0)
+
+sum(area_hexagon_grid$busstops, na.rm = TRUE)
+
+```
+
+Note that there are 5156 bus stops, which tallies to the 5156 from the raw `Busstop` shape file after deducting for the 5 bus stops outside Singapore boundary, suggesting that the hexagons have managed to capture all the Singapore bus stops as expected.
+
+## Train Station Exits
+
+**trainstationexits** contains the MRT station names and exits, as well as the respective point geometries.
+
+```{r}
+trainstationexits <- st_read(dsn = "data/geospatial",
+                   layer = "Train_Station_Exit_layer") %>% 
+  st_transform(crs = 3414)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| echo: false
+
+tmap_mode("plot")
+tm_shape(mpsz) +
+  tm_polygons() +
+tm_shape(trainstationexits) +
+  tm_dots()+
+tm_view(set.zoom.limits = c(11,14))
+```
+:::
+
+## 3.3 Geospatial Data Wrangling
+
+### 3.3.1 Combining Busstop and Hexagons
+
+Code chunk below populates the grid ID (i.e. grid_id) of `hexagon_w_busstops` sf data frame into `busstop` sf data frame using the following functions:
+
+-   `st_intersection()` is used to perform point and polygon overly and the output will be in point sf object.
+
+-   `select()` of **dplyr** package is then use to retain preferred variables from the data frames.
+
+-   `st_stop_geometry()` removes the geometry data to manipulate it like a regular dataframe using `tidyr` and `dplyr` functions
+
+```{r}
+bs_wgrids <- st_intersection(busstop, area_hexagon_grid) %>% 
+  dplyr::select(BUS_STOP_N,BUS_ROOF_N,LOC_DESC, grid_id) %>% 
+  st_drop_geometry
+```
+
+Before we proceed, let's perform a duplicates check on `bs_wgrids`.
+
+```{r}
+duplicate <- bs_wgrids %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+duplicate
+```
+
+Results displayed 4 seemingly genuine duplicated records, with same bus stop number, roof, and location description. We remove these to prevent double-counting.
+
+The code chunk below helps retain unique records.
+
+```{r}
+bs_wgrids <- unique(bs_wgrids)
+```
+
+### 3.3.2 Populate Passenger Volume data with Grid IDs
+
+Next, we are going to append the Grid IDs based on origin bus stops from `bs_wgrids` data frame onto `WDMpeak` data frame.
+
+```{r}
+od_data <- left_join(WDMpeak , bs_wgrids,
+            by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>% 
+  rename(ORIGIN_BS = ORIGIN_PT_CODE,
+         ORIGIN_GRID = grid_id,
+         DESTIN_BS = DESTINATION_PT_CODE)
+```
+
+Next, we will update od_data data frame with the Grid IDs of destination bus stops.
+
+```{r}
+od_data <- left_join(od_data , bs_wgrids,
+            by = c("DESTIN_BS" = "BUS_STOP_N")) %>% 
+           rename(DESTIN_GRID = grid_id)
+
+glimpse(od_data)
+```
+
+The code chunk below allows us to check for duplicates to prevent double counting. The results indicate that there are no duplicates found.
+
+```{r}
+duplicate2 <- od_data %>%
+  group_by_all() %>%
+  filter(n()>1) %>%
+  ungroup()
+
+duplicate2
+```
+
+The code chunk below removes rows with missing data using *drop_na()* and aggregates the total passenger trips at each origin-destination grid level with *group_by()* and *summarise()*.
+
+```{r}
+od_data <- od_data %>%
+  drop_na() %>%
+  group_by(ORIGIN_GRID, DESTIN_GRID) %>%
+  summarise(MORNING_PEAK = sum(TRIPS))
+```
+
+# 4 Visualising Spatial Interaction
+
+## 4.1 Removing Intra-Zonal Flows
+
+Intrazonal travels are considered localised and short duration trips within a transportation analysis zone (i.e. within a hexagon). For our analysis, we will be removing them.
+
+```{r}
+od_data1 <- od_data[od_data$ORIGIN_GRID!=od_data$DESTIN_GRID,]
+```
+
+There are 625 intra-zonal travels noted from the decrease in observations from 65,691 to 65,066.
+
+## 4.2 Creating Flow Lines
+
+```{r}
+flowLine <- od2line(flow = od_data1, 
+                    zones = area_hexagon_grid,
+                    zone_code = "grid_id")
+
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+
+tm_basemap("OneMapSG.Grey") +
+tm_shape(mpsz) +
+  tm_polygons(alpha = 0) +
+  tm_borders(alpha = 0.5)+
+tm_shape(area_hexagon_grid) +
+  tm_fill(alpha=0.7, 
+          palette="RdBu") +
+  tm_borders(alpha = 0.5)+
+flowLine %>%  
+  filter(MORNING_PEAK >= 10000) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.3)+
+tm_view(set.zoom.limits = c(11,14))
+```
+
+# 5 Computing Distance Matrix
+
+## 5.1 Converting from sf data.table to SpatialPolygonsDataFrame
+
+Firstly, [`as.Spatial()`](https://r-spatial.github.io/sf/reference/coerce-methods.html) will be used to convert *area_hexagon_grid* from sf tibble data frame to SpatialPolygonsDataFrame of sp object as shown in the code chunk below.
+
+```{r}
+hexgrid_sp <- as(area_hexagon_grid, "Spatial")
+hexgrid_sp
+```
+
+## 5.2 Computing Distance Matrix
+
+Next, [`spDists()`](https://www.rdocumentation.org/packages/sp/versions/2.1-1/topics/spDistsN1) of sp package will be used to compute the Euclidean distance between the centroids of the planning subzones.
+
+```{r}
+dist <- spDists(hexgrid_sp, 
+                longlat = FALSE)
+head(dist, n=c(8, 8))
+```
+
+Notice that the output *dist* is a matrix object class of R. Also notice that the column headers and row headers are not labeled with the grid IDs.
+
+```{r}
+grid_id <- area_hexagon_grid$grid_id
+
+colnames(dist) <- paste0(grid_id)
+rownames(dist) <- paste0(grid_id)
+```
+
+## 5.3 Pivoting Distance Value by Grid ID
+Next, we will pivot the distance matrix into a long table by using the row and column grid IDs as show in the code chunk below.
+
+Notice that the within zone distance is 0.
+
+```{r}
+distPair <- melt(dist) %>%
+  rename(dist = value,
+         orig = Var1,
+         dest = Var2)
+
+head(distPair, 10)
+```
+
+## 5.4 Updating Intra-Zonal Distances
+
+```{r}
+distPair %>%
+  filter(dist > 0) %>%
+  summary()
+```
+
+```{r}
+distPair$dist <- ifelse(distPair$dist == 0,
+                        100, 
+                        distPair$dist)
+```
+
+
+```{r}
+# Check the result data.frame.
+summary(distPair)
+  
+```
+Saved the dataframe for future use
+
+```{r}
+write_rds(distPair, "data/rds/distPair.rds") 
+```
+
+## 5.5 Separating intra-flow from passenger volume df
+```{r}
+flow_data <- od_data %>%
+  group_by(ORIGIN_GRID, DESTIN_GRID) %>% 
+  summarize(TRIPS = sum(MORNING_PEAK)) 
+
+glimpse(flow_data)
+```
+
+```{r}
+#flow_data$ORIGIN_GRID <- as.factor(flow_data$ORIGIN_GRID)
+#flow_data$DESTIN_GRID <- as.factor(flow_data$DESTIN_GRID)
+```
+
+## 5.6 Combining passenger volume data with distance value
+```{r}
+flow_data1 <- flow_data %>%
+  left_join (distPair,
+             by = c("ORIGIN_GRID" = "orig",
+                    "DESTIN_GRID" = "dest"))
+```
+
+# 6. Preparing Origin and Destination Attributes
+
+# Reference
+
+epsg.io (2023). EPSG: 3414 SVY21 / Singapore TM. https://epsg.io/3414
+
+Miller, E. J. (2021). Traffic Analysis Zone Definition: Issues & Guidance. *Travel Modelling Group.* <https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf>

@@ -1,5 +1,5 @@
 ---
-title: "In-class Exercise 4: Geospatial Data Science with R"
+title: "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables"
 date: "09 December 2023"
 date-modified: "last-modified"
 editor: visual
@@ -19,7 +19,10 @@ format:
 
 # 1. Objective
 
--   Perform geocoding data downloaded from data.gov.sg
+-   Perform geocoding data downloaded from data.gov.sg using SLA OneMap API,
+-   Convert an aspatial data into a simple feature tibble data.frame,
+-   Perform point-in-polygon count analysis,
+-   Append the propulsiveness and attractiveness variables onto a flow data, and
 -   Calibrate Geographically Weighted Poisson Regression
 
 # 2. Getting Starting
@@ -32,7 +35,6 @@ pacman::p_load(tidyverse, sf, httr,
 ```
 
 # 3. Geocoding using SLA API
-
 
 ```{r}
 #| eval: false 
@@ -69,7 +71,6 @@ write.csv(merged, file="data/aspatial/schools.csv")
 write.csv(not_found, file="data/aspatial/not_found.csv")
 ```
 
-
 # 4. Converting an aspatial data into a single feature tibble data.frame
 
 ## 4.1 Importing and tidying *schools* data
@@ -78,12 +79,13 @@ write.csv(not_found, file="data/aspatial/not_found.csv")
 schools <- read_csv("data/aspatial/schools.csv") %>% 
   rename(latitude=results.LATITUDE,
          longitude=results.LONGITUDE) %>% 
-  select(postal_code, school_name, latitude, longitude)
+  dplyr::select(postal_code, school_name, latitude, longitude)
 
 ```
+
 ## 4.2 Converting an aspatial data into sf tibble data.frame
 
-Next, convert the aspatial data into a simple feature tibble data called schools_sf.
+Next, you will convert schools tibble data.frame data into a simple feature tibble data.frame called *schools_sf* by using values in latitude and longitude fields.
 
 ```{r}
 schools_sf <- st_as_sf(schools, 
@@ -99,6 +101,13 @@ schools_sf <- st_as_sf(schools,
 To ensure that *schools* sf tibble data.fame has been projected and converted correctly, plot the schools point data for visual inspection.
 
 ```{r}
+mpsz <- st_read(dsn="data/geospatial",                   
+                layer="MPSZ-2019")%>%   
+  st_transform(crs = 3414)
+```
+
+
+```{r}
 
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -110,17 +119,10 @@ tm_view(set.zoom.limits = c(11,14)) # to fix the map extent, so cannot zoom in t
 tmap_mode("plot")
 ```
 
-
-# 5. Preparing
-
-```{r}
-mpsz <- st_read(dsn="data/geospatial",                   
-                layer="MPSZ-2019")%>%   
-  st_transform(crs = 3414)
-```
-
+## 4.4 Performing Point-in-Polygon Count Process
 
 ```{r}
+
 mpsz$`SCHOOL_COUNT` <- lengths(
   st_intersects(
     mpsz, schools_sf #must be in the same projection system
@@ -128,17 +130,28 @@ mpsz$`SCHOOL_COUNT` <- lengths(
 )
 ```
 
+
+
+It is always a good practice to examine the summary statistics of the derived variable.
+
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 summary(mpsz$SCHOOL_COUNT)
 ```
+The summary statistics above reveals that there are excessive 0 values in SCHOOL_COUNT field. If log() is going to use to transform this field, additional step is required to ensure that all 0 will be replaced with a value between 0 and 1 but not 0 neither 1.
+
+# 5. Data Inetegration and Final Touch-Up
 
 ```{r}
 business_sf <- st_read(dsn = "data/geospatial",
-                   layer = "Business") 
+                      layer = "Business")
 ```
 
 ```{r}
-tmap_mode("plot")
+#| code-fold: true
+#| code-summary: "Show the code"
+tmap_mode("view")
 tmap_options(check.and.fix = TRUE) # to close any gaps
 tm_shape(mpsz) + # plot polygon first = boundary map
   tm_polygons()+
@@ -150,12 +163,12 @@ tm_shape(business_sf)+
 
 # 6. Data Integration & Wrangling
 
-
 ```{r}
 #flow_data <-  flow_data %>% 
 #  left_join(mpsz_tidy,
 #            by= c("DESTIN_SZ" = "SUBZONE_C"))
 ```
+
 # 7. Model Calibration
 
 ```{r}
@@ -167,6 +180,7 @@ pacman::p_load(tmap, sf, performance,
 flow_data <- read_rds("data/rds/flow_data_tidy.rds")
 glimpse(flow_data)
 ```
+
 ```{r}
 flow_data$FlowNoIntra <- ifelse(
   flow_data$ORIGIN_SZ == flow_data$DESTIN_SZ,
@@ -197,13 +211,10 @@ orcSIM_Poisson <- glm(formula = TRIPS ~
 summary(orcSIM_Poisson)
 ```
 
-Check the log variables, 1st col should always be positive to attract people. 
-Distance must be -ve bc it is inverse relationship. ie people less willing to travel with longer dist = distance decay
-p-values should be < 0.05 to accept as part of the conceptual models.
-if > 0.05 = not statistically significant.
-
+Check the log variables, 1st col should always be positive to attract people. Distance must be -ve bc it is inverse relationship. ie people less willing to travel with longer dist = distance decay p-values should be \< 0.05 to accept as part of the conceptual models. if \> 0.05 = not statistically significant.
 
 ## 8.1. Goodness-of-Fit
+
 ```{r}
 CalcRSquared <- function(observed, estimated) {
   r <- cor(observed, estimated)
@@ -214,10 +225,11 @@ CalcRSquared <- function(observed, estimated) {
 CalcRSquared(orcSIM_Poisson$data$TRIPS, orcSIM_Poisson$fitted.values)
 
 ```
+
 Used residuals in the orcSIM_Poisson table to see which one is useful
 
-
 ## 8.2 Root mean square error
+
 ```{r}
 performance_rmse(orcSIM_Poisson,
                  normalized=FALSE) #only use raw values rather than standardised variables
@@ -226,7 +238,6 @@ performance_rmse(orcSIM_Poisson,
 # 9. Doubly Constrained
 
 Dont need to -1 because no destination attractiveness
-
 
 # 10. Model Comparison
 

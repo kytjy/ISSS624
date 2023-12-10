@@ -417,21 +417,21 @@
     "href": "In-class_Ex/In-class_Ex3/In-class_Ex3.html#geospatial-data-wrangling",
     "title": "In-Class Exercise 3: Processing and Visualising Flow Data",
     "section": "5.2 Geospatial Data Wrangling",
-    "text": "5.2 Geospatial Data Wrangling\n\npop &lt;- pop %&gt;%\n  left_join(mpsz,\n            by = c(\"PA\" = \"PLN_AREA_N\",\n                   \"SZ\" = \"SUBZONE_N\")) %&gt;%\n  select(1:6) %&gt;%\n  rename(SZ_NAME = SZ,\n         SZ = SUBZONE_C)"
+    "text": "5.2 Geospatial Data Wrangling\n\npop &lt;- pop %&gt;%\n  left_join(mpsz,\n            by = c(\"PA\" = \"PLN_AREA_N\",\n                   \"SZ\" = \"SUBZONE_N\")) %&gt;%\n  dplyr::select(1:6) %&gt;%\n  rename(SZ_NAME = SZ,\n         SZ = SUBZONE_C)"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex3/In-class_Ex3.html#preparing-origin-attrbute",
     "href": "In-class_Ex/In-class_Ex3/In-class_Ex3.html#preparing-origin-attrbute",
     "title": "In-Class Exercise 3: Processing and Visualising Flow Data",
     "section": "5.3 Preparing Origin Attrbute",
-    "text": "5.3 Preparing Origin Attrbute\nPeople on their journey to school (pri & sec sch) / journey to work\n\nflow_data1 &lt;- flow_data1 %&gt;%\n  left_join(pop,\n            by = c(ORIGIN_SZ = \"SZ\")) %&gt;%\n  rename(ORIGIN_AGE7_12 = AGE7_12,\n         ORIGIN_AGE13_24 = AGE13_24,\n         ORIGIN_AGE25_64 = AGE25_64) %&gt;%\n  select(-c(PA, SZ_NAME))"
+    "text": "5.3 Preparing Origin Attrbute\nPeople on their journey to school (pri & sec sch) / journey to work\n\nflow_data1 &lt;- flow_data1 %&gt;%\n  left_join(pop,\n            by = c(ORIGIN_SZ = \"SZ\")) %&gt;%\n  rename(ORIGIN_AGE7_12 = AGE7_12,\n         ORIGIN_AGE13_24 = AGE13_24,\n         ORIGIN_AGE25_64 = AGE25_64) %&gt;%\n  dplyr::select(-c(PA, SZ_NAME))"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex3/In-class_Ex3.html#preparing-destination-attribute",
     "href": "In-class_Ex/In-class_Ex3/In-class_Ex3.html#preparing-destination-attribute",
     "title": "In-Class Exercise 3: Processing and Visualising Flow Data",
     "section": "5.4 Preparing destination attribute",
-    "text": "5.4 Preparing destination attribute\n\nflow_data1 &lt;- flow_data1 %&gt;%\n  left_join(pop,\n            by = c(DESTIN_SZ = \"SZ\")) %&gt;%\n  rename(DESTIN_AGE7_12 = AGE7_12,\n         DESTIN_AGE13_24 = AGE13_24,\n         DESTIN_AGE25_64 = AGE25_64) %&gt;%\n  select(-c(PA, SZ_NAME))\n\n\nwrite_rds(flow_data1, \"data/rds/SIM_data\")\n\nmorning = push factor is origin evening = pull factor is destination bc ppl want to go home"
+    "text": "5.4 Preparing destination attribute\n\nflow_data1 &lt;- flow_data1 %&gt;%\n  left_join(pop,\n            by = c(DESTIN_SZ = \"SZ\")) %&gt;%\n  rename(DESTIN_AGE7_12 = AGE7_12,\n         DESTIN_AGE13_24 = AGE13_24,\n         DESTIN_AGE25_64 = AGE25_64) %&gt;%\n  dplyr::select(-c(PA, SZ_NAME))\n\n\nwrite_rds(flow_data1, \"data/rds/SIM_data\")\n\nmorning = push factor is origin evening = pull factor is destination bc ppl want to go home"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex3/data/geospatial/MPSZ-2019.html",
@@ -445,7 +445,7 @@
     "href": "In-class_Ex/In-class_Ex3/In-class_Ex3.html#combining-passenger-volume-data-with-distance-value",
     "title": "In-Class Exercise 3: Processing and Visualising Flow Data",
     "section": "4.2 Combining passenger volume data with distance value",
-    "text": "4.2 Combining passenger volume data with distance value\n\nflow_data$ORIGIN_SZ &lt;- as.factor(flow_data$ORIGIN_SZ)\nflow_data$DESTIN_SZ &lt;- as.factor(flow_data$DESTIN_SZ)\n\nleft_join() of dplyr will be used to flow_data dataframe and distPair dataframe. The output is called flow_data1.\n\nflow_data1 &lt;- flow_data %&gt;%\n  left_join (distPair,\n             by = c(\"ORIGIN_SZ\" = \"orig\",\n                    \"DESTIN_SZ\" = \"dest\"))"
+    "text": "4.2 Combining passenger volume data with distance value\n\nflow_data$ORIGIN_SZ &lt;- as.factor(flow_data$ORIGIN_SZ)\nflow_data$DESTIN_SZ &lt;- as.factor(flow_data$DESTIN_SZ)\n\n\nwrite_rds(flow_data, \"data/rds/flow_data\")\n\nleft_join() of dplyr will be used to flow_data dataframe and distPair dataframe. The output is called flow_data1.\n\nflow_data1 &lt;- flow_data %&gt;%\n  left_join (distPair,\n             by = c(\"ORIGIN_SZ\" = \"orig\",\n                    \"DESTIN_SZ\" = \"dest\"))"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex3/In-class_Ex3.html#importing-the-modelling-data",
@@ -772,35 +772,35 @@
   {
     "objectID": "In-class_Ex/In-class_Ex4/In-class_Ex4.html",
     "href": "In-class_Ex/In-class_Ex4/In-class_Ex4.html",
-    "title": "In-class Exercise 4: Geospatial Data Science with R",
+    "title": "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables",
     "section": "",
-    "text": "Perform geocoding data downloaded from data.gov.sg\nCalibrate Geographically Weighted Poisson Regression"
+    "text": "Perform geocoding data downloaded from data.gov.sg using SLA OneMap API,\nConvert an aspatial data into a simple feature tibble data.frame,\nPerform point-in-polygon count analysis,\nAppend the propulsiveness and attractiveness variables onto a flow data, and\nCalibrate Geographically Weighted Poisson Regression"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#importing-and-tidying-schools-data",
     "href": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#importing-and-tidying-schools-data",
-    "title": "In-class Exercise 4: Geospatial Data Science with R",
+    "title": "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables",
     "section": "4.1 Importing and tidying schools data",
-    "text": "4.1 Importing and tidying schools data\n\nschools &lt;- read_csv(\"data/aspatial/schools.csv\") %&gt;% \n  rename(latitude=results.LATITUDE,\n         longitude=results.LONGITUDE) %&gt;% \n  select(postal_code, school_name, latitude, longitude)"
+    "text": "4.1 Importing and tidying schools data\n\nschools &lt;- read_csv(\"data/aspatial/schools.csv\") %&gt;% \n  rename(latitude=results.LATITUDE,\n         longitude=results.LONGITUDE) %&gt;% \n  dplyr::select(postal_code, school_name, latitude, longitude)"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#converting-an-aspatial-data-into-sf-tibble-data.frame",
     "href": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#converting-an-aspatial-data-into-sf-tibble-data.frame",
-    "title": "In-class Exercise 4: Geospatial Data Science with R",
+    "title": "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables",
     "section": "4.2 Converting an aspatial data into sf tibble data.frame",
-    "text": "4.2 Converting an aspatial data into sf tibble data.frame\nNext, convert the aspatial data into a simple feature tibble data called schools_sf.\n\nschools_sf &lt;- st_as_sf(schools, \n                       coords=c(\"longitude\",\"latitude\"), \n                       crs=4326) %&gt;% \n  st_transform(crs=3414)\n\n3 variables in output sf tibble data frame. Lon&lat combined into 1 point column.\n\n4.3 Plotting a point simple feature layer\nTo ensure that schools sf tibble data.fame has been projected and converted correctly, plot the schools point data for visual inspection.\n\n#| code-fold: true\n#| code-summary: \"Show the code\"\n\ntmap_mode(\"view\")\ntm_shape(schools_sf) +\n  tm_dots()+\ntm_view(set.zoom.limits = c(11,14)) # to fix the map extent, so cannot zoom in too much\n\n\n\n\n\ntmap_mode(\"plot\")"
+    "text": "4.2 Converting an aspatial data into sf tibble data.frame\nNext, you will convert schools tibble data.frame data into a simple feature tibble data.frame called schools_sf by using values in latitude and longitude fields.\n\nschools_sf &lt;- st_as_sf(schools, \n                       coords=c(\"longitude\",\"latitude\"), \n                       crs=4326) %&gt;% \n  st_transform(crs=3414)\n\n3 variables in output sf tibble data frame. Lon&lat combined into 1 point column.\n\n4.3 Plotting a point simple feature layer\nTo ensure that schools sf tibble data.fame has been projected and converted correctly, plot the schools point data for visual inspection.\n\nmpsz &lt;- st_read(dsn=\"data/geospatial\",                   \n                layer=\"MPSZ-2019\")%&gt;%   \n  st_transform(crs = 3414)\n\nReading layer `MPSZ-2019' from data source \n  `C:\\kytjy\\ISSS624\\In-class_Ex\\In-class_Ex4\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775\nGeodetic CRS:  WGS 84\n\n\n\n#| code-fold: true\n#| code-summary: \"Show the code\"\n\ntmap_mode(\"view\")\ntm_shape(schools_sf) +\n  tm_dots()+\ntm_view(set.zoom.limits = c(11,14)) # to fix the map extent, so cannot zoom in too much\n\n\n\n\n\ntmap_mode(\"plot\")"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#goodness-of-fit",
     "href": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#goodness-of-fit",
-    "title": "In-class Exercise 4: Geospatial Data Science with R",
+    "title": "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables",
     "section": "8.1. Goodness-of-Fit",
     "text": "8.1. Goodness-of-Fit\n\nCalcRSquared &lt;- function(observed, estimated) {\n  r &lt;- cor(observed, estimated)\n  R2 &lt;- r^2\n  R2\n}\n\nCalcRSquared(orcSIM_Poisson$data$TRIPS, orcSIM_Poisson$fitted.values)\n\n[1] 0.4362208\n\n\nUsed residuals in the orcSIM_Poisson table to see which one is useful"
   },
   {
     "objectID": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#root-mean-square-error",
     "href": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#root-mean-square-error",
-    "title": "In-class Exercise 4: Geospatial Data Science with R",
+    "title": "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables",
     "section": "8.2 Root mean square error",
     "text": "8.2 Root mean square error\n\nperformance_rmse(orcSIM_Poisson,\n                 normalized=FALSE) #only use raw values rather than standardised variables\n\n[1] 2613.236"
   },
@@ -887,5 +887,12 @@
     "title": "Take-home Exercise 2: Applied Spatial Interaction Models: A case study of Singapore public bus commuter flows",
     "section": "4.2 OD Flow Distribution",
     "text": "4.2 OD Flow Distribution\n\nquantile(od_data1$MORNING_PEAK, probs = seq(0, 1.0, by = .1))\n\n   0%   10%   20%   30%   40%   50%   60%   70%   80%   90%  100% \n    1     2     5    11    21    38    67   125   253   660 77433 \n\n\nFrom the summary statistics above, the minimum number of passenger trips for each combination of origin and destination bus stop is 1. The maximum observed is 77,433 passengers, occurring during the weekday morning peak period. Furthermore, the 90th percentile is 174 passengers. This data suggests a highly right-skewed distribution."
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#performing-point-in-polygon-count-process",
+    "href": "In-class_Ex/In-class_Ex4/In-class_Ex4.html#performing-point-in-polygon-count-process",
+    "title": "In-class Exercise 4: Preparing Spatial Interaction Modelling Variables",
+    "section": "4.4 Performing Point-in-Polygon Count Process",
+    "text": "4.4 Performing Point-in-Polygon Count Process\n\nmpsz$`SCHOOL_COUNT` &lt;- lengths(\n  st_intersects(\n    mpsz, schools_sf #must be in the same projection system\n  )\n)\n\nIt is always a good practice to examine the summary statistics of the derived variable.\n\n\nShow the code\nsummary(mpsz$SCHOOL_COUNT)\n\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n  0.000   0.000   0.000   1.054   2.000  12.000 \n\n\nThe summary statistics above reveals that there are excessive 0 values in SCHOOL_COUNT field. If log() is going to use to transform this field, additional step is required to ensure that all 0 will be replaced with a value between 0 and 1 but not 0 neither 1."
   }
 ]

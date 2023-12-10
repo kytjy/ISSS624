@@ -39,14 +39,14 @@ format:
 
 Urban mobility, characterized by the daily commute of urban dwellers from homes to workplaces, presents complex challenges for transport operators and urban managers. Traditional approaches to understanding these mobility patterns, such as commuter surveys, are often hindered by high costs, time-consuming processes, and the rapid obsolescence of collected data. However, the digitalisation of city-wide urban infrastructures, including public buses, mass rapid transits, and other utilities, alongside the advent of pervasive computing technologies like GPS and SMART cards, offers a new paradigm in tracking and analyzing urban movement.
 
-This assignment is driven by two primary motivations. First, despite the growing availability of open data for public use, there is a noticeable gap in applied research demonstrating how these diverse data sources can be effectively integrated and analyzed to inform policy-making decisions. Second, there is a need to showcase how GDSA can be utilized in practical decision-making scenarios.
-
-The core task of this assignment is to conduct a case study that exhibits the potential value of GDSA. By leveraging publicly available data from multiple sources, the goal is to build spatial interaction models that unravel the factors influencing urban mobility patterns, particularly focusing on public bus transit. This exercise aims to bridge the gap between the abundance of geospatially-referenced data and its practical application, thereby enhancing the return on investment in data collection and management, and ultimately supporting informed policy-making in urban mobility.
-
 ## 1.2 Objectives
 
 ::: panel-tabset
 ## Aim
+
+This assignment is driven by two primary motivations. First, despite the growing availability of open data for public use, there is a noticeable gap in applied research demonstrating how these diverse data sources can be effectively integrated and analyzed to inform policy-making decisions. Second, there is a need to showcase how GDSA can be utilized in practical decision-making scenarios.
+
+The core task of this assignment is to conduct a case study that exhibits the potential value of GDSA. By leveraging publicly available data from multiple sources, the goal is to build spatial interaction models that unravel the factors influencing urban mobility patterns, particularly focusing on public bus transit. This exercise aims to bridge the gap between the abundance of geospatially-referenced data and its practical application, thereby enhancing the return on investment in data collection and management, and ultimately supporting informed policy-making in urban mobility.
 
 ## Tasks
 
@@ -111,7 +111,7 @@ pacman::p_load(tmap, sf, sp,
 For the purpose of this assignment, the following data will be used:
 
 |     |            |                                                                                                                                                                                                                                                                                                                                 |                |            |                                                                                                          |
-|--------|--------|------------------------------------|--------|--------|--------|
+|----------|----------|------------------------|----------|----------|----------|
 |     | **Type**   | **Name**                                                                                                                                                                                                                                                                                                                        | **As of Date** | **Format** | **Source**                                                                                               |
 | 1   | Aspatial   | Passenger Volume by Origin Destination Bus Stops                                                                                                                                                                                                                                                                                | Oct 2023       | .csv       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html)                        |
 | 2   | Aspatial   | School Directory and Information (General information of schools)                                                                                                                                                                                                                                                               | Mar 2022       | .csv       | [Data.gov.sg](https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view) |
@@ -312,7 +312,6 @@ sum(area_hexagon_grid$busstops, na.rm = TRUE)
 ```
 
 Note that there are 5156 bus stops, which tallies to the 5156 from the raw `Busstop` shape file after deducting for the 5 bus stops outside Singapore boundary, suggesting that the hexagons have managed to capture all the Singapore bus stops as expected.
-
 :::
 
 ## 3.3 Geospatial Data Wrangling
@@ -393,7 +392,8 @@ od_data <- od_data %>%
   group_by(ORIGIN_GRID, DESTIN_GRID) %>%
   summarise(MORNING_PEAK = sum(TRIPS))
 ```
-Our resulting OD Matrix is organises the commuter flows for weekday morning peak period in a column-wise format, with `origin_grid` representing the **from** and `destin_grid` representing the **to**.
+
+Our resulting OD Matrix organises the commuter flows for weekday morning peak period in a column-wise format, with `origin_grid` representing the ***from*** and `destin_grid` representing the ***to***.
 
 ```{r}
 #| code-fold: true
@@ -401,10 +401,9 @@ Our resulting OD Matrix is organises the commuter flows for weekday morning peak
 #| echo: false
 #| 
 DT::datatable(od_data,
-              options = list(pageLength = 8),
+              options = list(pageLength = 5),
               rownames = FALSE)
 ```
-
 
 # 4 Visualising Spatial Interaction
 
@@ -641,24 +640,24 @@ flow_data <- od_data %>%
 # 6. Preparing Origin and Destination Attributes
 
 The following information is used to derive propulsive/attractiveness variables:
-1.  *Business*, *entertn*, *F&B*, *FinServ*, *Leisure&Recreation* and *Retails* are geospatial data sets of the locations of business establishments, entertainments, food and beverage outlets, financial centres, leisure and recreation centres, retail and services stores/outlets.
 
-2. Schools: This data set contains directory and general information of schools in Singapore, obtained from data.gov.
+1.  *Business*, *FinServ*, *Leisure&Recreation* and *Retails* are geospatial data sets of the locations of business establishments, entertainments, food and beverage outlets, financial centres, leisure and recreation centres, retail and services stores/outlets.
+
+2.  Schools: This data set contains directory and general information of schools in Singapore, obtained from data.gov.
 
 3.  HDB: This data set is the geocoded version of *HDB Property Information* data from data.gov. The data set is prepared using September 2021 data.
 
-
-:::panel-tabset
-
+::: panel-tabset
 ## Train Station Exits
 
-**trainstationexits** contains the MRT station names and exits along with their respective **point** geometries in CRS SVY21. 
+**trainstationexits** contains the MRT station names and exits along with their respective **point** geometries in CRS SVY21.
 
-Train stations exits reflect the intermodal connections with bus stops. In the context of attractiveness, these stations can be seen as destinations that attract passengers, including those who might transit to/from these stations by bus. The data can also indicate the propulsiveness aspect – how these stations act as origins for passengers who leave the MRT stations and then proceed to their final destinations via other modes of transportation like buses.
+Train stations exits reflect the intermodal connections with bus stops. In the context of attractiveness, these stations can be seen as destinations that attract passengers, including those who might transit to/from these stations by bus. The data can also indicate the propulsiveness aspect -- how these stations act as origins for passengers who leave the MRT stations and then proceed to their final destinations via other modes of transportation like buses.
 
 ### Step 1: Import shapefile
 
 *st_read()* function of the sf package enables us to import the file into RStudio.
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -667,7 +666,9 @@ trainstationexits <- st_read(dsn = "data/geospatial",
                    layer = "Train_Station_Exit_layer") %>% 
   st_transform(crs = 3414)
 ```
+
 Notice there are 565 train station exits in total. Let's visualise where these are located are using the code chunk below:
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -695,6 +696,7 @@ area_hexagon_grid$`COUNT_TRAINSTATIONEXIT`<- lengths(
 
 sum(area_hexagon_grid$COUNT_TRAINSTATIONEXIT)
 ```
+
 The 5 train station exits not accounted for could be in areas outside hexagons where there are no bus stop.
 
 Summary statistics indicate that a maximum of 13 train station exits are located within a single hexagon, while at least 75% of the hexagons do not contain any exits.
@@ -703,14 +705,14 @@ Summary statistics indicate that a maximum of 13 train station exits are located
 summary(area_hexagon_grid$COUNT_TRAINSTATIONEXIT)
 ```
 
-
 ## Business
 
-**business** contains the details of various businesses from SMEs to bigger groups like Pan Pacific, as well as the respective **point** geometries in CRS SVY21. 
+**business** contains the details of various businesses from SMEs to bigger groups like Pan Pacific, as well as the respective **point** geometries in CRS SVY21.
 
 Businesses serve as significant attractors in a city. They draw people to these locations, primarily for work purposes. The presence and density of businesses in an area can significantly influence the flow of commuters, making it a measure of attractiveness.
 
 ### Step 1: Import shapefile
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -737,7 +739,6 @@ tm_shape(trainstationexits) +
   tm_dots()
 ```
 
-
 ### Step 2: Point-in-Polygon Count Process
 
 Next, we will count the number of business in each hexagon.
@@ -748,17 +749,15 @@ area_hexagon_grid$`COUNT_BIZ`<- lengths(
     area_hexagon_grid, business))
 ```
 
-
 Less than half of the hexagons contain no businesses, while in contrast, a single hexagon houses as many as 97 businesses.
 
 ```{r}
 summary(area_hexagon_grid$COUNT_BIZ)
 ```
 
-
 ## Financial Centres
 
-**finserv** contains the details of various financial centres, as well as the respective **point** geometries in CRS SVY21. 
+**finserv** contains the details of various financial centres, as well as the respective **point** geometries in CRS SVY21.
 
 Financial service locations often represent significant employment centers, especially in urban and commercial areas. Many people travel to these locations for work, making them important attractors during morning peak hours. In addition, financial services typically adhere to standard office hours, which aligns well with the morning peak period of bus ridership, as a large proportion of employees would be traveling to work during this time.
 
@@ -790,7 +789,6 @@ tm_shape(finserv) +
   tm_dots()
 ```
 
-
 ### Step 2: Point-in-Polygon Count Process
 
 Next, we will count the number of financial services in each hexagon.
@@ -801,19 +799,17 @@ area_hexagon_grid$`COUNT_FS`<- lengths(
     area_hexagon_grid, finserv))
 ```
 
-
 The summary statistics reveal that up to 139 financial services locations can be found within a single hexagon, with less than half of the hexagons are devoid of any such locations.
 
 ```{r}
 summary(area_hexagon_grid$COUNT_FS)
 ```
 
-
 ## Leisure & Recreation Centres
 
-**recs** includes information on various leisure and recreation centers, such as playgrounds, parks, and fitness centers. It also contains their respective **point** geometries in the CRS SVY21. 
+**recs** includes information on various leisure and recreation centers, such as playgrounds, parks, and fitness centers. It also contains their respective **point** geometries in the CRS SVY21.
 
-Recreational facilities could be popular for early morning workouts and might attract a morning crowd.  
+Recreational facilities could be popular for early morning workouts and might attract a morning crowd.
 
 ### Step 1: Import shapefile
 
@@ -824,6 +820,7 @@ recs <- st_read(dsn = "data/geospatial",
                       layer = "Liesure&Recreation") %>%
           st_transform(crs = 3414)
 ```
+
 Note that there are 1217 locations of leisure and recreational centres in our dataset in total. Let's visualise where these are located are using the code chunk below:
 
 ```{r}
@@ -842,7 +839,6 @@ tm_shape(recs) +
   tm_dots()
 ```
 
-
 ### Step 2: Point-in-Polygon Count Process
 
 Next, we will count the number of facilities in each hexagon.
@@ -853,7 +849,6 @@ area_hexagon_grid$`COUNT_RECS`<- lengths(
     area_hexagon_grid, recs))
 ```
 
-
 The summary statistics indicate that, on average, a single leisure and recreational facility is found within each hexagon, although the highest number recorded in a hexagon is 41.
 
 ```{r}
@@ -862,7 +857,7 @@ summary(area_hexagon_grid$COUNT_RECS)
 
 ## Retail
 
-**retail** includes information on various retail and services stores/outlets, along with their respective **point** geometries in the CRS SVY21. 
+**retail** includes information on various retail and services stores/outlets, along with their respective **point** geometries in the CRS SVY21.
 
 Retail locations can be significant attractors in the morning, particularly as employment destinations for people who work in these retail and service outlets. Some retail services, like coffee shops, breakfast spots, and convenience stores, might attract early morning customers, including commuters heading to work.
 
@@ -875,6 +870,7 @@ retail <- st_read(dsn = "data/geospatial",
                   layer = "Retails") %>%
           st_transform(crs = 3414)
 ```
+
 Note that there are 37635 retail locations in our dataset in total. Let's visualise where these are located are using the code chunk below:
 
 ```{r}
@@ -903,7 +899,6 @@ area_hexagon_grid$`COUNT_RETAIL`<- lengths(
     area_hexagon_grid, retail))
 ```
 
-
 The summary statistics reveal that, on average, 44 retail and service centers can be located within a single hexagon, with the maximum number reaching 1678.
 
 ```{r}
@@ -912,9 +907,7 @@ summary(area_hexagon_grid$COUNT_RETAIL)
 
 ## Schools
 
-
 ## HDBs
-
 :::
 
 # Reference

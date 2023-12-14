@@ -698,6 +698,8 @@ Since the 90th percentile of the distance traveled is 12,346.558m, we will filte
 
 The plot below reveals that longer travel distances predominantly occur between North and North-East regions (i.e., Woodlands/Yishun and Punggol), North and East (Woodlands and Tampines), West and South (Choa Chu Kang/Bukit Panjang and the Town area), and North and South (Yishun and the Town area). These patterns may reflect commuting trends or the distribution of residential and commercial areas, suggesting that significant portions of the population undertake considerable daily commutes. Understanding these long-distance travel patterns is crucial for planning efficient public transport services, particularly in enhancing connectivity between these widely separated areas.
 
+The sparseness of flow lines notes in the far West region also ascertain the trends noted in our previous Take-Home Exercise 1, where low-low autocorrelation were noted in that area.
+
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -1413,18 +1415,17 @@ ggarrange(tripvdist, logtripvslogdist, nrow = 1, ncol = 2)
 ```
 
 The scatter plot shows that the relationship between trips and distance does not demonstrate a linear relationship. In contrast, if we plot the scatter plot by using the log transformed version of both variables, we can see that their relationship resembles more of an inverse linear relationship.
-
 :::
 
 ## 8.2 Poisson Regression
 
 Poisson regression is appropriate for our dataset for two main reasons:
 
--   Count Dependent Variable: Our dependent variable (TRIPS) is a count (i.e., the number of occurrences of an event). Linear regression, on the other hand, assumes that the dependent variable is continuous and can take any value, including negative numbers, which is not applicable for count data. -
+-   Count Dependent Variable: Our dependent variable (TRIPS) is a count (i.e., the number of occurrences of an event). Linear regression, on the other hand, assumes that the dependent variable is continuous and can take any value, including negative numbers, which is not applicable for count data.
 
 -   Predicting Non-Negative Values: Poisson regression naturally ensures that predictions are non-negative, which is essential for count data. Linear regression can predict negative values, which do not make sense for counts.
 
-Since Poisson Regression is based of log and log 0 is undefined, it is important for us to ensure that no 0 values in the explanatory variables. In the code chunk below, *summary()* of **Base R** is used to compute the summary statistics of all variables in flowdata_final data frame.
+Since Poisson Regression is base on log and log 0 is undefined, it is important for us to ensure that no 0 values in the explanatory variables. In the code chunk below, *summary()* of **Base R** is used to compute the summary statistics of all variables in flowdata_final data frame.
 
 ```{r}
 summary(flowdata_final)
@@ -1523,22 +1524,23 @@ summary(flowdata_final)
 
 In general, we will calibrate separate Spatial Interaction Models for inter- and intra-zonal flows. In our analysis, we will focus our attention on inter-zonal flows. Therefore, it is necessary to exclude intra-zonal flows from the flow_data.
 
-First, two new columns called FlowNoIntra and offset will be created by using the code chunk below.
+First, a new column called FlowNoIntra will be created by using the code chunk below.
 
 ```{r}
 flowdata_final$FlowNoIntra <- ifelse(
   flowdata_final$ORIGIN_GRID == flowdata_final$DESTIN_GRID, 
   0, 
   flowdata_final$TRIPS)
-flowdata_final$offset <- ifelse(
-  flowdata_final$ORIGIN_GRID == flowdata_final$DESTIN_GRID, 
-  0.000001, 
-  1)
+
+#flowdata_final$offset <- ifelse(
+#  flowdata_final$ORIGIN_GRID == flowdata_final$DESTIN_GRID, 
+#  0.000001, 
+#  1)
 ```
 
-According to the syntax used to derive values in *FlowNoIntra* field, all intra-zonal flow will be given a value of 0 or else the original flow values will be inserted.
+In *FlowNoIntra* field, all intra-zonal flow will be given a value of 0, else the original flow values will be retained.
 
-Next, inter-zonal flow will be selected from flow_data and save into a new output data.frame called *inter_zonal_flow* by using the code chunk below.
+Next, inter-zonal flow will be selected from flow_data and saved into a new output data.frame called *inter_zonal_flow* using the code chunk below.
 
 ```{r}
 interzonal_flow <- flowdata_final %>%
@@ -1551,7 +1553,7 @@ There are 64,935 interzonal flows in our dataset.
 
 Before building a Poisson regression model, it is important to ensure that the indepdent variables used are not highly correlated to each other. Multicollinearity in a regression model can compromise the quality of the model.
 
-The code chunk below uses the [**corrplot**](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html) package to plot a scatterplot matrix of the relationship between the independent variables in *interzonal_flow* data.frame. In the code chunk above, AOE order is used. It orders the variables by using the *angular order of the eigenvectors* method suggested by [Michael Friendly](https://www.datavis.ca/papers/corrgram.pdf).
+The code chunk below uses the [**corrplot**](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html) package to plot a scatterplot matrix of the relationship between the independent variables in *interzonal_flow* data.frame. AOE order is used, tt orders the variables by using the *angular order of the eigenvectors* method suggested by [Michael Friendly](https://www.datavis.ca/papers/corrgram.pdf).
 
 ```{r}
 #| code-fold: true
@@ -1573,26 +1575,26 @@ corrplot(cor(interzonal_flow[, c(6:12, 15:21)]),
 
 From the scatterplot matrix, it is observed that none of the variable pairs exhibit a correlation greater than 0.8. Consequently, with no issues of multicollinearity present, there is no need to exclude any variables from our analysis.
 
+DEST_FS and DEST_TRAINEXITS 0.78 DEST_FS and DEST_RECS 0.76 DEST_FS and DEST_RETAIL 0.72 ORI_FS and ORI_RECS 0.73 ORI_FS and ORI_RETAIL 0.74 ORI_FS and ORI_TRAINEXITS 0.75
+
 # 9 Calibrating Spatial Interaction Models
 
 A spatial interaction model is specifically used to map and model the interactivity between various factors in distinct locations. This makes it useful to understand data with more than one location component, such as our analysis of bus travels from one hexagon to another.
 
-In this section, we will be calibrating spatial interaction models using *glm()* of Base Stats. 
+In this section, we will be calibrating spatial interaction models using *glm()* of Base Stats.
 
-## 9.1 Family of Gravity Models
+## 9.1 Unconstrained SIM
 
 ::: panel-tabset
-## Unconstrained SIM
+## Model
 
 In this unconstrained model, the following variables are used:
+
 -   Origin propulsiveness: ORI_TRAINEXITS, ORI_HDBUNITS
 
 -   Destination attractiveness: DEST_TRAINEXITS, DEST_BIZ, DEST_FS, DEST_RECS, DEST_RETAIL, DEST_SCHOOLS, DEST_HDBUNITS
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-
 uncSIM <- glm(formula = TRIPS ~ 
                 log(ORI_TRAINEXITS) +
                 #log(ORI_BIZ) +
@@ -1613,21 +1615,69 @@ uncSIM <- glm(formula = TRIPS ~
               data = interzonal_flow,
               na.action = na.exclude) # excludes any NAs in the data
 
+```
+
+## Coefficients & p-Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| 
 summary(uncSIM)
 ```
 
-## Origin-Constrained SIM
+The p-values associated with each predictor variable is \< 0.05, this suggests that all the coefficients used in the model have a statistically significant relationship with the weekday morning peak period bus trips.
 
-For origin-constrained model, only explanatory variables representing the attractiveness at the destinations will be used. ORIGIN_GRID, in the categorial data type, is used to model 𝜇𝑖. 
+From the results, we can also see that the top 2 coefficients with positive relationships are: - *number of train station exits at destination* (0.45) - *number of schools at destination* (0.26)
 
-It is important to note that -1 is added in the equation after the distance variable. The -1 serves the purpose of removing the intercept that by default, glm will insert into the model.
+The top 2 coefficients with inverse relationships are: - *distance* (-1.45) - *number of leisure / recreational places at destination* (-0.39)
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
 
+data.frame(
+  Coefficient = sort(uncSIM$coefficients, decreasing = TRUE)
+
+)
+
+
+
+```
+
+## R-Squared
+
+Calculating R-Squared helps determine the proportion of variance in the dependent variable that can be explained by the independent variables. In other words, R-Squared shows how well the data fit the regression model (the goodness of fit).
+
+To obtain R-Squared value, we will be using the following helper function:
+
+```{r}
+rsq <- function(observed,estimated){
+  r <- cor(observed,estimated)
+  R2 <- r^2
+  R2
+}
+```
+
+An R-squared value of 0.26 means that approximately 26% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
+
+```{r}
+rsq(uncSIM$data$TRIPS, uncSIM$fitted.values)
+```
+:::
+
+## 9.2 Origin-Constrained SIM
+
+::: panel-tabset
+## Model
+
+For origin-constrained model, only explanatory variables representing the attractiveness at the destinations will be used. ORIGIN_GRID, in the categorial data type, is used to model 𝜇𝑖.
+
+-1 is added in the equation after the distance variable. The -1 serves the purpose of removing the intercept that *glm* will insert into the model by default.
+
+```{r}
 orcSIM <- glm(formula = TRIPS ~ 
-                ORIGIN_GRID,
+                ORIGIN_GRID +
                 #log(ORI_TRAINEXITS) +
                 #log(ORI_BIZ) +
                 #log(ORI_FS) +
@@ -1647,66 +1697,180 @@ orcSIM <- glm(formula = TRIPS ~
               data = interzonal_flow,
               na.action = na.exclude) # excludes any NAs in the data
 
+```
+
+## Coefficients & p-Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 summary(orcSIM)
+
 ```
 
+The p-values associated with each predictor variable is \< 0.05, this suggests that all coefficients are statistically significant in determining weekday morning peak period bus trips.
 
-## Destination SIM
+From the results below, we can also see that the top 2 coefficients with positive relationships are: - *number of train station exits at destination* (0.50) - *number of financial services locations at destination* (0.26)
+
+The top 2 coefficients with inverse relationships are: - *distance* (-1.51) - *number of leisure / recreational places at destination* (-0.24)
 
 ```{r}
-
+#| code-fold: true
+#| code-summary: "Show the code"
+data.frame(
+  Coefficient = sort(orcSIM$coefficients[815:821]
+                     , decreasing = TRUE
+  )
+)
 ```
 
+## R-Squared
 
-## Doubly Constrained SIM
-
-```{r}
-
-```
-
-
-:::
-
-and calculating R-Squared to determine the proportion of variance in the dependent variable that can be explained by the independent variables. In other words, R-Squared shows how well the data fit the regression model (the goodness of fit).
-
-To obtain R-Squared value, we will be using the following helper function:
-
-```{r}
-rsq <- function(observed,estimated){
-  r <- cor(observed,estimated)
-  R2 <- r^2
-  R2
-}
-```
-
-
-## 9.2 Goodness-of-Fit Test
-
-::: panel-tabset
-## Unconstrained SIM
-
-```{r}
-rsq(uncSIM$data$TRIPS, uncSIM$fitted.values)
-```
-
-```{r}
-r2_mcfadden(uncSIM)
-```
-
-## Origin SIM
+An R-squared value of 0.41 means that approximately 41% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
 
 ```{r}
 rsq(orcSIM$data$TRIPS, orcSIM$fitted.values)
+```
+:::
+
+## 9.3 Destination-Constrained SIM
+
+::: panel-tabset
+## Model
+
+```{r}
+decSIM <- glm(formula = TRIPS ~ 
+                DESTIN_GRID +
+                log(ORI_TRAINEXITS) +
+                #log(ORI_BIZ) +
+                #log(ORI_FS) +
+                #log(ORI_RECS) +
+                #log(ORI_RETAIL) +
+                #log(ORI_SCHOOLS) +
+                log(ORI_HDBUNITS) +
+                #log(DEST_TRAINEXITS) +
+                #log(DEST_BIZ) +
+                #log(DEST_FS) +
+                #log(DEST_RECS) +
+                #log(DEST_RETAIL) +
+                #log(DEST_SCHOOLS) +
+                #log(DEST_HDBUNITS) +
+                log(dist) - 1,
+              family = poisson(link = "log"),
+              data = interzonal_flow,
+              na.action = na.exclude) # excludes any NAs in the data
 
 ```
 
+## Coefficients & p-Values
 
-## Destination SIM
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+summary(decSIM)
+```
 
-## Doubly Constrained SIM
+The p-values associated with each predictor variable is \< 0.05, indicating that all coefficients are statistically significant in determining weekday morning peak period bus trips using the destination-constrained SIM.
+
+The results below show that the *number of train station exits at origin* and the *number of dwelling HDB units at the origin* demonstrated positive association with the trips travelled during weekday morning peak periods. In contrast, distance had a negative association with the dependent variable instead.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+data.frame(
+  Coefficient = sort(decSIM$coefficients[816:818]
+                     , decreasing = TRUE
+  )
+)
+```
+
+## R-Squared
+
+An R-squared value of 0.41 means that approximately 41% of the variance in the TRIPS dependent variable is accounted for by the explanatory variables in the model.
+
+```{r}
+rsq(decSIM$data$TRIPS, decSIM$fitted.values)
+```
 :::
 
+## 9.4 Doubly Constrained SIM
+
+::: panel-tabset
+## Model
+
+```{r}
+dbcSIM <- glm(formula = TRIPS ~ 
+                ORIGIN_GRID +
+                DESTIN_GRID +
+                log(dist),
+              family = poisson(link = "log"),
+              data = interzonal_flow,
+              na.action = na.exclude) # excludes any NAs in the data
+
+```
+
+## Coefficients & p-Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+summary(dbcSIM)
+```
+
+Variable *distance* is statistically significant with p-value \< 0.05 and a coefficient of -1.6
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+data.frame(
+  Coefficient = sort(dbcSIM$coefficients[1629]
+                     , decreasing = TRUE
+  )
+)
+```
+
+## R-Squared
+
+An R-squared value of 0.58 means that approximately 58% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
+
+```{r}
+rsq(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
+```
+:::
+
+Table below summarises of the R-Squared values yielded by the 4 different SIMs:
+
+| Model                  | R-Squared Value |
+|------------------------|-----------------|
+| Unconstrained          | 0.26            |
+| Origin-onstrained      | 0.41            |
+| Destination-onstrained | 0.41            |
+| Doubly-constrained     | 0.58            |
+
+Doubly-constrained model yielded the highest R-Squared value amongst the 4 models calibrated.
+
 # 10 Model Comparison
+
+[Root Mean Squared Error](https://towardsdatascience.com/what-does-rmse-really-mean-806b65f2e48e) (RMSE) is a useful model performance measure. We explore how to utilise the [`compare_performance()`](https://easystats.github.io/performance/reference/compare_performance.html) function from [**performance**](https://easystats.github.io/performance/) package to evaluate this measure.
+
+The code chunk below serves a dual purpose:
+
+-   It first creates a list named `model_list`.
+
+-   Then, it computes the Root Mean Squared Error (RMSE) for all the models in `model_list` using the *compare_performance()* function.
+
+```{r}
+model_list <- list(
+  Unconstrained = uncSIM,
+  Origin_Constrained = orcSIM,
+  Desintation_Constrained = decSIM,
+  Doubly_Constrained = dbcSIM)
+
+compare_performance(model_list,
+                    metrics = "RMSE")
+```
+The results above reveal that doubly constrained SIM is the best model as it has the smallest RMSE value of 1164.166 amongst the 4 models calibrated.
+
 
 # 11 Visual Fitting
 
@@ -1716,8 +1880,12 @@ rsq(orcSIM$data$TRIPS, orcSIM$fitted.values)
 
 epsg.io (2023). EPSG: 3414 SVY21 / Singapore TM. https://epsg.io/3414
 
-Kam, T. S. (2023). Processing and Visualising Flow Data. *R for Geospatial Data Science and Analytics.* https://r4gdsa.netlify.app/chap15
+Kam, T. S. (2023). 15 Processing and Visualising Flow Data. *R for Geospatial Data Science and Analytics.* https://r4gdsa.netlify.app/chap15
 
-Kam, T. S. (2023). Calibrating Spatial Interaction Models with R. *R for Geospatial Data Science and Analytics.* https://r4gdsa.netlify.app/chap16
+Kam, T. S. (2023). 16 Calibrating Spatial Interaction Models with R. *R for Geospatial Data Science and Analytics.* https://r4gdsa.netlify.app/chap16
+
+Kam, T. S. (2023). In-class Exercise 4: Preparing Spatial Interaction Modelling Variables. *ISSS624.* https://isss624.netlify.app/in-class_ex/in-class_ex4/in-class_ex4-gds
+
+Kam, T. S. (2023). In-class Exercise 4: Calibrating Spatial Interaction Models with R. *ISSS624.* https://isss624.netlify.app/in-class_ex/in-class_ex4/in-class_ex4-sims
 
 Miller, E. J. (2021). Traffic Analysis Zone Definition: Issues & Guidance. *Travel Modelling Group.* https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf

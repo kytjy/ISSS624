@@ -81,11 +81,14 @@ The following packages will be used for this exercise:
 
 ## Code
 
+The code chunk below, using `p_load` function of the [**pacman**](https://cran.r-project.org/web/packages/pacman/pacman.pdf) package, ensures that packages required are installed and loaded in R.
+
 ```{r}
 pacman::p_load(tmap, sf, sp, 
                tidyverse, DT, performance, 
                reshape2, ggpubr, stplanr,
-               knitr, scales, corrplot, gtsummary)
+               knitr, scales, corrplot, 
+               gtsummary, plotly)
 ```
 :::
 
@@ -93,17 +96,16 @@ pacman::p_load(tmap, sf, sp,
 
 For the purpose of this assignment, the following data will be used:
 
-|     |            |                                                                                                                                                                                                                                                                                                                                 |                |            |                                                                                                          |
+|     |            |                                                                                                                                                                                                                                                                                                                   |                |            |                                                                                                          |
 |------------|------------|------------|------------|------------|------------|
-|     | **Type**   | **Name**                                                                                                                                                                                                                                                                                                                        | **As of Date** | **Format** | **Source**                                                                                               |
-| 1   | Aspatial   | Passenger Volume by Origin Destination Bus Stops                                                                                                                                                                                                                                                                                | Oct 2023       | .csv       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html)                        |
-| 2   | Aspatial   | School Directory and Information (General information of schools)                                                                                                                                                                                                                                                               | Mar 2022       | .csv       | [Data.gov.sg](https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view) |
-| 3   | Aspatial   | HDB Property Information (Geocoded)                                                                                                                                                                                                                                                                                             | Sep 2021       | .csv       | Courtesy of Prof T. S. Kam                                                                               |
-| 4   | Geospatial | Bus Stop Location                                                                                                                                                                                                                                                                                                               | Jul 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
-| 5   | Geospatial | Train Station                                                                                                                                                                                                                                                                                                                   | Feb 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
-| 6   | Geospatial | Train Station Exit Point                                                                                                                                                                                                                                                                                                        | Aug 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
-| 7   | Geospatial | Master Plan 2019 Subzone Boundary                                                                                                                                                                                                                                                                                               | 2019           | .shp       | Courtesy of Prof T.S. Kam                                                                                |
-| 8   | Geospatial | Business (incl. industrial parks), entertn, F&B, FinServ, Leisure&Recreation and Retails (Geospatial data sets of the locations of business establishments, entertainments, food and beverage outlets, financial centres, leisure and recreation centres, retail and services stores/outlets compiled for urban mobility study) |                | .shp       | Courtesy of Prof T.S. Kam                                                                                |
+|     | **Type**   | **Name**                                                                                                                                                                                                                                                                                                          | **As of Date** | **Format** | **Source**                                                                                               |
+| 1   | Aspatial   | Passenger Volume by Origin Destination Bus Stops                                                                                                                                                                                                                                                                  | Oct 2023       | .csv       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/dynamic-data.html)                        |
+| 2   | Aspatial   | School Directory and Information (General information of schools)                                                                                                                                                                                                                                                 | Mar 2022       | .csv       | [Data.gov.sg](https://beta.data.gov.sg/collections/457/datasets/d_688b934f82c1059ed0a6993d2a829089/view) |
+| 3   | Aspatial   | HDB Property Information (Geocoded)                                                                                                                                                                                                                                                                               | Sep 2021       | .csv       | Courtesy of Prof T. S. Kam                                                                               |
+| 4   | Geospatial | Bus Stop Location                                                                                                                                                                                                                                                                                                 | Jul 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
+| 5   | Geospatial | Train Station Exit Point                                                                                                                                                                                                                                                                                          | Aug 2023       | .shp       | [LTA DataMall](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)                         |
+| 6   | Geospatial | Master Plan 2019 Subzone Boundary                                                                                                                                                                                                                                                                                 | 2019           | .shp       | Courtesy of Prof T.S. Kam                                                                                |
+| 7   | Geospatial | Business (incl. industrial parks), FinServ, Leisure&Recreation and Retails (Geospatial data sets of the locations of business establishments, entertainments, food and beverage outlets, financial centres, leisure and recreation centres, retail and services stores/outlets compiled for urban mobility study) |                | .shp       | Courtesy of Prof T.S. Kam                                                                                |
 
 ## 3.1 O-D Data
 
@@ -437,9 +439,9 @@ od_data <- od_data %>%
   group_by(ORIGIN_GRID, DESTIN_GRID) %>%
   summarise(MORNING_PEAK = sum(TRIPS),
             ORIGIN_nBS = n_distinct(ORIGIN_BS),
-            ORIGIN_DESC = str_c(ORIGIN_DESC, collapse = ", "),
-            DESTIN_nBS = n_distinct(DESTIN_BS),            
-            DESTIN_DESC = str_c(DESTIN_DESC, collapse = ", ")) %>% 
+            ORIGIN_DESC = str_c(unique(ORIGIN_DESC), collapse = ", "),
+            DESTIN_nBS = n_distinct(DESTIN_BS),
+            DESTIN_DESC = str_c(unique(DESTIN_DESC), collapse = ", ")) %>%
   ungroup()
 ```
 
@@ -556,7 +558,9 @@ dist <- spDists(hexgrid_sp,
 head(dist, n=c(8, 8))
 ```
 
-The resulting output is a matrix object class, but column headers and row headers are not labeled with the grid IDs. We rename the headers for clarity.
+The resulting output is a matrix object class.
+
+Note that column headers and row headers are not labeled with the grid IDs, in the next step, we rename the headers for better clarity.
 
 ```{r}
 grid_id <- area_hexagon_grid$grid_id
@@ -698,7 +702,7 @@ Since the 90th percentile of the distance traveled is 12,346.558m, we will filte
 
 The plot below reveals that longer travel distances predominantly occur between North and North-East regions (i.e., Woodlands/Yishun and Punggol), North and East (Woodlands and Tampines), West and South (Choa Chu Kang/Bukit Panjang and the Town area), and North and South (Yishun and the Town area). These patterns may reflect commuting trends or the distribution of residential and commercial areas, suggesting that significant portions of the population undertake considerable daily commutes. Understanding these long-distance travel patterns is crucial for planning efficient public transport services, particularly in enhancing connectivity between these widely separated areas.
 
-The sparseness of flow lines notes in the far West region also ascertain the trends noted in our previous Take-Home Exercise 1, where low-low autocorrelation were noted in that area.
+The sparseness of flow lines seen in the West-end also ascertains the trends noted in our previous Take-Home Exercise 1, where low-low autocorrelation were noted in that area.
 
 ```{r}
 #| code-fold: true
@@ -1148,7 +1152,7 @@ tm_shape(schools_sf) +
 
 The *hdb* dataset is a geocoded version of the *HDB Property Information* from data.gov, provided courtesy of Prof. Kam. It encompasses details such as addresses and characteristics of Housing Development Board (HDB) blocks, complete with longitude and latitude coordinates. The number of total_dwelling_units in these blocks serves as an indicative measure of the **propulsive** factor during weekday morning peak periods.
 
-Significantly, HDB blocks house the majority of Singapore's population, making this dataset particularly valuable for urban and transportation planning. The number of dwelling units in a housing area is a robust indicator of population density. Typically, higher density translates to a greater potential for public transport usage, especially buses, during peak commuting times. Consequently, areas with a high concentration of dwelling units are likely to see substantial demand for public transportation services during peak hours as residents commute to work, school, or other daily activities.
+Significantly, HDB blocks house the majority of Singapore's population, making this dataset particularly valuable for urban and transportation planning. The number of dwelling units in a housing area is a robust indicator of population density. To enhance the accuracy of our population estimates, we multiply the count of dwelling units by 3.09, which represents the average household size in Singapore as of 2022. This adjustment allows for a more realistic assessment of population density ((SingStat, 2022))\[https://www.singstat.gov.sg/find-data/search-by-theme/households/households/latest-data\]. Typically, higher density translates to a greater potential for public transport usage, especially buses, during peak commuting times. Consequently, areas with a high concentration of dwelling units, and hence higher estimated population, are likely to see substantial demand for public transportation services during peak hours as residents commute to work, school, or other daily activities.
 
 ### Step 1: Import csv file
 
@@ -1177,20 +1181,26 @@ hdb_sf <- st_as_sf(hdb,
   st_transform(crs = 3414)
 ```
 
-### Step 3: Counting the Total Dwelling Units per Hexagon
+### Step 3: Counting the Total Dwelling Units / Population per Hexagon
 
 *st_intersects()* performs a spatial join between `area_hexagon_grid` and `hdb_sf` so that we can identify HDBs that are located in hexagons with bus stop.
 
-*apply()* applies a function to each row. Inside the function, hdb_sf\$total_dwelling_units\[row\] sums the total_dwelling_units values for all hdb_sf features that intersect with the hexagons.
+*apply()* applies a function to each row. Within the function, hdb_sf\$total_dwelling_units\[row\] sums the total_dwelling_units values for all hdb_sf features that intersect with the hexagons. To obtain a more accurate estimation of the actual population in each hexagon, we then multiply this sum by 3.09, the average household size in Singapore as of 2022. This multiplication adjusts the total dwelling units to better reflect the population density, providing a more realistic basis for analyzing and planning urban and transportation needs.
 
 ```{r}
 hdbinhex  <-  st_intersects(area_hexagon_grid, 
                             hdb_sf)
 
-area_hexagon_grid$TOT_DWELLINGUNITS <- 
+area_hexagon_grid$TOT_HDBPOP <- 
   apply(hdbinhex, 1, function(row) {
-    sum(hdb_sf$total_dwelling_units[row], na.rm = TRUE)
-})
+    sum(hdb_sf$total_dwelling_units[row], na.rm = TRUE) * 3.09
+  })
+```
+
+A quick sum() of the total population from all the dwelling units suggests that our proxy of 3.3 million is acceptable, as [The Straits Times](https://www.straitstimes.com/singapore/singapore-resident-population-in-hdb-flats-falls-to-304m-with-smaller-households-spread) reported a total of 3.1 million residents living in HDB flats in 2021.
+
+```{r}
+sum(area_hexagon_grid$TOT_HDBPOP)
 ```
 :::
 
@@ -1219,7 +1229,7 @@ flowdata_ori <- flow_data %>%
          ORI_RECS = COUNT_RECS,
          ORI_RETAIL = COUNT_RETAIL,
          ORI_SCHOOLS = COUNT_SCHOOLS,
-         ORI_HDBUNITS = TOT_DWELLINGUNITS)
+         ORI_HDBPOP = TOT_HDBPOP)
 
 glimpse(flowdata_ori)
 ```
@@ -1239,7 +1249,7 @@ flowdata_final <- flowdata_ori %>%
         DEST_RECS = COUNT_RECS,
         DEST_RETAIL = COUNT_RETAIL,
         DEST_SCHOOLS = COUNT_SCHOOLS,
-        DEST_HDBUNITS = TOT_DWELLINGUNITS) %>% 
+        DEST_HDBPOP = TOT_HDBPOP) %>% 
  select(c(1:3,4,5,10:17,6:7,19:26,8)) %>% 
   select(-c('ORI_BS','DEST_BS'))
 
@@ -1247,7 +1257,7 @@ glimpse(flowdata_final)
 ```
 :::
 
-# 8 Preparing for Spatial Interaction Models
+# 8 Preparing for Modelling
 
 ## 8.1 Visualising Distribution of Variables
 
@@ -1328,14 +1338,14 @@ plot_ori_retail <- ggplot(data=flowdata_final, aes(x= `ORI_RETAIL`)) +
 plot_ori_schools <- ggplot(data=flowdata_final, aes(x= `ORI_SCHOOLS`)) +
   geom_histogram(bins = 20, color = "#FFFCF9", fill = "black", alpha = .3)
 
-plot_ori_hdbunits <- ggplot(data=flowdata_final, aes(x= `ORI_HDBUNITS`)) +
+plot_ori_hdbpop <- ggplot(data=flowdata_final, aes(x= `ORI_HDBPOP`)) +
   geom_histogram(bins = 20, color = "#FFFCF9", fill = "black", alpha = .3)
 
 
 
 ggarrange(plot_ori_ts, plot_ori_biz, plot_ori_fs, 
           plot_ori_recs, plot_ori_retail, plot_ori_schools,
-          plot_ori_hdbunits,
+          plot_ori_hdbpop,
           ncol = 3, nrow = 3)
 ```
 
@@ -1363,14 +1373,14 @@ plot_des_retail <- ggplot(data=flowdata_final, aes(x= `DEST_RETAIL`)) +
 plot_des_schools <- ggplot(data=flowdata_final, aes(x= `DEST_SCHOOLS`)) +
   geom_histogram(bins = 20, color = "#FFFCF9", fill = "black", alpha = .3)
 
-plot_des_hdbunits <- ggplot(data=flowdata_final, aes(x= `DEST_HDBUNITS`)) +
+plot_des_hdbpop <- ggplot(data=flowdata_final, aes(x= `DEST_HDBPOP`)) +
   geom_histogram(bins = 20, color = "#FFFCF9", fill = "black", alpha = .3)
 
 
 
 ggarrange(plot_des_ts, plot_des_biz, plot_des_fs, 
           plot_des_recs, plot_des_retail, plot_des_schools,
-          plot_des_hdbunits,
+          plot_des_hdbpop,
           ncol = 3, nrow = 3)
 ```
 
@@ -1414,7 +1424,7 @@ logtripvslogdist <- ggplot(data = flowdata_final,
 ggarrange(tripvdist, logtripvslogdist, nrow = 1, ncol = 2)
 ```
 
-The scatter plot shows that the relationship between trips and distance does not demonstrate a linear relationship. In contrast, if we plot the scatter plot by using the log transformed version of both variables, we can see that their relationship resembles more of an inverse linear relationship.
+The scatter plot on the left using the original values indicates that the relationship between trips and distance does not demonstrate a linear relationship. However, when we plot the scatter plot using the log-transformed version of both variables, the relationship appears more like an inverse linear relationship. This pattern is indicative of distance decay, a concept in spatial analysis where the interaction between locations decreases as the distance between them increases. The log transformation helps in visualizing and quantifying this distance decay effect, where a greater distance is associated with a lower number of trips, reflecting a common trend in spatial interactions and movements.
 :::
 
 ## 8.2 Poisson Regression
@@ -1425,13 +1435,13 @@ Poisson regression is appropriate for our dataset for two main reasons:
 
 -   Predicting Non-Negative Values: Poisson regression naturally ensures that predictions are non-negative, which is essential for count data. Linear regression can predict negative values, which do not make sense for counts.
 
-Since Poisson Regression is base on log and log 0 is undefined, it is important for us to ensure that no 0 values in the explanatory variables. In the code chunk below, *summary()* of **Base R** is used to compute the summary statistics of all variables in flowdata_final data frame.
+It is important here that the explanatory variables are **never zero** since Poisson Regression is base on log and log 0 is undefined. In the code chunk below, *summary()* of **Base R** is used to compute the summary statistics of all variables in flowdata_final data frame.
 
 ```{r}
 summary(flowdata_final)
 ```
 
-The report above reveals that variables ORI_TRAINEXITS, ORI_BIZ, ORI_FS, ORI_RECS, ORI_RETAIL, ORI_SCHOOLS, ORI_HDBUNITS, DEST_TRAINEXITS, DEST_BIZ, DEST_FS, DEST_RECS, DEST_RETAIL, DEST_SCHOOLS, DEST_HDBUNITS consist of 0 values.
+The report above reveals that variables ORI_TRAINEXITS, ORI_BIZ, ORI_FS, ORI_RECS, ORI_RETAIL, ORI_SCHOOLS, ORI_HDBPOP, DEST_TRAINEXITS, DEST_BIZ, DEST_FS, DEST_RECS, DEST_RETAIL, DEST_SCHOOLS, DEST_HDBPOP consist of 0 values.
 
 In view of this, code chunk below will be used to replace zero values to an arbitrary value of 0.99.
 
@@ -1471,10 +1481,10 @@ flowdata_final$ORI_SCHOOLS <- ifelse(
   0.99, 
   flowdata_final$ORI_SCHOOLS)
 
-flowdata_final$ORI_HDBUNITS <- ifelse(
-  flowdata_final$ORI_HDBUNITS == 0,
+flowdata_final$ORI_HDBPOP <- ifelse(
+  flowdata_final$ORI_HDBPOP == 0,
   0.99, 
-  flowdata_final$ORI_HDBUNITS)
+  flowdata_final$ORI_HDBPOP)
 
 # Destination Attributes
 
@@ -1508,10 +1518,10 @@ flowdata_final$DEST_SCHOOLS <- ifelse(
   0.99, 
   flowdata_final$DEST_SCHOOLS)
 
-flowdata_final$DEST_HDBUNITS <- ifelse(
-  flowdata_final$DEST_HDBUNITS == 0,
+flowdata_final$DEST_HDBPOP <- ifelse(
+  flowdata_final$DEST_HDBPOP == 0,
   0.99, 
-  flowdata_final$DEST_HDBUNITS)
+  flowdata_final$DEST_HDBPOP)
 ```
 
 We run *summary()* again to check the results.
@@ -1520,7 +1530,7 @@ We run *summary()* again to check the results.
 summary(flowdata_final)
 ```
 
-## 8.3 Preparing Inter-Zonal Flow Data
+## 8.3 Extracting Inter-Zonal Flow Data
 
 In general, we will calibrate separate Spatial Interaction Models for inter- and intra-zonal flows. In our analysis, we will focus our attention on inter-zonal flows. Therefore, it is necessary to exclude intra-zonal flows from the flow_data.
 
@@ -1531,11 +1541,6 @@ flowdata_final$FlowNoIntra <- ifelse(
   flowdata_final$ORIGIN_GRID == flowdata_final$DESTIN_GRID, 
   0, 
   flowdata_final$TRIPS)
-
-#flowdata_final$offset <- ifelse(
-#  flowdata_final$ORIGIN_GRID == flowdata_final$DESTIN_GRID, 
-#  0.000001, 
-#  1)
 ```
 
 In *FlowNoIntra* field, all intra-zonal flow will be given a value of 0, else the original flow values will be retained.
@@ -1547,7 +1552,7 @@ interzonal_flow <- flowdata_final %>%
   filter(FlowNoIntra > 0)
 ```
 
-There are 64,935 interzonal flows in our dataset.
+There are 64,936 interzonal flows in our dataset.
 
 ## 8.4 Correlation Analysis
 
@@ -1575,13 +1580,11 @@ corrplot(cor(interzonal_flow[, c(6:12, 15:21)]),
 
 From the scatterplot matrix, it is observed that none of the variable pairs exhibit a correlation greater than 0.8. Consequently, with no issues of multicollinearity present, there is no need to exclude any variables from our analysis.
 
-DEST_FS and DEST_TRAINEXITS 0.78 DEST_FS and DEST_RECS 0.76 DEST_FS and DEST_RETAIL 0.72 ORI_FS and ORI_RECS 0.73 ORI_FS and ORI_RETAIL 0.74 ORI_FS and ORI_TRAINEXITS 0.75
-
 # 9 Calibrating Spatial Interaction Models
 
-A spatial interaction model is specifically used to map and model the interactivity between various factors in distinct locations. This makes it useful to understand data with more than one location component, such as our analysis of bus travels from one hexagon to another.
+A spatial interaction model is specifically designed to map and model the interactivity between various factors across distinct locations. This makes it particularly useful for understanding data involving more than one location component, such as our analysis of bus travel from one hexagon to another.
 
-In this section, we will be calibrating spatial interaction models using *glm()* of Base Stats.
+In this section, we will calibrate spatial interaction models using the *glm()* function from the **Base Stats** package in R and determine the statistical significance of the association between the explanatory variables and the response variable, before moving on to evaluate how well the models fit our data.
 
 ## 9.1 Unconstrained SIM
 
@@ -1590,9 +1593,9 @@ In this section, we will be calibrating spatial interaction models using *glm()*
 
 In this unconstrained model, the following variables are used:
 
--   Origin propulsiveness: ORI_TRAINEXITS, ORI_HDBUNITS
+-   Origin propulsiveness: ORI_TRAINEXITS, ORI_HDBPOP
 
--   Destination attractiveness: DEST_TRAINEXITS, DEST_BIZ, DEST_FS, DEST_RECS, DEST_RETAIL, DEST_SCHOOLS, DEST_HDBUNITS
+-   Destination attractiveness: DEST_TRAINEXITS, DEST_BIZ, DEST_FS, DEST_RECS, DEST_RETAIL, DEST_SCHOOLS, DEST_HDBPOP
 
 ```{r}
 uncSIM <- glm(formula = TRIPS ~ 
@@ -1602,14 +1605,14 @@ uncSIM <- glm(formula = TRIPS ~
                 #log(ORI_RECS) +
                 #log(ORI_RETAIL) +
                 #log(ORI_SCHOOLS) +
-                log(ORI_HDBUNITS) +
+                log(ORI_HDBPOP) +
                 log(DEST_TRAINEXITS) +
                 log(DEST_BIZ) +
                 log(DEST_FS) +
                 log(DEST_RECS) +
                 log(DEST_RETAIL) +
                 log(DEST_SCHOOLS) +
-                log(DEST_HDBUNITS) +
+                log(DEST_HDBPOP) +
                 log(dist),
               family = poisson(link = "log"),
               data = interzonal_flow,
@@ -1628,9 +1631,9 @@ summary(uncSIM)
 
 The p-values associated with each predictor variable is \< 0.05, this suggests that all the coefficients used in the model have a statistically significant relationship with the weekday morning peak period bus trips.
 
-From the results, we can also see that the top 2 coefficients with positive relationships are: - *number of train station exits at destination* (0.45) - *number of schools at destination* (0.26)
+From the results, we can also see that the top 2 coefficients with positive relationships are: *number of train station exits at destination* (0.46) and *number of schools at destination* (0.27).
 
-The top 2 coefficients with inverse relationships are: - *distance* (-1.45) - *number of leisure / recreational places at destination* (-0.39)
+The top 2 coefficients with inverse relationships are: *distance* (-1.45) and *number of leisure / recreational places at destination* (-0.39).
 
 ```{r}
 #| code-fold: true
@@ -1640,29 +1643,6 @@ data.frame(
   Coefficient = sort(uncSIM$coefficients, decreasing = TRUE)
 
 )
-
-
-
-```
-
-## R-Squared
-
-Calculating R-Squared helps determine the proportion of variance in the dependent variable that can be explained by the independent variables. In other words, R-Squared shows how well the data fit the regression model (the goodness of fit).
-
-To obtain R-Squared value, we will be using the following helper function:
-
-```{r}
-rsq <- function(observed,estimated){
-  r <- cor(observed,estimated)
-  R2 <- r^2
-  R2
-}
-```
-
-An R-squared value of 0.26 means that approximately 26% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
-
-```{r}
-rsq(uncSIM$data$TRIPS, uncSIM$fitted.values)
 ```
 :::
 
@@ -1684,14 +1664,14 @@ orcSIM <- glm(formula = TRIPS ~
                 #log(ORI_RECS) +
                 #log(ORI_RETAIL) +
                 #log(ORI_SCHOOLS) +
-                #log(ORI_HDBUNITS) +
+                #log(ORI_HDBPOP) +
                 log(DEST_TRAINEXITS) +
                 log(DEST_BIZ) +
                 log(DEST_FS) +
                 log(DEST_RECS) +
                 log(DEST_RETAIL) +
                 log(DEST_SCHOOLS) +
-                #log(DEST_HDBUNITS) +
+                #log(DEST_HDBPOP) +
                 log(dist) - 1,
               family = poisson(link = "log"),
               data = interzonal_flow,
@@ -1710,9 +1690,9 @@ summary(orcSIM)
 
 The p-values associated with each predictor variable is \< 0.05, this suggests that all coefficients are statistically significant in determining weekday morning peak period bus trips.
 
-From the results below, we can also see that the top 2 coefficients with positive relationships are: - *number of train station exits at destination* (0.50) - *number of financial services locations at destination* (0.26)
+From the results below, we can also see that the top 2 coefficients with positive relationships are: *number of train station exits at destination* (0.50) and the *number of financial services locations at destination* (0.26).
 
-The top 2 coefficients with inverse relationships are: - *distance* (-1.51) - *number of leisure / recreational places at destination* (-0.24)
+The top 2 coefficients with inverse relationships are: *distance* (-1.51) and *number of leisure / recreational places at destination* (-0.24).
 
 ```{r}
 #| code-fold: true
@@ -1722,14 +1702,6 @@ data.frame(
                      , decreasing = TRUE
   )
 )
-```
-
-## R-Squared
-
-An R-squared value of 0.41 means that approximately 41% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
-
-```{r}
-rsq(orcSIM$data$TRIPS, orcSIM$fitted.values)
 ```
 :::
 
@@ -1747,14 +1719,14 @@ decSIM <- glm(formula = TRIPS ~
                 #log(ORI_RECS) +
                 #log(ORI_RETAIL) +
                 #log(ORI_SCHOOLS) +
-                log(ORI_HDBUNITS) +
+                log(ORI_HDBPOP) +
                 #log(DEST_TRAINEXITS) +
                 #log(DEST_BIZ) +
                 #log(DEST_FS) +
                 #log(DEST_RECS) +
                 #log(DEST_RETAIL) +
                 #log(DEST_SCHOOLS) +
-                #log(DEST_HDBUNITS) +
+                #log(DEST_HDBPOP) +
                 log(dist) - 1,
               family = poisson(link = "log"),
               data = interzonal_flow,
@@ -1772,7 +1744,7 @@ summary(decSIM)
 
 The p-values associated with each predictor variable is \< 0.05, indicating that all coefficients are statistically significant in determining weekday morning peak period bus trips using the destination-constrained SIM.
 
-The results below show that the *number of train station exits at origin* and the *number of dwelling HDB units at the origin* demonstrated positive association with the trips travelled during weekday morning peak periods. In contrast, distance had a negative association with the dependent variable instead.
+The results below show that the *number of train station exits at origin* and the *number of population residing in HDBs at the origin* demonstrated positive association with the trips travelled during weekday morning peak periods. In contrast, distance had a negative association with the dependent variable instead.
 
 ```{r}
 #| code-fold: true
@@ -1782,14 +1754,6 @@ data.frame(
                      , decreasing = TRUE
   )
 )
-```
-
-## R-Squared
-
-An R-squared value of 0.41 means that approximately 41% of the variance in the TRIPS dependent variable is accounted for by the explanatory variables in the model.
-
-```{r}
-rsq(decSIM$data$TRIPS, decSIM$fitted.values)
 ```
 :::
 
@@ -1828,8 +1792,52 @@ data.frame(
   )
 )
 ```
+:::
 
-## R-Squared
+# 10 Model Comparison
+
+Suitable statistical measures help evaluate how well the models' parameters give the best fit to data. In this section, we will look at various models that can help us determine which model is 'best'.
+
+## 10.1 R-Squared
+
+Calculating R-Squared helps determine the proportion of variance in the dependent variable that can be explained by the independent variables. In other words, R-Squared shows how well the data fit the regression model (the goodness of fit).
+
+To obtain R-Squared value, we will be using the following helper function:
+
+```{r}
+rsq <- function(observed,estimated){
+  r <- cor(observed,estimated)
+  R2 <- r^2
+  R2
+}
+```
+
+::: panel-tabset
+## Unconstrained SIM
+
+An R-squared value of 0.26 means that approximately 26% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
+
+```{r}
+rsq(uncSIM$data$TRIPS, uncSIM$fitted.values)
+```
+
+## Origin-Constrained SIM
+
+An R-squared value of 0.41 means that approximately 41% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
+
+```{r}
+rsq(orcSIM$data$TRIPS, orcSIM$fitted.values)
+```
+
+## Destination-Constrained SIM
+
+An R-squared value of 0.41 means that approximately 41% of the variance in the TRIPS dependent variable is accounted for by the explanatory variables in the model.
+
+```{r}
+rsq(decSIM$data$TRIPS, decSIM$fitted.values)
+```
+
+## Doubly Constrained SIM
 
 An R-squared value of 0.58 means that approximately 58% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
 
@@ -1840,18 +1848,18 @@ rsq(dbcSIM$data$TRIPS, dbcSIM$fitted.values)
 
 Table below summarises of the R-Squared values yielded by the 4 different SIMs:
 
-| Model                  | R-Squared Value |
-|------------------------|-----------------|
-| Unconstrained          | 0.26            |
-| Origin-onstrained      | 0.41            |
-| Destination-onstrained | 0.41            |
-| Doubly-constrained     | 0.58            |
+| Model                   | R-Squared Value |
+|-------------------------|-----------------|
+| Unconstrained           | 0.257           |
+| Origin-Constrained      | 0.408           |
+| Destination-Constrained | 0.402           |
+| Doubly-Cconstrained     | 0.577           |
 
 Doubly-constrained model yielded the highest R-Squared value amongst the 4 models calibrated.
 
-# 10 Model Comparison
+## 10.2 Root Mean Squared Error
 
-[Root Mean Squared Error](https://towardsdatascience.com/what-does-rmse-really-mean-806b65f2e48e) (RMSE) is a useful model performance measure. We explore how to utilise the [`compare_performance()`](https://easystats.github.io/performance/reference/compare_performance.html) function from [**performance**](https://easystats.github.io/performance/) package to evaluate this measure.
+[Root Mean Squared Error](https://towardsdatascience.com/what-does-rmse-really-mean-806b65f2e48e) (RMSE) is a useful model performance measure to evaluate how closely a model's predicted values match the actual values. We explore how to utilise the [`compare_performance()`](https://easystats.github.io/performance/reference/compare_performance.html) function from [**performance**](https://easystats.github.io/performance/) package to evaluate this measure.
 
 The code chunk below serves a dual purpose:
 
@@ -1869,12 +1877,388 @@ model_list <- list(
 compare_performance(model_list,
                     metrics = "RMSE")
 ```
-The results above reveal that doubly constrained SIM is the best model as it has the smallest RMSE value of 1164.166 amongst the 4 models calibrated.
+
+Similar to our R-Sqaured results, the results above reveal that doubly constrained SIM is the best model as it has the smallest RMSE value of 1164.166 amongst the 4 models calibrated.
+
+## 10.3 Visualising Fitted Values
+
+Plotting observed versus fitted values allows us to visually assess how well the model captures the data. If the model is a good fit, the fitted values should closely follow the trend of the observed values. Such visualizations can help in identifying patterns or anomalies that might not be apparent from the model's statistical output alone. In this section, we will visualise the observed values and the fitted values.
+
+The code chunk below performs the following functions:
+
+-   It first extracts the fitted values from each model
+
+-   Appends the fitted values into `inter_zonal_flow` data frame
+
+-   Lastly, *rename()* is used to rename the field name
+
+::: panel-tabset
+## Unconstrained SIM
+
+```{r}
+# Extracts fitted values from model
+df <- as.data.frame(uncSIM$fitted.values) %>%
+    round(digits = 0)
+
+# Append fitted values to inter_zonal_flow
+interzonal_flow  <- interzonal_flow  %>%
+    cbind(df) %>%
+    rename(uncTRIPS = "uncSIM$fitted.values")
+```
+
+## Origin-Constrained SIM
+
+```{r}
+# Extracts fitted values from model
+df <- as.data.frame(orcSIM$fitted.values) %>%
+    round(digits = 0)
+
+# Append fitted values to inter_zonal_flow
+interzonal_flow  <- interzonal_flow  %>%
+    cbind(df) %>%
+    rename(orcTRIPS = "orcSIM$fitted.values")
+```
+
+## Destination-Constrained SIM
+
+```{r}
+# Extracts fitted values from model
+df <- as.data.frame(decSIM$fitted.values) %>%
+    round(digits = 0)
+
+# Append fitted values to inter_zonal_flow
+interzonal_flow  <- interzonal_flow  %>%
+    cbind(df) %>%
+    rename(decTRIPS = "decSIM$fitted.values")
+```
+
+## Doubly Constrained SIM
+
+```{r}
+# Extracts fitted values from model
+df <- as.data.frame(dbcSIM$fitted.values) %>%
+    round(digits = 0)
+
+# Append fitted values to inter_zonal_flow
+interzonal_flow  <- interzonal_flow  %>%
+    cbind(df) %>%
+    rename(dbcTRIPS = "dbcSIM$fitted.values")
+```
+:::
+
+Using *ggplot()* and *ggarrange()*, we will visualise the observed against fitted values of the 4 models in a single visual for better comparison.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+library(plotly)
+unc_p <- ggplot(data = interzonal_flow,
+                aes(x = uncTRIPS,
+                    y = TRIPS)) +
+  geom_point(shape = 16, size = 0.5) +
+  geom_smooth(method = lm) +
+  ggtitle("Unconstrained SIM") +
+  theme(
+plot.title = element_text(size=8, face="bold"),
+axis.title.x = element_text(size=8, face="bold"),
+axis.title.y = element_text(size=8, face="bold"),
+axis.text.x = element_text(size=6),
+axis.text.y = element_text(size=6)
+)
+
+orc_p <- ggplot(data = interzonal_flow,
+                aes(x = orcTRIPS,
+                    y = TRIPS)) +
+  geom_point(shape = 16, size = 0.5) +
+  geom_smooth(method = lm)  +
+  ggtitle("Origin-constrained SIM") +
+  theme(
+plot.title = element_text(size=8, face="bold"),
+axis.title.x = element_text(size=8, face="bold"),
+axis.title.y = element_text(size=8, face="bold"),
+axis.text.x = element_text(size=6),
+axis.text.y = element_text(size=6)
+)
+
+dec_p <- ggplot(data = interzonal_flow,
+                aes(x = decTRIPS,
+                    y = TRIPS)) +
+  geom_point(shape = 16, size = 0.5) +
+  geom_smooth(method = lm) +
+  ggtitle("Destination-constrained SIM") +
+  theme(
+plot.title = element_text(size=8, face="bold"),
+axis.title.x = element_text(size=8, face="bold"),
+axis.title.y = element_text(size=8, face="bold"),
+axis.text.x = element_text(size=6),
+axis.text.y = element_text(size=6)
+)
+
+dbc_p <- ggplot(data = interzonal_flow,
+                aes(x = dbcTRIPS,
+                    y = TRIPS)) +
+  geom_point(shape = 16, size = 0.5) +
+  geom_smooth(method = lm) +
+  ggtitle("Doubly-constrained SIM") +
+  theme(
+plot.title = element_text(size=8, face="bold"),
+axis.title.x = element_text(size=8, face="bold"),
+axis.title.y = element_text(size=8, face="bold"),
+axis.text.x = element_text(size=6),
+axis.text.y = element_text(size=6)
+)
+
+ggarrange(unc_p, orc_p, dec_p, dbc_p,
+          ncol = 2,
+          nrow = 2)
+```
+
+From the four plots above, it is evident that most data points do not align with the best fit line. The origin-constrained and doubly-constrained models appear to have a comparatively better fit, as more points cluster close to the line of perfect fit, suggesting that these models' predictions are more aligned with the actual data. Conversely, the unconstrained and destination-constrained models display a broader scatter of points, further from the line, indicating a potential deficiency in capturing the underlying trend effectively. The relatively flat line observed for the unconstrained SIM implies limited predictive power, as there is minimal variation in the fitted values across the observed data range, thus failing to capture the data's variability adequately.
+
+Additionally, there are notable outliers on the top middle of the Origin-constrained and Doubly-constrained SIM models where the values are furthest from the best fit line. Such outliers can exert a disproportionate influence on the model, and therefore, their impact warrants careful evaluation.
+
+## 10.3.1 Removing Outliers
+
+Upon further investigation, the outliers correspond to the observations detailed below.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+interzonal_flow[interzonal_flow$TRIPS %in% c(77433, 77255, 76780), ]
+
+```
+
+To analyze the impact of the outliers on our model fit, we removed the outlier using the **`filter()`** function and recalibrated the models using **glm()**.
+
+```{r}
+interzonal_flow2 <- interzonal_flow %>%
+  filter(!TRIPS %in% c(77433, 77255, 76780))
+```
+
+```{r}
+uncSIM2 <- glm(formula = TRIPS ~ 
+                log(ORI_TRAINEXITS) +
+                #log(ORI_BIZ) +
+                #log(ORI_FS) +
+                #log(ORI_RECS) +
+                #log(ORI_RETAIL) +
+                #log(ORI_SCHOOLS) +
+                log(ORI_HDBPOP) +
+                log(DEST_TRAINEXITS) +
+                log(DEST_BIZ) +
+                log(DEST_FS) +
+                log(DEST_RECS) +
+                log(DEST_RETAIL) +
+                log(DEST_SCHOOLS) +
+                log(DEST_HDBPOP) +
+                log(dist),
+              family = poisson(link = "log"),
+              data = interzonal_flow2,
+              na.action = na.exclude) # excludes any NAs in the data
+
+orcSIM2 <- glm(formula = TRIPS ~ 
+                ORIGIN_GRID +
+                #log(ORI_TRAINEXITS) +
+                #log(ORI_BIZ) +
+                #log(ORI_FS) +
+                #log(ORI_RECS) +
+                #log(ORI_RETAIL) +
+                #log(ORI_SCHOOLS) +
+                #log(ORI_HDBPOP) +
+                log(DEST_TRAINEXITS) +
+                log(DEST_BIZ) +
+                log(DEST_FS) +
+                log(DEST_RECS) +
+                log(DEST_RETAIL) +
+                log(DEST_SCHOOLS) +
+                #log(DEST_HDBPOP) +
+                log(dist) - 1,
+              family = poisson(link = "log"),
+              data = interzonal_flow2,
+              na.action = na.exclude) # excludes any NAs in the data
+
+decSIM2 <- glm(formula = TRIPS ~ 
+                DESTIN_GRID +
+                log(ORI_TRAINEXITS) +
+                #log(ORI_BIZ) +
+                #log(ORI_FS) +
+                #log(ORI_RECS) +
+                #log(ORI_RETAIL) +
+                #log(ORI_SCHOOLS) +
+                log(ORI_HDBPOP) +
+                #log(DEST_TRAINEXITS) +
+                #log(DEST_BIZ) +
+                #log(DEST_FS) +
+                #log(DEST_RECS) +
+                #log(DEST_RETAIL) +
+                #log(DEST_SCHOOLS) +
+                #log(DEST_HDBPOP) +
+                log(dist) - 1,
+              family = poisson(link = "log"),
+              data = interzonal_flow2,
+              na.action = na.exclude) # excludes any NAs in the data
+
+dbcSIM2 <- glm(formula = TRIPS ~ 
+                ORIGIN_GRID +
+                DESTIN_GRID +
+                log(dist),
+              family = poisson(link = "log"),
+              data = interzonal_flow2,
+              na.action = na.exclude) # excludes any NAs in the data
+```
+
+**R-Squared**
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+rsq(uncSIM2$data$TRIPS, uncSIM2$fitted.values)
+rsq(orcSIM2$data$TRIPS, orcSIM2$fitted.values)
+rsq(decSIM2$data$TRIPS, decSIM2$fitted.values)
+rsq(dbcSIM2$data$TRIPS, dbcSIM2$fitted.values)
+
+```
+
+The table below compares the R-Squared values before and after the removal of the outliers.
+
+| Model                   | R-Squared Value | R-Squared Value after removing outliers |
+|---------------------|-----------------|----------------------------------|
+| Unconstrained           | 0.257           | 0.267                                   |
+| Origin-Constrained      | 0.408           | 0.410                                   |
+| Destination-Constrained | 0.402           | 0.425                                   |
+| Doubly-Constrained      | 0.577           | 0.580                                   |
+
+**RMSE**
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+model_list2 <- list(
+  Unconstrained = uncSIM,
+  Unconstrained_wo_Outliers = uncSIM2,
+  Origin_Constrained = orcSIM,
+  Origin_Constrained_wo_Outliers = orcSIM2,
+  Desintation_Constrained = decSIM,
+  Desintation_Constrained_wo_Outliers = decSIM2,
+  Doubly_Constrained = dbcSIM, 
+  Doubly_Constrained_wo_Outliers = dbcSIM2)
+
+compare_performance(model_list2,
+                    metrics = "RMSE")
+```
+
+We observe a marked improvement in both R-Squared and RMSE values following the removal of outliers, with the **Doubly-Constrained model still yielding the best results**.
+
+## 10.3.2 Deviance Residuals vs Fitted Values
+
+Residuals represent the discrepancies between observed values and the predictions made by our model. Ideally, for a model that fits the data well, the residuals should be small and close to zero. Analysing the residuals of GLMs can yield crucial insights into the performance of the model. Deviance residuals, specifically, measure the degree to which probabilities estimated from our model diverge from the observed frequencies of success. Larger values suggest greater divergence, while smaller values indicate less divergence.
+
+```{r}
+#res_orcSIM <- residuals(orcSIM, type="deviance")
+#res_orcSIM2 <- residuals(orcSIM2, type="deviance")
+res_dbcSIM <- residuals(dbcSIM, type="deviance")
+res_dbcSIM2 <- residuals(dbcSIM2, type="deviance")
+
+#fitted_orcSIM <- fitted(orcSIM)
+#fitted_orcSIM2 <- fitted(orcSIM2)
+
+fitted_dbcSIM <- fitted(dbcSIM)
+fitted_dbcSIM2 <- fitted(dbcSIM2)
+```
+
+By employing [*ggplot()*](https://ggplot2.tidyverse.org/), we can compare the plots of residuals versus fitted values for the Doubly-Constrained model with and without outliers. The axis range for both plots are kept constant to visualise the difference between both plots.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Create data frames for plotting
+#df_orcSIM <- data.frame(Fitted = fitted_orcSIM, Residuals = res_orcSIM)
+#df_orcSIM2 <- data.frame(Fitted = fitted_orcSIM2, Residuals = res_orcSIM2)
+
+df_dbcSIM <- data.frame(Fitted = fitted_dbcSIM, Residuals = res_dbcSIM)
+df_dbcSIM2 <- data.frame(Fitted = fitted_dbcSIM2, Residuals = res_dbcSIM2)
+
+# Create individual ggplot objects
+#p_orcSIM <- ggplot(df_orcSIM, aes(x = Fitted, y = Residuals)) +
+#  geom_point(size = 0.5) +
+#  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+#  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Origin-Constrained SIM") +
+#  theme(
+#    plot.title = element_text(size=8, face="bold"),
+#    axis.title.x = element_text(size=8, face="bold"),
+#    axis.title.y = element_text(size=8, face="bold"),
+#    axis.text.x = element_text(size=6),
+#    axis.text.y = element_text(size=6)
+#)
+
+#p_orcSIM2 <- ggplot(df_orcSIM2, aes(x = Fitted, y = Residuals)) +
+#  geom_point(size = 0.5) +
+#  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+#  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Origin-Constrained SIM w/o Outlier") +
+#  theme(
+#    plot.title = element_text(size=8, face="bold"),
+#    axis.title.x = element_text(size=8, face="bold"),
+#    axis.title.y = element_text(size=8, face="bold"),
+#    axis.text.x = element_text(size=6),
+#    axis.text.y = element_text(size=6)
+#)
+
+p_dbcSIM <- ggplot(df_dbcSIM, aes(x = Fitted, y = Residuals)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Doubly Constrained SIM") +
+  theme(
+    plot.title = element_text(size=8, face="bold"),
+    axis.title.x = element_text(size=8, face="bold"),
+    axis.title.y = element_text(size=8, face="bold"),
+    axis.text.x = element_text(size=6),
+    axis.text.y = element_text(size=6)
+    ) +
+  scale_x_continuous(limits = c(0, 60000)) +
+  scale_y_continuous(limits = c(-300, 450))  
+
+p_dbcSIM2 <- ggplot(df_dbcSIM2, aes(x = Fitted, y = Residuals)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Doubly Constrained SIM w/o Outliers") +
+  theme(
+    plot.title = element_text(size=8, face="bold"),
+    axis.title.x = element_text(size=8, face="bold"),
+    axis.title.y = element_text(size=8, face="bold"),
+    axis.text.x = element_text(size=6),
+    axis.text.y = element_text(size=6)
+    ) +
+  scale_x_continuous(limits = c(0, 60000)) +
+  scale_y_continuous(limits = c(-300, 450)) 
+
+# Arrange the plots in a 2x2 grid
+ggarrange(p_dbcSIM, p_dbcSIM2, ncol = 2, nrow = 1)
 
 
-# 11 Visual Fitting
+```
+
+With both plots, the vertical dispersion at lower fitted values suggests signs of overfitting to varying degrees, and to a lesser extent, underfitting. The removal of outliers leads to a decrease in the spread of residuals, particularly in the range of higher residuals. The concentration of residuals around the zero line seems tighter as well, which suggests an improved model fit.
 
 # 12 Conclusion & Future Work
+
+The Doubly-Constrained model has consistently outperformed the other models in terms of predictive accuracy. Notably, the removal of outliers resulted in a more robust model, as indicated by enhanced R-Squared and RMSE scores. Specifically, the Doubly-Constrained model demonstrated the best performance after the outliers were excluded.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+data.frame(
+  Coefficient = sort(dbcSIM2$coefficients[1629]
+                     , decreasing = TRUE
+  )
+)
+```
+
+In contrast, the model was unable to perform meaningful predictions where the outliers are (i.e. Woodlands Checkpoint to Kranji MRT Station, Woodlands Checkpoint to Woodlands Regional Bus Interchange, Choa Chu Kang North to Yew Tee Station).
 
 # Reference
 
@@ -1889,3 +2273,5 @@ Kam, T. S. (2023). In-class Exercise 4: Preparing Spatial Interaction Modelling 
 Kam, T. S. (2023). In-class Exercise 4: Calibrating Spatial Interaction Models with R. *ISSS624.* https://isss624.netlify.app/in-class_ex/in-class_ex4/in-class_ex4-sims
 
 Miller, E. J. (2021). Traffic Analysis Zone Definition: Issues & Guidance. *Travel Modelling Group.* https://tmg.utoronto.ca/files/Reports/Traffic-Zone-Guidance_March-2021_Final.pdf
+
+SingStat. (2022). Statistics on resident households are compiled by the Singapore Department of Statistics. *Households.* https://www.singstat.gov.sg/find-data/search-by-theme/households/households/latest-data

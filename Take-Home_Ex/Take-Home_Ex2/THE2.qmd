@@ -19,7 +19,7 @@ format:
 
 # 1 Overview
 
-Urban mobility, characterized by the daily commute of urban dwellers from homes to workplaces, presents complex challenges for transport operators and urban managers. Traditional approaches to understanding these mobility patterns, such as commuter surveys, are often hindered by high costs, time-consuming processes, and the rapid obsolescence of collected data. However, the digitalisation of city-wide urban infrastructures, including public buses, mass rapid transits, and other utilities, alongside the advent of pervasive computing technologies like GPS and SMART cards, offers a new paradigm in tracking and analyzing urban movement.
+elt
 
 ## Objectives
 
@@ -601,7 +601,7 @@ Notice that the column and row names have been updated to the grid IDs.
 
 ## 5.3 Pivoting Distance Value by Grid ID
 
-Next, we will pivot the distance matrix into a long table by using the row and column grid IDs using (`melt()`)\[https://www.rdocumentation.org/packages/reshape2/versions/1.4.4/topics/melt\] of the **reshape2** package, as shown in the code chunk below.
+Next, we will pivot the distance matrix into a long table by using the row and column grid IDs using [`melt()`](https://www.rdocumentation.org/packages/reshape2/versions/1.4.4/topics/melt) of the **reshape2** package, as shown in the code chunk below.
 
 ```{r}
 distPair <- melt(dist) %>%
@@ -763,7 +763,7 @@ The sparseness of flow lines seen in the West-end also ascertains the trends not
 
 In the subsequent sections, we explore the potential factors that could attract or propel passengers to travel by bus from one location to another. This exploration will include examining various urban elements such as the proximity to key amenities like schools, shopping centers, and employment hubs. Understanding these elements can provide valuable insights into improving public transportation systems and urban planning strategies.
 
-# 6. Preparing Origin and Destination Attributes
+# 6 Preparing Origin and Destination Attributes
 
 The following information is used to derive propulsive/attractiveness variables:
 
@@ -1152,7 +1152,7 @@ Significant passenger flows are observed in the Town area where the retail count
 
 ## Schools
 
-The *schools* data is taken from *School Directory and Information* as of March 2022 from data.gov. 
+The *schools* data is taken from *School Directory and Information* as of March 2022 from data.gov.
 
 Schools significantly impact local transit patterns, especially during morning and afternoon peak hours. Regular travel routines of students, teachers, and staff create predictable demand, with a high volume of commuters contributing substantially to local transit ridership, making it a critical **attractor**. This effect is particularly pronounced on bus routes serving school areas, where the demand for public transit is heightened around school start and end times.
 
@@ -1166,7 +1166,8 @@ csv <- read_csv('data/aspatial/Generalinformationofschools.csv')
 
 glimpse(schs)
 ```
-Note that this data is aspatial. In subsequent steps, we aim to geocode using the postal code in the *postal_code* field to obtain the geographic coordinates of each school. The Singapore Land Authority (SLA) supports an online geocoding service called (**OneMap API**)[https://www.onemap.gov.sg/apidocs/]. The Search API looks up address data or a 6-digit postal code for an entered value, then returns the latitude, longitude, and x,y coordinates of the searched location.
+
+Note that this data is aspatial. In subsequent steps, we aim to geocode using the postal code in the *postal_code* field to obtain the geographic coordinates of each school. The Singapore Land Authority (SLA) supports an online geocoding service called (**OneMap API**)\[https://www.onemap.gov.sg/apidocs/\]. The Search API looks up address data or a 6-digit postal code for an entered value, then returns the latitude, longitude, and x,y coordinates of the searched location.
 
 The following code chunks will perform geocoding using the SLA OneMap API. It uses the input data **csv** and a collection of HTTP call functions from the **httr** package in R to pass individual records to the geocoding server at OneMap.
 
@@ -1208,7 +1209,7 @@ for(postcode in postcodes){
 }
 ```
 
-Next, the code chunk below will combine both **found** and **not_found** data.frames into a single tibble data.frame called **merged**. 
+Next, the code chunk below will combine both **found** and **not_found** data.frames into a single tibble data.frame called **merged**.
 
 ```{r}
 #| eval: false
@@ -1410,7 +1411,7 @@ tm_shape() +
 There seems to be a correlation between the density of the population and the volume of bus ridership. Areas with denser populations are marked by a greater number of flow lines, as shown by the darker blue shades on the map.
 :::
 
-# 7. Combining Attributes with Flow Data
+# 7 Combining Attributes with Flow Data
 
 Two `left_joins()` will be performed between *flow_data* and *area_hexagon_grid* using the origin and destination grid IDs.
 
@@ -2119,7 +2120,7 @@ Similar to our R-Squared results, the results above reveal that doubly constrain
 
 Plotting observed versus fitted values allows us to visually assess how well the model captures the data. If the model is a good fit, the fitted values should closely follow the trend of the observed values. Such visualizations can help in identifying patterns or anomalies that might not be apparent from the model's statistical output alone. In this section, we will visualise the observed values and the fitted values.
 
-The code chunk below performs the following functions:
+The code chunk below performs the followinresidualg functions:
 
 -   It first extracts the fitted values from each model
 
@@ -2391,7 +2392,7 @@ We observe a marked improvement in both R-Squared and RMSE values following the 
 
 Residuals represent the discrepancies between observed values and the predictions made by our model. Ideally, for a model that fits the data well, the residuals should be small and close to zero. Analysing the residuals of GLMs can yield crucial insights into the performance of the model. Deviance residuals, specifically, measure the degree to which probabilities estimated from our model diverge from the observed frequencies of success. Larger values suggest greater divergence, while smaller values indicate less divergence.
 
-The code chunk below extracts residuals, using (`residuals()`)[https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/residuals], and fitted values, using `fitted()`, from two models. Fitted values are the predictions made by the model. For each observation in the model's dataset, it gives the expected value of the response variable, based on the model's fitted parameters.
+The code chunk below extracts residuals, using [`residuals()`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/residuals), and fitted values, using [`fitted()`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/fitted), from two models. Fitted values are the predictions made by the model. For each observation in the model's dataset, it gives the expected value of the response variable, based on the model's fitted parameters.
 
 ```{r}
 
@@ -2461,7 +2462,7 @@ In the analysis of intrazonal flows, where movements occur within the same zone,
 
 Note that compared to Unconstrained model used for interzonal travels, origin propulsiveness variable *ORI_TRAINEXITS* has been removed to prevent multicollinearly with *DEST_TRAINEXITS.*
 
-Additionally, in the context of modeling intrazonal flows, where the origin and destination grids are the same, *log(dist)* has been excluded from the models. This is because the primary factor influencing intrazonal flows is likely not distance, but other area characteristics such as population density, the presence of businesses, and schools. Therefore, the emphasis should be placed more on these local factors rather than on the distance between points within the same zone.
+In modeling intrazonal flows, where the origin and destination grids are the same, *log(dist)* has been excluded from the models. This is because the primary factor influencing intrazonal flows is likely not distance, but other area characteristics such as population density, the presence of businesses, and schools. Therefore, the emphasis should be placed more on these local factors rather than on the distance between points within the same zone.
 
 ```{r}
 intra_uncSIM <- glm(formula = TRIPS ~ 

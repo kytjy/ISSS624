@@ -1,5 +1,5 @@
 ---
-title: "Take-home Exercise 2: Applied Spatial Interaction Models: A case study of Singapore public bus commuter flows"
+title: "Take-home Exercise 2: Applied Spatial Interaction Models - A case study of Singapore public bus commuter flows"
 date: "07 December 2023"
 date-modified: "last-modified"
 editor: visual
@@ -19,7 +19,7 @@ format:
 
 # 1 Overview
 
-elt
+Urban mobility, characterized by the daily commute of urban dwellers from homes to workplaces, presents complex challenges for transport operators and urban managers. Traditional approaches to understanding these mobility patterns, such as commuter surveys, are often hindered by high costs, time-consuming processes, and the rapid obsolescence of collected data. However, the digitalization of city-wide urban infrastructures, including public buses, mass rapid transits, and other utilities, alongside the advent of pervasive computing technologies like GPS and SMART cards, offers a new paradigm in tracking and analyzing urban movement.
 
 ## Objectives
 

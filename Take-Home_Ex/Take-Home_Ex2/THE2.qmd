@@ -71,17 +71,24 @@ The specific tasks of this take-home exercise are as follows:
 
 The following packages will be used for this exercise:
 
-| Package                                                                                 | Description                                                              |
+| Package                                                                                                          | Description                                                              |
 |---------------------------------------|---------------------------------|
-| [**tmap**](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) | For thematic mapping                                                     |
-| [**sf**](https://r-spatial.github.io/sf/) & [**sp**]()                                  | For importing, integrating, processing, and transforming geospatial data |
-| [**tidyverse**](https://www.tidyverse.org/)                                             | For non-spatial data wrangling                                           |
-| [**knitr**](https://cran.r-project.org/web/packages/knitr/)                             | For dynamic report generation                                            |
-| [**scales**](https://scales.r-lib.org/)                                                 | For scaling graphs                                                       |
+| [**tmap**](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)                          | For thematic mapping                                                     |
+| [**sf**](https://r-spatial.github.io/sf/) & [**sp**]()                                                           | For importing, integrating, processing, and transforming geospatial data |
+| [**tidyverse**](https://www.tidyverse.org/)                                                                      | For non-spatial data wrangling                                           |
+| [**DT**](https://rstudio.github.io/DT/)                                                                          | For creating and working with html tables                                |
+| [**performance**](https://www.rdocumentation.org/packages/ROCR/versions/1.0-1/topics/performance)                | For computing model comparison metrics                                   |
+| [**reshape2**](https://seananderson.ca/2013/10/19/reshape/)                                                      | For data transformation between wide and long formats                    |
+| [**ggpubr**](https://rpkgs.datanovia.com/ggpubr/) and [**gtsummary**](https://www.danieldsjoberg.com/gtsummary/) | For creating publication quality analytical and summary tables           |
+| [**stplanr**](https://github.com/ropensci/stplanr)                                                               | For transport planning and analysis                                      |
+| [**knitr**](https://cran.r-project.org/web/packages/knitr/)                                                      | For dynamic report generation                                            |
+| [**scales**](https://scales.r-lib.org/)                                                                          | For scaling graphs                                                       |
+| [**corrplot**](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)                   | For visualising correlation matrix                                       |
+| [**plotly**](https://plotly-r.com/)                                                                              | For interactive and dynamic plots                                        |
 
 ## Code
 
-The code chunk below, using `p_load` function of the [**pacman**](https://cran.r-project.org/web/packages/pacman/pacman.pdf) package, ensures that packages required are installed and loaded in R.
+The code chunk below, using `p_load` function of the [**pacman**](https://cran.r-project.org/web/packages/pacman/pacman.pdf) package, ensures that packages required are installed and loaded in R.
 
 ```{r}
 pacman::p_load(tmap, sf, sp, 
@@ -112,7 +119,7 @@ For the purpose of this assignment, the following data will be used:
 ::: panel-tabset
 ## Importing csv
 
-*Passenger Volume by Origin Destination Bus Stops* dataset for October 2023, downloaded from LTA DataMall by using *read_csv()* or **readr** package.
+*Passenger Volume by Origin Destination Bus Stops* dataset for October 2023, downloaded from LTA DataMall by using `read_csv()` or **readr** package.
 
 ```{r}
 odbus <- read_csv("data/aspatial/origin_destination_bus_202310.csv")
@@ -120,7 +127,7 @@ odbus <- read_csv("data/aspatial/origin_destination_bus_202310.csv")
 
 ## Attributes
 
-*glimpse()* of the **dplyr** package allows us to see all columns and their data type in the data frame.
+`glimpse()` of the **dplyr** package allows us to see all columns and their data type in the data frame.
 
 ```{r}
 glimpse(odbus)
@@ -137,7 +144,7 @@ glimpse(odbus)
     -   DESTINATION_PT_CODE: Destination bus stop ID
 -   TOTAL_TRIPS: Number of trips We also note that values in ORIGIN_PT_CODE and DESTINATON_PT_CODE are in numeric data type. These should be in factor data type for further processing and georeferencing.
 
-*as.factor()* can be used to convert the variables ORIGIN_PT_CODE and DESTINATON_PT_CODE from numeric to categorical data type. We use glimpse() again to check the results.
+`as.factor()` can be used to convert the variables ORIGIN_PT_CODE and DESTINATON_PT_CODE from numeric to categorical data type. We use `glimpse()` again to check the results.
 
 ```{r}
 odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
@@ -154,11 +161,11 @@ In our study, we would like to analyse the 1 of the peak hour periods identified
 
 Summary of the functions used as follow:
 
--   *filter()*: Retains rows that satisfies our condition (i.e. Weekday Morning peak period)
+-   `filter()`: Retains rows that satisfies our condition (i.e. Weekday Morning peak period)
 
--   *select()* of **dplyr** package: Retains the desired variables for further analysis.
+-   `select()` of **dplyr** package: Retains the desired variables for further analysis.
 
--   *group_by()* and *summarise()*: Aggregates the total trips at each combination of origin bus stop, destination bus stop, and peak period.
+-   `group_by()` and `summarise()`: Aggregates the total trips at each combination of origin bus stop, destination bus stop, and peak period.
 
 ```{r}
 WDMpeak <- odbus %>%
@@ -168,7 +175,7 @@ WDMpeak <- odbus %>%
   summarise(TRIPS=sum(TOTAL_TRIPS))
 ```
 
-Let's check the output using the *glimpse()* function of dplyr.
+Let's check the output using the `glimpse()` function of dplyr.
 
 ```{r}
 glimpse(WDMpeak)
@@ -179,11 +186,11 @@ glimpse(WDMpeak)
 
 For the purpose of this exercise, three geospatial data will be used. They are:
 
--   MPSZ-2019: This data provides the sub-zone boundary of URA Master Plan 2019.
--   BusStop: This data provides the location of bus stop as at Jul 2023.
--   Analytical hexagon: Hexagonal grids of 375m (this distance is the perpendicular distance between the centre of the hexagon and its edges) to represent the traffic analysis zone.
+-   **MPSZ-2019**: This data provides the sub-zone boundary of URA Master Plan 2019, it helps us define the geographical boundary of Singapore.
+-   **BusStop**: This data provides the location of bus stop as at Jul 2023.
+-   **Analytical hexagon**: Hexagonal grids of 375m (this distance is the perpendicular distance between the centre of the hexagon and its edges) to represent the traffic analysis zone.
 
-In this section, we import the shapefiles into RStudio using *st_read()* function of sf package. *st_transform()* function of **sf** package is used to transform the projection to coordinate reference system (CRS) 3414, which is the EPSG code for the SVY21 projection used in Singapore.
+In this section, we import the shapefiles into RStudio using `st_read()` function of sf package. `st_transform()` function of **sf** package is used to transform the projection to coordinate reference system (CRS) 3414, which is the EPSG code for the SVY21 projection used in Singapore.
 
 ::: panel-tabset
 ## Master Plan Subzone
@@ -194,7 +201,7 @@ mpsz <- st_read(dsn="data/geospatial",
   st_transform(crs = 3414)
 ```
 
-In the code chunk below, *tm_shape()* of **tmap** package is used to define the input data (i.e mpsz) and tm_polygons() is used to draw the planning subzone polygons.
+In the code chunk below, `tm_shape()` of **tmap** package is used to define the input data (i.e mpsz) and `tm_polygons()` is used to draw the planning subzone polygons.
 
 ```{r}
 #| code-fold: true
@@ -203,7 +210,7 @@ In the code chunk below, *tm_shape()* of **tmap** package is used to define the 
 tmap_mode("plot")
 
 tm_shape(mpsz) +
-  tm_polygons()
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1)
 ```
 
 ## Bus Stop
@@ -217,7 +224,7 @@ busstop <- st_read(dsn = "data/geospatial",
 
 Busstop represents sf point objects for 5161 bus stop in Singapore.
 
-To visualise the points of the bus stops, we can use *tm_shape()* of tmap package with each bus stop point displayed as dots. *tmap_mode* allows us to view static maps with `plot` and interactive maps with `view`.
+To visualise the points of the bus stops, we can use `tm_shape()` of tmap package with each bus stop point displayed as dots. *tmap_mode* allows us to view static maps with `plot` and interactive maps with `view`.
 
 ```{r}
 #| code-fold: true
@@ -225,7 +232,7 @@ To visualise the points of the bus stops, we can use *tm_shape()* of tmap packag
 
 tmap_mode("plot")
 tm_shape(mpsz) +
-  tm_polygons() +
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(busstop) +
   tm_dots()+
 tm_view(set.zoom.limits = c(11,14)) # to fix the map extent, so cannot zoom in too much
@@ -244,7 +251,7 @@ knitr::kable(bs_dupes)
 
 ```
 
-The results displayed 16 pairs of duplicated 'BUS_STOP_N', with each pair showing a different geometry point for the same bus stop number. This could potentially suggest that these are temporary bus stops. In that case, it would be prudent to retain only one of them, as conventionally, only one bus stop is used at a time.
+The results displayed 16 pairs of duplicated *BUS_STOP_N*, with each pair showing a different geometry point for the same bus stop number. This could potentially suggest that these are temporary bus stops. In that case, it would be prudent to retain only one of them, as conventionally, only one bus stop is used at a time.
 
 ```{r}
 busstop <- busstop %>%
@@ -270,7 +277,7 @@ A hexagonal grid is used to represent the traffic analysis zones, which helps to
 
 **Step 1: Create Hexagonal Grids**
 
-We first create a hexagonal grid layer of 375m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [*st_make_grid*](https://r-spatial.github.io/sf/reference/st_make_grid.html), [*st_sf*](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below, and *row_number()* to assign an ID to each hexagon.
+We first create a hexagonal grid layer of 375m (refers to the perpendicular distance between the centre of the hexagon and its edges) with [`st_make_grid`](https://r-spatial.github.io/sf/reference/st_make_grid.html), [`st_sf`](https://r-spatial.github.io/sf/reference/sf.html) to convert the grid into an sf object with the codes below, and `row_number()` to assign an ID to each hexagon.
 
 ::: {.callout-note collapse="true"}
 ## *st_make_grid* Arguments
@@ -302,14 +309,18 @@ area_hexagon_grid = st_make_grid(busstop,
 
 We count the number of bus stops in each grid and retain only the grids with bus stops using the code chunks below.
 
-[*st_intersects*](https://postgis.net/docs/ST_Intersects.html) is used to identify the bus stops falling inside each hexagon, while [*lengths*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) returns the number of bus stops inside each hexagon.
+[`st_intersects`](https://postgis.net/docs/ST_Intersects.html) is used to identify the bus stops falling inside each hexagon, while [`lengths`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/lengths) returns the number of bus stops inside each hexagon.
 
 ```{r}
 # Create a column containing the count of bus stops in each grid
-area_hexagon_grid$busstops = lengths(st_intersects(area_hexagon_grid, busstop))
+area_hexagon_grid$busstops = lengths(
+  st_intersects(
+    area_hexagon_grid, 
+    busstop))
 
 # Retain hexagons with bus stops
-area_hexagon_grid = filter(area_hexagon_grid, busstops > 0)
+area_hexagon_grid = filter(area_hexagon_grid, 
+                           busstops > 0)
 
 ```
 
@@ -321,7 +332,7 @@ Notice that 831 hexagons have been created.
 sum(area_hexagon_grid$busstops, na.rm = TRUE)
 ```
 
-Note that there are **5140** bus stops, which tallies to the 5140 from the `Busstop` shape file after deducting for the 5 bus stops outside Singapore boundary and the 16 duplicates, suggesting that the hexagons have managed to capture all expected bus stops.
+Note that there are **5140** bus stops, which tallies to the 5140 from the **Busstop** shape file after deducting for the 5 bus stops outside Singapore boundary and the 16 duplicates, suggesting that the hexagons have managed to capture all expected bus stops.
 
 In the bar chart below, it is evident that the distribution of bus stops per hexagon is right-skewed. While one hexagon contains as many as 19 bus stops, the majority have fewer than 10 bus stops.
 
@@ -341,7 +352,7 @@ ggplot(area_hexagon_grid,
 
 ```
 
-Lastly, using *tm_shape* from **tmap** package, we can quickly visualise the results of the hexagon grids we have created.
+Lastly, using `tm_shape` from **tmap** package, we can quickly visualise the results of the hexagon grids we have created.
 
 ```{r}
 #| code-fold: true
@@ -369,7 +380,7 @@ tm_shape(area_hexagon_grid)+
 
 ### 3.3.1 Combining Busstop and Hexagons
 
-Code chunk below populates the grid ID (i.e. grid_id) of `area_hexagon_grid` sf data frame into `busstop` sf data frame using the following functions:
+Code chunk below populates the grid ID (i.e. grid_id) of **area_hexagon_grid** sf data frame into **busstop** sf data frame using the following functions:
 
 -   `st_intersection()` is used to perform point and polygon overly and the output will be in point sf object.
 
@@ -383,7 +394,7 @@ bs_wgrids <- st_intersection(busstop, area_hexagon_grid) %>%
   st_drop_geometry
 ```
 
-Before we proceed, let's perform a duplicates check on `bs_wgrids`.
+Before we proceed, let's perform a duplicates check on **bs_wgrids**.
 
 ```{r}
 duplicate <- bs_wgrids %>%
@@ -398,9 +409,12 @@ Results showed that there are no duplicated records.
 
 ### 3.3.2 Populate Passenger Volume data with Grid IDs
 
-Next, we are going to append the Grid IDs based on origin bus stops from `bs_wgrids` data frame onto `WDMpeak` data frame.
+Next, we are going to append the Grid IDs based on **origin** bus stops from **bs_wgrids** data frame onto **WDMpeak** data frame. But before that, ensure that *BUS_STOP_N* of **bs_wgrids** is also in factor data type.
 
 ```{r}
+bs_wgrids$BUS_STOP_N  <- as.factor(bs_wgrids$BUS_STOP_N)
+
+
 od_data <- left_join(WDMpeak , bs_wgrids,
             by = c("ORIGIN_PT_CODE" = "BUS_STOP_N")) %>% 
   rename(ORIGIN_BS = ORIGIN_PT_CODE,
@@ -409,7 +423,7 @@ od_data <- left_join(WDMpeak , bs_wgrids,
          DESTIN_BS = DESTINATION_PT_CODE)
 ```
 
-Next, we will update od_data data frame with the Grid IDs of destination bus stops.
+Next, we will update od_data data frame with the Grid IDs of **destination** bus stops.
 
 ```{r}
 od_data <- left_join(od_data , bs_wgrids,
@@ -431,7 +445,7 @@ duplicate2 <- od_data %>%
 duplicate2
 ```
 
-Next, the code chunk below removes rows with missing data using *drop_na()* and aggregates the total passenger trips at each origin-destination grid level with *group_by()* and *summarise()*. *ORIGIN_nBS* and *DESTIN_nBS* counts the number of bus stops, while *ORIGIN_DESC* and *DESTIN_DESC* provides the descriptions of each of the bus stops at origin and destination grids respectively.
+Next, the code chunk below removes rows with missing data using `drop_na()` and aggregates the total passenger trips at each origin-destination grid level with `group_by()` and `summarise()`. *ORIGIN_nBS* and *DESTIN_nBS* counts the number of bus stops, while *ORIGIN_DESC* and *DESTIN_DESC* provides the descriptions of each of the bus stops at origin and destination grids respectively.
 
 ```{r}
 od_data <- od_data %>%
@@ -445,7 +459,7 @@ od_data <- od_data %>%
   ungroup()
 ```
 
-Our resulting OD Matrix organises the commuter flows for weekday morning peak period in a column-wise format, with `origin_grid` representing the ***from*** and `destin_grid` representing the ***to***. There are a total of 65,559 unique origin grid to destination grid combinations.
+Our resulting OD Matrix organises the commuter flows for weekday morning peak period in a column-wise format, with *origin_grid* representing the ***from*** and *destin_grid* representing the ***to***. There are a total of 65,559 unique origin grid to destination grid combinations.
 
 ```{r}
 #| code-fold: true
@@ -460,35 +474,48 @@ DT::datatable(od_data,
 
 Origin-destination flow maps are a popular option to visualise connections between different spatial locations. It reflects the relationships/flows between locations and are created by monitoring movements. In our analysis, we can use OD flows to identify the patterns of bus ridership during weekday mornings.
 
-## 4.1 Removing Intra-Zonal Flows
+## 4.1 Identifying Inter- & Intra-Zonal Flows
 
-Intrazonal travels are considered localised and short duration trips within a transportation analysis zone (i.e. within a hexagon). For our analysis, we will be removing them.
+Intrazonal travels are considered localised and short duration trips within a transportation analysis zone (i.e. within a hexagon). For our analysis, we will be separating them.
+
+To do that, we create a new column in the od_data dataframe called *Zone_Type* using `mutate()` that labels each row as either "Intrazone" or "Interzone" based on whether the *ORIGIN_GRID* and *DESTIN_GRID* are the same or different.
 
 ```{r}
-od_data1 <- od_data[od_data$ORIGIN_GRID!=od_data$DESTIN_GRID,]
+od_data <- od_data %>%
+  mutate(Zone_Type = ifelse(ORIGIN_GRID == DESTIN_GRID, "intrazone", "interzone"))
+
 ```
 
-There are 623 intra-zonal travels noted from the decrease in observations from 65,559 to 64,936.
+There are 623 combinations of intra-zonal travels and 64,936 combinations of inter-zonal travels during the weekday morning peak period based on our dataset.
 
-## 4.2 OD Flow Distribution
+```{r}
+table(od_data$Zone_Type)
+```
+
+## 4.2 Interzonal OD Flow Distribution
+
+In the code chunk below, we use `filter()` to identify the inter-data before using `summary()` to evaulate the distribution of data.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
 
-quantile(od_data1$MORNING_PEAK, 
-         probs = seq(0, 1.0, by = .1))
+od_interzone <- od_data %>%
+  filter(Zone_Type == "interzone")
+
+quantile(od_interzone$MORNING_PEAK, 
+         probs = seq(0, 1.0, by = .05))
 ```
 
-From the summary statistics above, the minimum number of passenger trips for each combination of origin and destination bus stop is 1. The maximum observed is 77,433 passengers, occurring during the weekday morning peak period. Furthermore, the 90th percentile is 174 passengers. This data suggests a highly right-skewed distribution.
+From the summary statistics provided above, we observe that the minimum number of passenger trips for each interzonal combination of origin and destination bus stop is 1. The maximum number of trips recorded is 77,433 passengers, noted during the weekday morning peak period. Additionally, the 90th percentile for passenger trips stands at 174, indicating a highly right-skewed distribution.
 
-## 4.2 Creating Flow Lines
+## 4.2 Creating Interzonal Flow Lines
 
-Desire lines visually represent the connections between originating and destination hexagons using straight lines. The [od2line()](https://docs.ropensci.org/stplanr/reference/od2line.html) function of **stplanr** package is utilized to create these lines. The width of each desire line is proportional to number of passenger trips, i.e. thicker lines would represent higher ridership.
+Desire lines visually represent the connections between originating and destination hexagons using straight lines. The [`od2line()`](https://docs.ropensci.org/stplanr/reference/od2line.html) function of **stplanr** package is utilized to create these lines. The width of each desire line is proportional to number of passenger trips, i.e. thicker lines would represent higher ridership.
 
 ```{r}
 # Creating centroids representing desire line start and end points
-flowLine <- od2line(flow = od_data1, 
+flowLine <- od2line(flow = od_interzone, 
                     zones = area_hexagon_grid,
                     zone_code = "grid_id")
 ```
@@ -505,8 +532,7 @@ tmap_options(check.and.fix = TRUE)
 #tm_basemap("OneMapSG.Grey") +
 tm_basemap("OpenStreetMap") +
 tm_shape(mpsz) +
-  tm_polygons(alpha = 0) +
-  tm_borders(alpha = 0.5)+
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(area_hexagon_grid) +
   tm_fill(alpha=0.7, 
           palette="RdBu") + 
@@ -528,7 +554,7 @@ tm_shape() +
 #tm_view(set.zoom.limits = c(11,14))
 ```
 
-The map reveals that Yew Tee, Woodlands, and Yishun dominate bus ridership during weekday mornings, with notably wider desire lines. Key routes include travel within Yew Tee, between Woodlands Checkpoint and Woodlands MRT Station, as well as within Woodlands and Yishun. Interestingly, though broad, these desire lines are relatively short, often indicating bus travel to neighboring hexagons. This suggests a higher demand for feeder bus services in these areas during weekday mornings. Areas such as Boon Lay, Bedok, Choa Chu Kang, Clementi, Tampines, Pasir Ris, and Serangoon also display high concentrations and variations of desire lines with neighboring hexagons, indicating higher ridership within these areas.
+The map reveals that Yew Tee, Woodlands, and Yishun dominate inter-zonal bus ridership during weekday mornings, with notably wider desire lines. Key routes include travel within Yew Tee, between Woodlands Checkpoint and Woodlands MRT Station, as well as within Woodlands and Yishun. Interestingly, though broad, these desire lines are relatively short, often indicating bus travel to neighboring hexagons. This suggests a higher demand for feeder bus services in these areas during weekday mornings. Areas such as Boon Lay, Bedok, Choa Chu Kang, Clementi, Tampines, Pasir Ris, and Serangoon also display high concentrations and variations of desire lines with neighboring hexagons, indicating higher ridership within these areas.
 
 Furthermore, longer desire lines between the North and East (i.e., Woodlands and Changi) suggest passengers' willingness to travel longer distances to their destinations.
 
@@ -555,7 +581,7 @@ Next, [`spDists()`](https://www.rdocumentation.org/packages/sp/versions/2.1-1/to
 dist <- spDists(hexgrid_sp, 
                 longlat = FALSE)
 
-head(dist, n=c(8, 8))
+head(dist, n=c(6, 6))
 ```
 
 The resulting output is a matrix object class.
@@ -568,14 +594,14 @@ grid_id <- area_hexagon_grid$grid_id
 colnames(dist) <- paste0(grid_id)
 rownames(dist) <- paste0(grid_id)
 
-head(dist, n=c(8, 8))
+head(dist, n=c(6, 6))
 ```
 
 Notice that the column and row names have been updated to the grid IDs.
 
 ## 5.3 Pivoting Distance Value by Grid ID
 
-Next, we will pivot the distance matrix into a long table by using the row and column grid IDs using (*melt()*)\[https://www.rdocumentation.org/packages/reshape2/versions/1.4.4/topics/melt\] of the **reshape2** package, as shown in the code chunk below.
+Next, we will pivot the distance matrix into a long table by using the row and column grid IDs using (`melt()`)\[https://www.rdocumentation.org/packages/reshape2/versions/1.4.4/topics/melt\] of the **reshape2** package, as shown in the code chunk below.
 
 ```{r}
 distPair <- melt(dist) %>%
@@ -583,10 +609,10 @@ distPair <- melt(dist) %>%
          orig = Var1,
          dest = Var2)
 
-head(distPair, 10)
+head(distPair, 5)
 ```
 
-Notice that the within zone distance is 0.
+Notice that the within-zone distance is 0.
 
 ## 5.4 Updating Intra-Zonal Distances
 
@@ -608,23 +634,16 @@ distPair$dist <- ifelse(distPair$dist == 0,
                         distPair$dist)
 ```
 
-The code chunk below will be used to check the result data.frame.
+The code chunk below will be used to check the result using `summary()`.
 
 ```{r}
-# Check the result data.frame.
 summary(distPair)
   
 ```
 
-Lastly, the code chunk below is used to save the dataframe for future use.
-
-```{r}
-write_rds(distPair, "data/rds/distPair.rds") 
-```
-
 ## 5.5 Combining passenger volume data with distance value
 
-Let's convert the origin and destination grid data in `od_data` and `distPair` into factor data type before we combine passenger volume data from `od_data` and distance from `distPair` using *left_join()*.
+Let's convert the origin and destination grid data in *od_data* and *distPair* into factor data type before we combine passenger volume data from **od_data** and distance from **distPair** using `left_join()`.
 
 ```{r}
 od_data$ORIGIN_GRID  <- as.factor(od_data$ORIGIN_GRID)
@@ -700,10 +719,6 @@ ggplot(
 
 Since the 90th percentile of the distance traveled is 12,346.558m, we will filter the data for distances greater than 12,347m to analyse the top 10% of the longest distances traveled.
 
-The plot below reveals that longer travel distances predominantly occur between North and North-East regions (i.e., Woodlands/Yishun and Punggol), North and East (Woodlands and Tampines), West and South (Choa Chu Kang/Bukit Panjang and the Town area), and North and South (Yishun and the Town area). These patterns may reflect commuting trends or the distribution of residential and commercial areas, suggesting that significant portions of the population undertake considerable daily commutes. Understanding these long-distance travel patterns is crucial for planning efficient public transport services, particularly in enhancing connectivity between these widely separated areas.
-
-The sparseness of flow lines seen in the West-end also ascertains the trends noted in our previous Take-Home Exercise 1, where low-low autocorrelation were noted in that area.
-
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -742,7 +757,11 @@ tm_shape() +
 #tm_view(set.zoom.limits = c(11,14))
 ```
 
-Let's now move on to explore the potential factors that could attract or propel passengers to travel by bus from one location to another. This exploration will include examining various urban elements such as the proximity to key amenities like schools, shopping centers, and employment hubs. Understanding these elements can provide valuable insights into improving public transportation systems and urban planning strategies.
+The plot below reveals that longer travel distances predominantly occur between North and North-East regions (i.e., Woodlands/Yishun and Punggol), North and East (Woodlands and Tampines), West and South (Choa Chu Kang/Bukit Panjang and the Town area), and North and South (Yishun and the Town area). These patterns may reflect commuting trends between residential and commercial areas, suggesting that significant portion of the population undertake considerable daily commutes.
+
+The sparseness of flow lines seen in the West-end also ascertains the trends noted in our previous Take-Home Exercise 1, where low-low autocorrelation were noted in that area.
+
+In the subsequent sections, we explore the potential factors that could attract or propel passengers to travel by bus from one location to another. This exploration will include examining various urban elements such as the proximity to key amenities like schools, shopping centers, and employment hubs. Understanding these elements can provide valuable insights into improving public transportation systems and urban planning strategies.
 
 # 6. Preparing Origin and Destination Attributes
 
@@ -787,7 +806,7 @@ trainstationexits %>%
 
 ### Step 2: Point-in-Polygon Count Process
 
-Next, we will count the number of train station exits located inside each hexagon and include this as a variable in `area_hexagon_grid` table.
+Next, we will count the number of train station exits located inside each hexagon and include this as a variable in **area_hexagon_grid** table.
 
 ```{r}
 area_hexagon_grid$`COUNT_TRAINSTATIONEXIT`<- lengths(
@@ -805,7 +824,7 @@ Summary statistics indicate that a maximum of 13 train station exits are located
 summary(area_hexagon_grid$COUNT_TRAINSTATIONEXIT)
 ```
 
-Let's visualise where these are located:
+Let's visualise where the bus stops are located, alongside the top 5% of ridership, to see if we can identify any discernible patterns.
 
 ```{r}
 #| code-fold: true
@@ -813,14 +832,25 @@ Let's visualise where these are located:
 
 tmap_mode("plot")
 tm_shape(mpsz) +
-  tm_polygons(alpha = 0) +
-  tm_borders(alpha = 0.5)+
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(area_hexagon_grid) +
-  tm_fill(alpha=0.7, 
-          palette="RdBu") +
-  tm_borders(alpha = 0.5)+
-tm_shape(trainstationexits) +
-  tm_dots()
+  tm_fill(
+    col="COUNT_TRAINSTATIONEXIT",
+    style="pretty",
+    palette="Blues",
+    alpha=0.7) +
+  tm_borders(alpha = 0.5) +
+flowLine %>%  
+  filter(MORNING_PEAK >= 1399) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.1)+
+    tm_layout(legend.text.size = 0.6,
+              legend.title.size=0.6)
+  
 ```
 
 ## Business
@@ -856,11 +886,11 @@ business %>%
 business <- unique(business)
 ```
 
-Note that the number of records for `business` is has decreased from 6550 to 6549.
+Note that the number of records for **business** is has decreased from 6550 to 6549.
 
 ### Step 2: Point-in-Polygon Count Process
 
-Next, we will count the number of business in each hexagon and include this as a variable in `area_hexagon_grid` table.
+Next, we will count the number of business in each hexagon and include this as a variable in **area_hexagon_grid** table.
 
 ```{r}
 area_hexagon_grid$`COUNT_BIZ`<- lengths(
@@ -868,13 +898,13 @@ area_hexagon_grid$`COUNT_BIZ`<- lengths(
     area_hexagon_grid, business))
 ```
 
-Summary statistics below show that less than half of the hexagons contain no businesses, while in contrast, a single hexagon houses as many as 97 businesses.
+Summary statistics below show that less than half of the hexagons do not contain any businesses, while in contrast, a single hexagon houses as many as 97 businesses.
 
 ```{r}
 summary(area_hexagon_grid$COUNT_BIZ)
 ```
 
-Let's visualise where these are located are using the code chunk below:
+Let's visualise where the businesses are located, alongside the top 5% of ridership, to see if we can identify any discernible patterns.
 
 ```{r}
 #| code-fold: true
@@ -882,15 +912,28 @@ Let's visualise where these are located are using the code chunk below:
 
 tmap_mode("plot")
 tm_shape(mpsz) +
-  tm_polygons(alpha = 0) +
-  tm_borders(alpha = 0.5)+
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(area_hexagon_grid) +
-  tm_fill(alpha=0.7, 
-          palette="RdBu") +
-  tm_borders(alpha = 0.5)+
-tm_shape(trainstationexits) +
-  tm_dots()
+  tm_fill(
+    col="COUNT_BIZ",
+    style="pretty",
+    palette="Blues",
+    alpha=0.7) +
+  tm_borders(alpha = 0.5) +
+flowLine %>%  
+  filter(MORNING_PEAK >= 1399) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.1)+
+    tm_layout(legend.text.size = 0.6,
+              legend.title.size=0.6)
+  
 ```
+
+No consistent patterns are evident when comparing the number of businesses in a grid with the top 5% of ridership. In the far West, despite a significant presence of businesses, the passenger volume does not rise correspondingly. In contrast, areas like Changi, Woodlands, the Central Business District, and Geylang, which have higher numbers of business units, also experience greater passenger volumes.
 
 ## Financial Centres
 
@@ -910,7 +953,7 @@ finserv <- st_read(dsn = "data/geospatial",
 
 Note that there are 3320 locations of financial services in our dataset in total.
 
-Similarly, we remove duplicates to prevent double-counting. This reduces the number of financial services locations from 3320 to 3058.
+Similarly, we remove duplicates by retaining the unique observations to prevent double-counting. This reduces the number of financial services locations from 3320 to 3058.
 
 ```{r}
 finserv <- unique(finserv)
@@ -918,7 +961,7 @@ finserv <- unique(finserv)
 
 ### Step 2: Point-in-Polygon Count Process
 
-Next, we will count the number of financial services in each hexagon and include this as a variable in `area_hexagon_grid` table.
+Next, we will count the number of financial services in each hexagon and include this as a variable in **area_hexagon_grid** table.
 
 ```{r}
 area_hexagon_grid$`COUNT_FS`<- lengths(
@@ -932,7 +975,7 @@ The summary statistics reveal that up to 130 financial services locations can be
 summary(area_hexagon_grid$COUNT_FS)
 ```
 
-Let's visualise where these are located are using the code chunk below:
+Let's visualise where these are located, alongside the top 5% of ridership, to see if we can identify any discernible patterns.
 
 ```{r}
 #| code-fold: true
@@ -940,15 +983,27 @@ Let's visualise where these are located are using the code chunk below:
 
 tmap_mode("plot")
 tm_shape(mpsz) +
-  tm_polygons(alpha = 0) +
-  tm_borders(alpha = 0.5)+
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(area_hexagon_grid) +
-  tm_fill(alpha=0.7, 
-          palette="RdBu") +
-  tm_borders(alpha = 0.5)+
-tm_shape(finserv) +
-  tm_dots()
+  tm_fill(
+    col="COUNT_FS",
+    style="pretty",
+    palette="Blues",
+    alpha=0.7) +
+  tm_borders(alpha = 0.5) +
+flowLine %>%  
+  filter(MORNING_PEAK >= 1399) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.1)+
+    tm_layout(legend.text.size = 0.6,
+              legend.title.size=0.6)
 ```
+
+Similarly, the relationship between ridership and the count of financial services is not particularly obvious. High ridership is observed outside the Central Business District area, where financial services are concentrated.
 
 ## Leisure & Recreation Centres
 
@@ -981,7 +1036,7 @@ finserv %>%
 
 ### Step 2: Point-in-Polygon Count Process
 
-Next, we will count the number of facilities in each hexagon and include this as a variable in `area_hexagon_grid` table.
+Next, we will count the number of facilities in each hexagon and include this as a variable in **area_hexagon_grid** table.
 
 ```{r}
 area_hexagon_grid$`COUNT_RECS`<- lengths(
@@ -995,7 +1050,7 @@ The summary statistics indicate that, on average, a single leisure and recreatio
 summary(area_hexagon_grid$COUNT_RECS)
 ```
 
-Let's visualise where these are located are using the code chunk below:
+Let's visualise where these are located, alongside the top 5% of ridership, to see if we can identify any discernible patterns.
 
 ```{r}
 #| code-fold: true
@@ -1003,15 +1058,27 @@ Let's visualise where these are located are using the code chunk below:
 
 tmap_mode("plot")
 tm_shape(mpsz) +
-  tm_polygons(alpha = 0) +
-  tm_borders(alpha = 0.5)+
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(area_hexagon_grid) +
-  tm_fill(alpha=0.7, 
-          palette="RdBu") +
-  tm_borders(alpha = 0.5)+
-tm_shape(recs) +
-  tm_dots()
+  tm_fill(
+    col="COUNT_RECS",
+    style="pretty",
+    palette="Blues",
+    alpha=0.7) +
+  tm_borders(alpha = 0.5) +
+flowLine %>%  
+  filter(MORNING_PEAK >= 1399) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.1)+
+    tm_layout(legend.text.size = 0.6,
+              legend.title.size=0.6)
 ```
+
+Similarly, the relationship between the number of bus trips and the presence of leisure and recreational centers is not consistently clear across all areas. Locations such as the CBD, Yishun, and Tampines, which have a higher concentration of recreational centers, do indeed experience higher ridership.
 
 ## Retail
 
@@ -1039,7 +1106,7 @@ retail <- unique(retail)
 
 ### Step 2: Point-in-Polygon Count Process
 
-Next, we will count the number of retail centres in each hexagon and include this as a variable in `area_hexagon_grid` table.
+Next, we will count the number of retail centres in each hexagon and include this as a variable in **area_hexagon_grid** table.
 
 ```{r}
 area_hexagon_grid$`COUNT_RETAIL`<- lengths(
@@ -1053,7 +1120,7 @@ The summary statistics reveal that, on average, 44 retail and service centers ca
 summary(area_hexagon_grid$COUNT_RETAIL)
 ```
 
-Let's visualise where these are located are using the code chunk below:
+Let's visualise where these are located, alongside the top 5% of ridership, to see if we can identify any discernible patterns.
 
 ```{r}
 #| code-fold: true
@@ -1061,23 +1128,116 @@ Let's visualise where these are located are using the code chunk below:
 
 tmap_mode("plot")
 tm_shape(mpsz) +
-  tm_polygons(alpha = 0) +
-  tm_borders(alpha = 0.5)+
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(area_hexagon_grid) +
-  tm_fill(alpha=0.7, 
-          palette="RdBu") +
-  tm_borders(alpha = 0.5)+
-tm_shape(retail) +
-  tm_dots()
+  tm_fill(
+    col="COUNT_RETAIL",
+    style="pretty",
+    palette="Blues",
+    alpha=0.7) +
+  tm_borders(alpha = 0.5) +
+flowLine %>%  
+  filter(MORNING_PEAK >= 1399) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.1)+
+    tm_layout(legend.text.size = 0.6,
+              legend.title.size=0.6)
 ```
+
+Significant passenger flows are observed in the Town area where the retail count is high. However, high passenger flows are also noted in areas where retail units are not as abundant, such as Woodlands and Jurong.
 
 ## Schools
 
-The *schools* data is a geocoded version of the *School Directory and Information* from data.gov. This information was prepared with [OneMap API](https://www.onemap.gov.sg/apidocs/) using the March 2022 data. For detailed steps, please visit [Prof Kam's ISSS624](https://isss624.netlify.app/in-class_ex/in-class_ex4/in-class_ex4-gds).
+The *schools* data is taken from *School Directory and Information* as of March 2022 from data.gov. 
 
 Schools significantly impact local transit patterns, especially during morning and afternoon peak hours. Regular travel routines of students, teachers, and staff create predictable demand, with a high volume of commuters contributing substantially to local transit ridership, making it a critical **attractor**. This effect is particularly pronounced on bus routes serving school areas, where the demand for public transit is heightened around school start and end times.
 
-### Step 1: Import csv file
+### Step 1: Geocoding using SLA OneMap API
+
+We first load our data into RStudio using `read_csv()`, which allows us to access data from a CSV file. The dataset contains detailed descriptions of mainly primary and secondary schools, ranging from addresses to contact information.
+
+```{r}
+#| eval: false
+csv <- read_csv('data/aspatial/Generalinformationofschools.csv')
+
+glimpse(schs)
+```
+Note that this data is aspatial. In subsequent steps, we aim to geocode using the postal code in the *postal_code* field to obtain the geographic coordinates of each school. The Singapore Land Authority (SLA) supports an online geocoding service called (**OneMap API**)[https://www.onemap.gov.sg/apidocs/]. The Search API looks up address data or a 6-digit postal code for an entered value, then returns the latitude, longitude, and x,y coordinates of the searched location.
+
+The following code chunks will perform geocoding using the SLA OneMap API. It uses the input data **csv** and a collection of HTTP call functions from the **httr** package in R to pass individual records to the geocoding server at OneMap.
+
+The codes below aim to extract the field required for geocoding, i.e., *postal_code*, and set the link to the SLA OneMap API.
+
+```{r}
+#| eval: false
+pacman::p_load(httr)
+
+## Extract field
+postcodes <- csv$`postal_code`
+
+## Establish link with SLA OneMap API
+url<-"https://www.onemap.gov.sg/api/common/elastic/search"
+
+```
+
+The code below performs the following:
+
+-   Creates two tibble data frames if the geocoding process completes successfully: **found** and **not_found**. **found** contains all records that are geocoded correctly, and **not_found** contains postals that failed to be geocoded.
+
+-   **found** data table will be joined with the initial csv data table using a unique identifier (i.e., POSTAL) common to both data tables. The output data table will then be saved as a CSV file called **found**.
+
+```{r}
+#| eval: false
+#| 
+found<-data.frame()
+not_found<-data.frame()
+
+for(postcode in postcodes){
+  query<-list('searchVal'=postcode,'returnGeom'='Y','getAddrDetails'='Y','pageNum'='1')
+  res<- GET(url,query=query)
+  
+  if((content(res)$found)!=0){
+    found<-rbind(found,data.frame(content(res))[4:13])
+  } else{
+    not_found = data.frame(postcode)
+  }
+}
+```
+
+Next, the code chunk below will combine both **found** and **not_found** data.frames into a single tibble data.frame called **merged**. 
+
+```{r}
+#| eval: false
+
+merged = merge(csv, found, by.x = 'postal_code', by.y = 'results.POSTAL', all = TRUE)
+```
+
+Then we will write **merged** and **not_found** tibble data.frames into two separate csv files called **schools** and **not_found** respectively.
+
+```{r}
+#| eval: false
+
+write.csv(merged, file = "data/aspatial/schools.csv")
+write.csv(not_found, file = "data/aspatial/not_found.csv")
+```
+
+Note that Zhenghua Secondary School did not manage to be geocoded using the OneMap API. We can fill in the gaps by manually inputting the longitude and latitude information from Google.
+
+From Google:
+
+![](images/Google_ZHSS.PNG){width="276"}
+
+Manual Edit in **schools.csv**:
+
+![](images/ZHSS.PNG){width="276"}
+
+Save the file in Excel once this step is completed.
+
+### Step 2: Import csv file
 
 ```{r}
 schools <- read_csv("data/aspatial/schools.csv") %>%
@@ -1097,15 +1257,15 @@ schools %>%
   kable()
 ```
 
-Note that the number of schools has dropped from 350 to 346.
+Note that the number of schools has dropped from 350 to 346 after running the code chunk below.
 
 ```{r}
 schools <- unique(schools)
 ```
 
-### Step 2: Convert into sf tibble data.frame
+### Step 3: Convert into sf tibble data.frame
 
-To transform longitude and latitude into point geometries for further analysis, we can use *st_as_sf* to convert coordinates into spatial geometry objects and *st_transform* to help in assigning to Singapore's coordinate system with EPSG 3414.
+To transform longitude and latitude into point geometries for further analysis, we can use `st_as_sf` to convert coordinates into spatial geometry objects and `st_transform` to help in assigning to Singapore's coordinate system with EPSG 3414.
 
 ```{r}
 schools_sf <- st_as_sf(schools, 
@@ -1114,9 +1274,9 @@ schools_sf <- st_as_sf(schools,
   st_transform(crs = 3414)
 ```
 
-### Step 3: Point-in-Polygon Count Process
+### Step 4: Point-in-Polygon Count Process
 
-Next, we will count the number of schools in each hexagon and include this as a variable in `area_hexagon_grid` table.
+Next, we will count the number of schools in each hexagon and include this as a variable in *area_hexagon_grid* table.
 
 ```{r}
 area_hexagon_grid$`COUNT_SCHOOLS`<- lengths(
@@ -1124,29 +1284,42 @@ area_hexagon_grid$`COUNT_SCHOOLS`<- lengths(
     area_hexagon_grid, schools_sf))
 ```
 
-The summary statistics reveal that more than half of the hexagons do not contain any schools, with the maximum number of schools in a single hexagon being 4. We see from the map plotted above that two of such hexagons are located at Choa Chu Kang and Marine Parade.
+The summary statistics reveal that more than half of the hexagons do not contain any schools, with the maximum number of schools in a single hexagon being 4.
 
 ```{r}
 summary(area_hexagon_grid$COUNT_SCHOOLS)
 ```
 
-Let's visualise where these are located:
+Let's visualize where these are located, alongside the top 5% of ridership, to see if we can identify any discernible patterns.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
 
-tmap_mode("view")
-#tm_shape(mpsz) +
-#  tm_polygons(alpha = 0) +
-#  tm_borders(alpha = 0.5)+
+tmap_mode("plot")
+tm_shape(mpsz) +
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
 tm_shape(area_hexagon_grid) +
-  tm_fill(alpha=0.7, 
-          palette="RdBu") +
-  tm_borders(alpha = 0.5)+
-tm_shape(schools_sf) +
-  tm_dots()
+  tm_fill(
+    col="COUNT_SCHOOLS",
+    style="pretty",
+    palette="Blues",
+    alpha=0.7) +
+  tm_borders(alpha = 0.5) +
+flowLine %>%  
+  filter(MORNING_PEAK >= 1399) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.1)+
+    tm_layout(legend.text.size = 0.6,
+              legend.title.size=0.6)
+
 ```
+
+There seems to be an association between passenger volume and the number of schools. There is a significantly higher number of flow lines representing the top 5% of ridership in areas with higher school counts, as indicated by the darker blue shades on the map.
 
 ## HDBs
 
@@ -1156,13 +1329,15 @@ Significantly, HDB blocks house the majority of Singapore's population, making t
 
 ### Step 1: Import csv file
 
+We first import the csv file using `read_csv()`.
+
 ```{r}
 hdb <- read_csv("data/aspatial/hdb.csv")
 
 str(hdb)
 ```
 
-The below code chunk retains relevant columns for further analysis:
+Subsequently, the below code chunk retains relevant columns for further analysis:
 
 ```{r}
 hdb <- hdb %>%  
@@ -1172,7 +1347,7 @@ hdb <- hdb %>%
 
 ### Step 2: Convert into sf tibble data.frame
 
-To transform longitude and latitude into point geometries for further analysis, we can use *st_as_sf* to convert coordinates into spatial geometry objects and *st_transform* to help in assigning to Singapore's coordinate system with EPSG 3414.
+To transform longitude and latitude into point geometries for further analysis, we can use `st_as_sf` to convert coordinates into spatial geometry objects and `st_transform` to help in assigning to Singapore's coordinate system with EPSG 3414.
 
 ```{r}
 hdb_sf <- st_as_sf(hdb, 
@@ -1183,9 +1358,9 @@ hdb_sf <- st_as_sf(hdb,
 
 ### Step 3: Counting the Total Dwelling Units / Population per Hexagon
 
-*st_intersects()* performs a spatial join between `area_hexagon_grid` and `hdb_sf` so that we can identify HDBs that are located in hexagons with bus stop.
+`st_intersects()` performs a spatial join between *area_hexagon_grid* and *hdb_sf* so that we can identify HDBs that are located in hexagons with bus stop.
 
-*apply()* applies a function to each row. Within the function, hdb_sf\$total_dwelling_units\[row\] sums the total_dwelling_units values for all hdb_sf features that intersect with the hexagons. To obtain a more accurate estimation of the actual population in each hexagon, we then multiply this sum by 3.09, the average household size in Singapore as of 2022. This multiplication adjusts the total dwelling units to better reflect the population density, providing a more realistic basis for analyzing and planning urban and transportation needs.
+`apply()` applies a function to each row. Within the function, hdb_sf\$total_dwelling_units\[row\] sums the total_dwelling_units values for all hdb_sf features that intersect with the hexagons. To obtain a more accurate estimation of the actual population in each hexagon, we then multiply this sum by 3.09, which is the average household size in Singapore as of 2022. This multiplication adjusts the total dwelling units to better reflect the population density, providing a more realistic basis for analyzing and planning urban and transportation needs.
 
 ```{r}
 hdbinhex  <-  st_intersects(area_hexagon_grid, 
@@ -1197,18 +1372,49 @@ area_hexagon_grid$TOT_HDBPOP <-
   })
 ```
 
-A quick sum() of the total population from all the dwelling units suggests that our proxy of 3.3 million is acceptable, as [The Straits Times](https://www.straitstimes.com/singapore/singapore-resident-population-in-hdb-flats-falls-to-304m-with-smaller-households-spread) reported a total of 3.1 million residents living in HDB flats in 2021.
+A quick `sum()` of the total population from all the dwelling units suggests that our proxy of 3.3 million is acceptable, as [The Straits Times](https://www.straitstimes.com/singapore/singapore-resident-population-in-hdb-flats-falls-to-304m-with-smaller-households-spread) reported a total of 3.1 million residents living in HDB flats in 2021.
 
 ```{r}
 sum(area_hexagon_grid$TOT_HDBPOP)
 ```
+
+Let's visualize the population density across the island, alongside the top 5% of ridership, to see if we can identify any discernible patterns.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+tmap_mode("plot")
+tm_shape(mpsz) +
+  tm_polygons(col='#C2D3CC', border.alpha = 0.1, alpha = 0.3) +
+tm_shape(area_hexagon_grid) +
+  tm_fill(
+    col="TOT_HDBPOP",
+    style="pretty",
+    palette="Blues",
+    alpha=0.7) +
+  tm_borders(alpha = 0.5) +
+flowLine %>%  
+  filter(MORNING_PEAK >= 1399) %>% 
+tm_shape() +
+  tm_lines(lwd = "MORNING_PEAK",
+           style = "quantile",
+           scale = c(0.1, 1, 3, 5, 7, 10),
+           n = 6,
+           alpha = 0.1)+
+    tm_layout(legend.text.size = 0.6,
+              legend.title.size=0.6)
+
+```
+
+There seems to be a correlation between the density of the population and the volume of bus ridership. Areas with denser populations are marked by a greater number of flow lines, as shown by the darker blue shades on the map.
 :::
 
 # 7. Combining Attributes with Flow Data
 
-Two *left_joins()* will be performed between `flow_data` and `area_hexagon_grid` using the origin and destination grid IDs.
+Two `left_joins()` will be performed between *flow_data* and *area_hexagon_grid* using the origin and destination grid IDs.
 
-To perform the left join, we first have to convert *grid_id* of `area_hexagon_grid` into factor data type.
+Before performing the left joins, we first have to convert *grid_id* of *\`*area_hexagon_grid\* into factor data type.
 
 ```{r}
 area_hexagon_grid$grid_id  <- as.factor(area_hexagon_grid$grid_id)
@@ -1250,8 +1456,7 @@ flowdata_final <- flowdata_ori %>%
         DEST_RETAIL = COUNT_RETAIL,
         DEST_SCHOOLS = COUNT_SCHOOLS,
         DEST_HDBPOP = TOT_HDBPOP) %>% 
- select(c(1:3,4,5,10:17,6:7,19:26,8)) %>% 
-  select(-c('ORI_BS','DEST_BS'))
+  select(-c('ORI_GEOM','ORI_BS','DEST_GEOM','DEST_BS'))
 
 glimpse(flowdata_final)
 ```
@@ -1312,7 +1517,7 @@ Notice that the distribution is highly right-skewed.
 
 ## Independent Variables
 
-The code chunk below is used to create histograms for all origin and destination related variables. Then, *ggarrange()* is used to organised these histogram into a 3 columns by 3 rows of multiple small plots.
+The code chunk below is used to create histograms for all origin and destination related variables. Then, `ggarrange()` is used to organised these histogram into a 3 columns by 3 rows of multiple small plots.
 
 **Origin Variables**
 
@@ -1435,7 +1640,7 @@ Poisson regression is appropriate for our dataset for two main reasons:
 
 -   Predicting Non-Negative Values: Poisson regression naturally ensures that predictions are non-negative, which is essential for count data. Linear regression can predict negative values, which do not make sense for counts.
 
-It is important here that the explanatory variables are **never zero** since Poisson Regression is base on log and log 0 is undefined. In the code chunk below, *summary()* of **Base R** is used to compute the summary statistics of all variables in flowdata_final data frame.
+It is important here that the explanatory variables are **never zero** since Poisson Regression is base on log and log 0 is undefined. In the code chunk below, `summary()` of **Base R** is used to compute the summary statistics of all variables in flowdata_final data frame.
 
 ```{r}
 summary(flowdata_final)
@@ -1524,41 +1729,34 @@ flowdata_final$DEST_HDBPOP <- ifelse(
   flowdata_final$DEST_HDBPOP)
 ```
 
-We run *summary()* again to check the results.
+We run `summary()` again to check the results.
 
 ```{r}
 summary(flowdata_final)
 ```
 
-## 8.3 Extracting Inter-Zonal Flow Data
+## 8.3 Extracting Inter- & Intra-Zonal Flow Data
 
-In general, we will calibrate separate Spatial Interaction Models for inter- and intra-zonal flows. In our analysis, we will focus our attention on inter-zonal flows. Therefore, it is necessary to exclude intra-zonal flows from the flow_data.
+To calibrate separate Spatial Interaction Models for inter- and intra-zonal flows, we can select the data required using the *Zone_Type* variable created previously.
 
-First, a new column called FlowNoIntra will be created by using the code chunk below.
-
-```{r}
-flowdata_final$FlowNoIntra <- ifelse(
-  flowdata_final$ORIGIN_GRID == flowdata_final$DESTIN_GRID, 
-  0, 
-  flowdata_final$TRIPS)
-```
-
-In *FlowNoIntra* field, all intra-zonal flow will be given a value of 0, else the original flow values will be retained.
-
-Next, inter-zonal flow will be selected from flow_data and saved into a new output data.frame called *inter_zonal_flow* using the code chunk below.
+Next, inter-zonal flow will be selected from flow_data and saved into a new output data.frame called **interzonal_flow** using the code chunk below, and intra-zonal flow will be filtered for and saved in **intrazonal_flow**.
 
 ```{r}
 interzonal_flow <- flowdata_final %>%
-  filter(FlowNoIntra > 0)
-```
+  filter(Zone_Type=='interzone')
 
-There are 64,936 interzonal flows in our dataset.
+intrazonal_flow <- flowdata_final %>%
+  filter(Zone_Type=='intrazone')
+```
 
 ## 8.4 Correlation Analysis
 
 Before building a Poisson regression model, it is important to ensure that the indepdent variables used are not highly correlated to each other. Multicollinearity in a regression model can compromise the quality of the model.
 
-The code chunk below uses the [**corrplot**](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html) package to plot a scatterplot matrix of the relationship between the independent variables in *interzonal_flow* data.frame. AOE order is used, tt orders the variables by using the *angular order of the eigenvectors* method suggested by [Michael Friendly](https://www.datavis.ca/papers/corrgram.pdf).
+The code chunk below uses the [**corrplot**](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html) package to plot a scatterplot matrix of the relationship between the independent variables in **interzonal_flow** data.frame. AOE order is used, tt orders the variables by using the *angular order of the eigenvectors* method suggested by [Michael Friendly](https://www.datavis.ca/papers/corrgram.pdf).
+
+::: panel-tabset
+## Interzonal Flow
 
 ```{r}
 #| code-fold: true
@@ -1566,7 +1764,7 @@ The code chunk below uses the [**corrplot**](https://cran.r-project.org/web/pack
 
 col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
 
-corrplot(cor(interzonal_flow[, c(6:12, 15:21)]), 
+corrplot(cor(interzonal_flow[, c(10:23)]), 
          diag = FALSE, 
          order = "AOE",
          tl.pos = "td", 
@@ -1578,13 +1776,50 @@ corrplot(cor(interzonal_flow[, c(6:12, 15:21)]),
          type = "upper")
 ```
 
-From the scatterplot matrix, it is observed that none of the variable pairs exhibit a correlation greater than 0.8. Consequently, with no issues of multicollinearity present, there is no need to exclude any variables from our analysis.
+From the correlation matrix, it is observed that none of the variable pairs exhibit a correlation greater than 0.8. Consequently, with no issues of multicollinearity present, there is no need to exclude any variables from our analysis.
 
-# 9 Calibrating Spatial Interaction Models
+## Intrazonal Flow
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+
+corrplot(cor(intrazonal_flow[, c(10:23)]), 
+         diag = FALSE, 
+         order = "AOE",
+         tl.pos = "td", 
+         tl.cex = 0.5, # Change size of headers
+         number.cex = 0.5, # Change size of coefficients
+         method="color", col=col(200),
+         addCoef.col = "black", # Add coefficient of correlation
+         tl.col="black", tl.srt=45, #Text label color and rotation
+         type = "upper")
+```
+
+The following pairs of variables exhibit high collinearity, each with a correlation coefficient of 1
+
+-   HDB population at origin and destination
+
+-   School count at origin and destination
+
+-   Business count at origin and destination
+
+-   Retail count at origin and destination
+
+-   Financial services count at origin and destination
+
+-   Train station exit count at origin and destintation
+
+This high degree of collinearity is expected for intrazonal flows, where the origin and destination are the same. However, caution is advised in subsequent analytical steps to avoid using these highly correlated variables together, as they can lead to issues in statistical models.
+:::
+
+# 9 Calibrating Spatial Interaction Models for Interzonal Travels
 
 A spatial interaction model is specifically designed to map and model the interactivity between various factors across distinct locations. This makes it particularly useful for understanding data involving more than one location component, such as our analysis of bus travel from one hexagon to another.
 
-In this section, we will calibrate spatial interaction models using the *glm()* function from the **Base Stats** package in R and determine the statistical significance of the association between the explanatory variables and the response variable, before moving on to evaluate how well the models fit our data.
+In this section, we will calibrate spatial interaction models for interzonal data using the *glm()* function from the **Base Stats** package in R and determine the statistical significance of the association between the explanatory variables and the response variable, before moving on to evaluate how well the models fit our data.
 
 ## 9.1 Unconstrained SIM
 
@@ -1595,7 +1830,7 @@ In this unconstrained model, the following variables are used:
 
 -   Origin propulsiveness: ORI_TRAINEXITS, ORI_HDBPOP
 
--   Destination attractiveness: DEST_TRAINEXITS, DEST_BIZ, DEST_FS, DEST_RECS, DEST_RETAIL, DEST_SCHOOLS, DEST_HDBPOP
+-   Destination attractiveness: DEST_TRAINEXITS, DEST_BIZ, DEST_FS, DEST_RECS, DEST_RETAIL, DEST_SCHOOLS
 
 ```{r}
 uncSIM <- glm(formula = TRIPS ~ 
@@ -1612,7 +1847,7 @@ uncSIM <- glm(formula = TRIPS ~
                 log(DEST_RECS) +
                 log(DEST_RETAIL) +
                 log(DEST_SCHOOLS) +
-                log(DEST_HDBPOP) +
+                #log(DEST_HDBPOP) +
                 log(dist),
               family = poisson(link = "log"),
               data = interzonal_flow,
@@ -1794,7 +2029,7 @@ data.frame(
 ```
 :::
 
-# 10 Model Comparison
+# 10 Model Comparison for Interzonal Travels
 
 Suitable statistical measures help evaluate how well the models' parameters give the best fit to data. In this section, we will look at various models that can help us determine which model is 'best'.
 
@@ -1863,9 +2098,9 @@ Doubly-constrained model yielded the highest R-Squared value amongst the 4 model
 
 The code chunk below serves a dual purpose:
 
--   It first creates a list named `model_list`.
+-   It first creates a list named **model_list**.
 
--   Then, it computes the Root Mean Squared Error (RMSE) for all the models in `model_list` using the *compare_performance()* function.
+-   Then, it computes the Root Mean Squared Error (RMSE) for all the models in `model_list` using the `compare_performance()` function.
 
 ```{r}
 model_list <- list(
@@ -1878,7 +2113,7 @@ compare_performance(model_list,
                     metrics = "RMSE")
 ```
 
-Similar to our R-Sqaured results, the results above reveal that doubly constrained SIM is the best model as it has the smallest RMSE value of 1164.166 amongst the 4 models calibrated.
+Similar to our R-Squared results, the results above reveal that doubly constrained SIM is the best model as it has the smallest RMSE value of 1164.166 amongst the 4 models calibrated.
 
 ## 10.3 Visualising Fitted Values
 
@@ -1888,9 +2123,9 @@ The code chunk below performs the following functions:
 
 -   It first extracts the fitted values from each model
 
--   Appends the fitted values into `inter_zonal_flow` data frame
+-   Appends the fitted values into **inter_zonal_flow** data frame
 
--   Lastly, *rename()* is used to rename the field name
+-   Lastly, `rename()` is used to rename the field name
 
 ::: panel-tabset
 ## Unconstrained SIM
@@ -1946,7 +2181,7 @@ interzonal_flow  <- interzonal_flow  %>%
 ```
 :::
 
-Using *ggplot()* and *ggarrange()*, we will visualise the observed against fitted values of the 4 models in a single visual for better comparison.
+Using `ggplot()` and `ggarrange()`, we will visualise the observed against fitted values of the 4 models in a single visual for better comparison.
 
 ```{r}
 #| code-fold: true
@@ -2026,11 +2261,10 @@ Upon further investigation, the outliers correspond to the observations detailed
 #| code-fold: true
 #| code-summary: "Show the code"
 
-interzonal_flow[interzonal_flow$TRIPS %in% c(77433, 77255, 76780), ]
-
+datatable(interzonal_flow[interzonal_flow$TRIPS %in% c(77433, 77255, 76780), ])
 ```
 
-To analyze the impact of the outliers on our model fit, we removed the outlier using the **`filter()`** function and recalibrated the models using **glm()**.
+To analyse the impact of the outliers on our model fit, we remove the outliers using the `filter()` function and recalibrated the models using `glm()`.
 
 ```{r}
 interzonal_flow2 <- interzonal_flow %>%
@@ -2052,7 +2286,7 @@ uncSIM2 <- glm(formula = TRIPS ~
                 log(DEST_RECS) +
                 log(DEST_RETAIL) +
                 log(DEST_SCHOOLS) +
-                log(DEST_HDBPOP) +
+                #log(DEST_HDBPOP) +
                 log(dist),
               family = poisson(link = "log"),
               data = interzonal_flow2,
@@ -2114,7 +2348,7 @@ dbcSIM2 <- glm(formula = TRIPS ~
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-
+#| eval: false
 rsq(uncSIM2$data$TRIPS, uncSIM2$fitted.values)
 rsq(orcSIM2$data$TRIPS, orcSIM2$fitted.values)
 rsq(decSIM2$data$TRIPS, decSIM2$fitted.values)
@@ -2125,7 +2359,7 @@ rsq(dbcSIM2$data$TRIPS, dbcSIM2$fitted.values)
 The table below compares the R-Squared values before and after the removal of the outliers.
 
 | Model                   | R-Squared Value | R-Squared Value after removing outliers |
-|---------------------|-----------------|----------------------------------|
+|---------------------|------------------|---------------------------------|
 | Unconstrained           | 0.257           | 0.267                                   |
 | Origin-Constrained      | 0.408           | 0.410                                   |
 | Destination-Constrained | 0.402           | 0.425                                   |
@@ -2157,57 +2391,28 @@ We observe a marked improvement in both R-Squared and RMSE values following the 
 
 Residuals represent the discrepancies between observed values and the predictions made by our model. Ideally, for a model that fits the data well, the residuals should be small and close to zero. Analysing the residuals of GLMs can yield crucial insights into the performance of the model. Deviance residuals, specifically, measure the degree to which probabilities estimated from our model diverge from the observed frequencies of success. Larger values suggest greater divergence, while smaller values indicate less divergence.
 
+The code chunk below extracts residuals, using (`residuals()`)[https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/residuals], and fitted values, using `fitted()`, from two models. Fitted values are the predictions made by the model. For each observation in the model's dataset, it gives the expected value of the response variable, based on the model's fitted parameters.
+
 ```{r}
-#res_orcSIM <- residuals(orcSIM, type="deviance")
-#res_orcSIM2 <- residuals(orcSIM2, type="deviance")
+
 res_dbcSIM <- residuals(dbcSIM, type="deviance")
 res_dbcSIM2 <- residuals(dbcSIM2, type="deviance")
-
-#fitted_orcSIM <- fitted(orcSIM)
-#fitted_orcSIM2 <- fitted(orcSIM2)
 
 fitted_dbcSIM <- fitted(dbcSIM)
 fitted_dbcSIM2 <- fitted(dbcSIM2)
 ```
 
-By employing [*ggplot()*](https://ggplot2.tidyverse.org/), we can compare the plots of residuals versus fitted values for the Doubly-Constrained model with and without outliers. The axis range for both plots are kept constant to visualise the difference between both plots.
+By employing [`ggplot()`](https://ggplot2.tidyverse.org/), we can compare the plots of residuals versus fitted values for the Doubly-Constrained model with and without outliers. The axis range for both plots are kept constant to visualise the difference between both plots.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
 
 # Create data frames for plotting
-#df_orcSIM <- data.frame(Fitted = fitted_orcSIM, Residuals = res_orcSIM)
-#df_orcSIM2 <- data.frame(Fitted = fitted_orcSIM2, Residuals = res_orcSIM2)
-
 df_dbcSIM <- data.frame(Fitted = fitted_dbcSIM, Residuals = res_dbcSIM)
 df_dbcSIM2 <- data.frame(Fitted = fitted_dbcSIM2, Residuals = res_dbcSIM2)
 
-# Create individual ggplot objects
-#p_orcSIM <- ggplot(df_orcSIM, aes(x = Fitted, y = Residuals)) +
-#  geom_point(size = 0.5) +
-#  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
-#  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Origin-Constrained SIM") +
-#  theme(
-#    plot.title = element_text(size=8, face="bold"),
-#    axis.title.x = element_text(size=8, face="bold"),
-#    axis.title.y = element_text(size=8, face="bold"),
-#    axis.text.x = element_text(size=6),
-#    axis.text.y = element_text(size=6)
-#)
-
-#p_orcSIM2 <- ggplot(df_orcSIM2, aes(x = Fitted, y = Residuals)) +
-#  geom_point(size = 0.5) +
-#  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
-#  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Origin-Constrained SIM w/o Outlier") +
-#  theme(
-#    plot.title = element_text(size=8, face="bold"),
-#    axis.title.x = element_text(size=8, face="bold"),
-#    axis.title.y = element_text(size=8, face="bold"),
-#    axis.text.x = element_text(size=6),
-#    axis.text.y = element_text(size=6)
-#)
-
+# Create individual ggplots
 p_dbcSIM <- ggplot(df_dbcSIM, aes(x = Fitted, y = Residuals)) +
   geom_point(size = 0.5) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
@@ -2244,21 +2449,279 @@ ggarrange(p_dbcSIM, p_dbcSIM2, ncol = 2, nrow = 1)
 
 With both plots, the vertical dispersion at lower fitted values suggests signs of overfitting to varying degrees, and to a lesser extent, underfitting. The removal of outliers leads to a decrease in the spread of residuals, particularly in the range of higher residuals. The concentration of residuals around the zero line seems tighter as well, which suggests an improved model fit.
 
-# 12 Conclusion & Future Work
+# 11 Calibrating Spatial Interaction Model for Intrazonal Travels
 
-The Doubly-Constrained model has consistently outperformed the other models in terms of predictive accuracy. Notably, the removal of outliers resulted in a more robust model, as indicated by enhanced R-Squared and RMSE scores. Specifically, the Doubly-Constrained model demonstrated the best performance after the outliers were excluded.
+In previous sections, we identified the Doubly Constrained SIM as the most effective model for predicting interzonal flow. This finding underscores the significance of distance in influencing cross-hexagonal travel. In subsequent sections, we will shift our focus to calibrating the optimal model for intrazonal flows. This will enable us to explore whether variables other than distance can effectively explain intrazonal travels, where distance is less of a constraining factor.
+
+In the analysis of intrazonal flows, where movements occur within the same zone, Origin-Constrained, Destination-Constrained, and Doubly Constrained models become less relevant. These models are typically designed to balance flows between distinct origins and destinations, based on specific capacity or potential constraints. However, such constraints are not applicable within the same zone, where origin and destination are identical. In contrast, Unconstrained models are more suitable for intrazonal flows. They do not impose artificial constraints on interaction flows, allowing for a more direct and meaningful examination of local factors. This approach, with its simplicity and direct focus on area-specific characteristics, makes unconstrained models the optimal choice for understanding movements or behaviors that occur within a single zone, driven more by local dynamics than by the balance of flows between different locations.
+
+## 11.1 Unconstrained SIM
+
+**Model**
+
+Note that compared to Unconstrained model used for interzonal travels, origin propulsiveness variable *ORI_TRAINEXITS* has been removed to prevent multicollinearly with *DEST_TRAINEXITS.*
+
+Additionally, in the context of modeling intrazonal flows, where the origin and destination grids are the same, *log(dist)* has been excluded from the models. This is because the primary factor influencing intrazonal flows is likely not distance, but other area characteristics such as population density, the presence of businesses, and schools. Therefore, the emphasis should be placed more on these local factors rather than on the distance between points within the same zone.
+
+```{r}
+intra_uncSIM <- glm(formula = TRIPS ~ 
+                #log(ORI_TRAINEXITS) +
+                #log(ORI_BIZ) +
+                #log(ORI_FS) +
+                #log(ORI_RECS) +
+                #log(ORI_RETAIL) +
+                #log(ORI_SCHOOLS) +
+                log(ORI_HDBPOP) +
+                log(DEST_TRAINEXITS) +
+                log(DEST_BIZ) +
+                log(DEST_FS) +
+                log(DEST_RECS) +
+                log(DEST_RETAIL) +
+                log(DEST_SCHOOLS),
+                #log(DEST_HDBPOP) +
+                #log(dist),
+              family = poisson(link = "log"),
+              data = intrazonal_flow,
+              na.action = na.exclude) # excludes any NAs in the data
+```
+
+**Coefficients & p-Values**
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
+#| 
+summary(intra_uncSIM)
+```
+
+The p-values associated with each predictor variable is \< 0.05, this suggests that all the coefficients used in the model have a statistically significant relationship with the weekday morning peak period bus trips.
+
+From the results, we can also see that the top 2 coefficients with positive relationships are: *number of financial services at destination* (0.72) and *number of train station exits at destination* (0.380).
+
+The top coefficient with inverse relationships is the *number of leisure / recreational places at destination* (-0.47).
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
 data.frame(
-  Coefficient = sort(dbcSIM2$coefficients[1629]
-                     , decreasing = TRUE
-  )
+  Coefficient = sort(intra_uncSIM$coefficients, decreasing = TRUE)
+
 )
 ```
 
-In contrast, the model was unable to perform meaningful predictions where the outliers are (i.e. Woodlands Checkpoint to Kranji MRT Station, Woodlands Checkpoint to Woodlands Regional Bus Interchange, Choa Chu Kang North to Yew Tee Station).
+## 11.2 Model Performance
+
+::: panel-tabset
+## R-Squared
+
+An R-squared value of 0.277 means that approximately 27.7% of the variance in the TRIPS dependent variable is explained by the independent variables in the model.
+
+```{r}
+rsq(intra_uncSIM$data$TRIPS, intra_uncSIM$fitted.values)
+```
+
+## Root Mean Squared Error
+
+Since we only have one model for intrazonal flow, we can use [`rmse()`](https://www.rdocumentation.org/packages/Metrics/versions/0.1.4/topics/rmse) directly to measure how far predicted values are from observed values.
+
+```{r}
+rmse(intra_uncSIM)
+```
+
+A high RMSE suggests that the model may not be very accurate in its predictions. Let's visualise the fitted values to see if we can identify any outliers causing the unpredcitability.
+
+## Visualising Fitted Values
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Extracts fitted values from model
+df <- as.data.frame(intra_uncSIM$fitted.values) %>%
+    round(digits = 0)
+
+# Append fitted values to inter_zonal_flow
+intrazonal_flow  <- intrazonal_flow  %>%
+    cbind(df) %>%
+    rename(uncTRIPS = "intra_uncSIM$fitted.values")
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+p_intra_uncSIM <-
+  ggplot(data = intrazonal_flow,
+                aes(x = uncTRIPS,
+                    y = TRIPS)) +
+  geom_point(shape = 16, size = 0.5) +
+  geom_smooth(method = lm) +
+  ggtitle("Unconstrained SIM for Intrazonal Flow") +
+  theme(
+plot.title = element_text(size=8, face="bold"),
+axis.title.x = element_text(size=8, face="bold"),
+axis.title.y = element_text(size=8, face="bold"),
+axis.text.x = element_text(size=6),
+axis.text.y = element_text(size=6)
+)
+
+ggplotly(p_intra_uncSIM)
+
+```
+
+Notably, the point on the top of the graph where TRIPS = 62718 deviates from the best fit line most.
+
+The outlier point corresponds to the intrazonal travel within the Admiralty/Woodlands area below:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+datatable(intrazonal_flow[intrazonal_flow$TRIPS %in% c(62718), ])
+```
+:::
+
+## 11.3 Removing Outlier
+
+To analyse the impact of the outlier on our model fit, we remove the outlier using the `filter()` function and recalibrated the models using `glm()`.
+
+```{r}
+intrazonal_flow2 <- intrazonal_flow %>%
+  filter(!TRIPS %in% c(62718))
+```
+
+Note that the total observation count has reduced by 1, from 623 to 622.
+
+```{r}
+intra_uncSIM2 <- glm(formula = TRIPS ~ 
+                #log(ORI_TRAINEXITS) +
+                #log(ORI_BIZ) +
+                #log(ORI_FS) +
+                #log(ORI_RECS) +
+                #log(ORI_RETAIL) +
+                #log(ORI_SCHOOLS) +
+                log(ORI_HDBPOP) +
+                log(DEST_TRAINEXITS) +
+                log(DEST_BIZ) +
+                log(DEST_FS) +
+                log(DEST_RECS) +
+                log(DEST_RETAIL) +
+                log(DEST_SCHOOLS),
+                #log(DEST_HDBPOP) +
+                #log(dist),
+              family = poisson(link = "log"),
+              data = intrazonal_flow2,
+              na.action = na.exclude) # excludes any NAs in the data
+```
+
+**R-Squared**
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| eval: false
+rsq(intra_uncSIM2$data$TRIPS, intra_uncSIM2$fitted.values)
+
+```
+
+The table below compares the R-Squared values before and after the removal of the outlier.
+
+| Model         | R-Squared Value | R-Squared Value after removing outlier |
+|---------------|-----------------|----------------------------------------|
+| Unconstrained | 0.277           | 0.377                                  |
+
+**RMSE**
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+model_list_intra <- list(
+  Unconstrained = intra_uncSIM,
+  Unconstrained_wo_Outliers = intra_uncSIM2)
+
+
+compare_performance(model_list_intra,
+                    metrics = "RMSE")
+```
+
+We observe a marked improvement in both R-Squared and RMSE values following the removal of outliers.
+
+## 11.4 Deviance Residuals vs Fitted Values
+
+Similar to the steps performed for interzonal flows, we use `residuals()` and `fitted()` to obtain the deviance residuals and fitted values respectively.
+
+```{r}
+
+res_intra_uncSIM <- residuals(intra_uncSIM, type="deviance")
+res_intra_uncSIM2 <- residuals(intra_uncSIM2, type="deviance")
+
+fitted_intra_uncSIM <- fitted(intra_uncSIM)
+fitted_intra_uncSIM2 <- fitted(intra_uncSIM2)
+```
+
+By employing [*ggplot()*](https://ggplot2.tidyverse.org/), we can compare the plots of residuals versus fitted values for the Doubly-Constrained model with and without outliers. The axis range for both plots are kept constant to visualise the difference between both plots.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Create data frames for plotting
+df_intra_unccSIM <- data.frame(Fitted = fitted_intra_uncSIM, Residuals = res_intra_uncSIM)
+df_intra_uncSIM2 <- data.frame(Fitted = fitted_intra_uncSIM2, Residuals = res_intra_uncSIM2)
+
+# Create individual ggplots
+dr_intra_uncSIM <- ggplot(df_intra_unccSIM, aes(x = Fitted, y = Residuals)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Unconstrained SIM") +
+  theme(
+    plot.title = element_text(size=8, face="bold"),
+    axis.title.x = element_text(size=8, face="bold"),
+    axis.title.y = element_text(size=8, face="bold"),
+    axis.text.x = element_text(size=6),
+    axis.text.y = element_text(size=6)
+    ) +
+  scale_y_continuous(limits = c(-150, 500)) 
+
+dr_intra_uncSIM2 <- ggplot(df_intra_uncSIM2, aes(x = Fitted, y = Residuals)) +
+  geom_point(size = 0.5) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(x = "Fitted Values", y = "Deviance Residuals", title = "Unconstrained SIM w/o Outliers") +
+  theme(
+    plot.title = element_text(size=8, face="bold"),
+    axis.title.x = element_text(size=8, face="bold"),
+    axis.title.y = element_text(size=8, face="bold"),
+    axis.text.x = element_text(size=6),
+    axis.text.y = element_text(size=6)
+    ) +
+  scale_y_continuous(limits = c(-150, 500)) 
+
+# Arrange the plots side by side
+ggarrange(dr_intra_uncSIM, dr_intra_uncSIM2, ncol = 2, nrow = 1)
+
+```
+
+In general, most of the residuals for Unconstrained SIM are scattered around the zero line, which is desirable. Before removing the outlier, there was significantly higher deviance residuals, indicating large prediction errors for those observations. In the right plot, removal of the outlier led to a tighter clustering of residuals around the zero line, suggesting that the model fit has improved.
+
+# 12 Conclusion & Future Work
+
+In conclusion, we have calibrated 4 models for interzonal travels and 1 model for intrazonal travels.
+
+For interzonal flows, the Doubly-Constrained model has consistently outperformed other models in terms of predictive accuracy, indicating that distance significantly impacts cross-hexagonal movements. Notably, the removal of outliers, particularly at higher passenger volumes, led to a more robust model, as reflected in improved R-Squared and RMSE scores. The Doubly-Constrained model, in particular, showed the best performance after outlier exclusion.
+
+Regarding intrazonal flows, the Unconstrained model indicates that the number of financial services and the number of train station exits at the destination exert the most substantial positive impacts, with coefficients of 0.72 and 0.38, respectively. Conversely, the number of leisure/recreational places at the destination inversely influences ridership at -0.47. This pattern suggests that, during the weekday morning peak period, most people travel to train stations or financial services by bus.
+
+However, it's notable that the best models for both intra- and inter-zonal flows struggle to make meaningful predictions at the highest trip volumes. For interzonal travel, this includes routes such as Woodlands Checkpoint to Kranji MRT Station, Woodlands Checkpoint to Woodlands Regional Bus Interchange, and Choa Chu Kang North to Yew Tee Station. For intrazonal travel, challenges are observed within This could suggest that there may be other influential factors specific to the outlier areas identified during the weekday mornings peak period.
+
+Thus, a deeper understanding in the following areas could lead to more insightful results:
+
+-   Spatial Interaction Models assumes that each hexagon's observations are independent, without accounting for the attractiveness or the draw of surrounding areas. Enhancing these models with spatial econometric techniques, like incorporating weighted metrics, could provide a better grasp of how neighboring areas exert influence.
+
+-   The current calculation of population density, based solely on the number of HDB dwelling units, is a rough estimate. Incorporating other housing types and demographic factors, such as age groups, could provide a more accurate picture. Additionally, the model does not account for young children who may not need to pay for bus rides and thus might not be captured in the trip data.
+
+-   Investigating the connectivity and frequency of buses at each stop, including the usage of feeder buses within neighborhoods compared to long-distance buses to less frequented areas, could yield further insights.
 
 # Reference
 

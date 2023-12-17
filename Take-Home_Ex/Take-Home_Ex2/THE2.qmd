@@ -1228,10 +1228,6 @@ write.csv(not_found, file = "data/aspatial/not_found.csv")
 
 Note that Zhenghua Secondary School did not manage to be geocoded using the OneMap API. We can fill in the gaps by manually inputting the longitude and latitude information from Google.
 
-From Google:
-
-![](images/Google_ZHSS.PNG){width="276"}
-
 Manual Edit in **schools.csv**:
 
 ![](images/ZHSS.PNG){width="276"}

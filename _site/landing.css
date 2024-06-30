@@ -1,7 +1,5 @@
-/* background styles */
-
-body {
-  background-image: url("images/landing.png");
+body { 
+  background-image: url("images/landing.jpg");
   min-height: 500px;
   /* Set background image to fixed (don't scroll along with the page) */
   /*background-attachment: fixed;*/

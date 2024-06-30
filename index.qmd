@@ -1,10 +1,7 @@
 ---
-title: "Welcome!"
-listing: 
-  contents: posts
-  sort: "date desc"
-  type: grid
-  categories: false
+title: ""
+toc: false
+format:
+  html:
+    css: landing.css
 ---
-
-In this webpage, I am going to share with you my learning journey of geospatial analytics. Join me in my adventure :)

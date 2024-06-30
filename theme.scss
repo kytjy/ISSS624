@@ -6,26 +6,34 @@
 // Colors
 $sienna: #B9714F;
 $navy: #34414E;
-$sundress: #EBCF89;
+$toasted: #efbc68;
 $light-gray: #ebebeb;
 $cream: #F4EFE4;
 $gray: #65666a;
-$black-bean: #2e272A;
 $milk: #F1EEE6;
+
 $pink: #e0218a;
 $blue: #595DE5;
 $green: #0DB574;
 $yellow: #FFBC2F;
 $violet: #B0B6D9;
 
+$morningmist: #e1e3da;
+$powderblue: #98b0b6;
+$denim: #4B7FAF;
+$greenery: #919f89;
+
 // Base document colors
-$navbar-bg: $black-bean; // navbar
-$navbar-fg: $light-gray; // navbar foreground elements
-$navbar-hl: $sundress; // highlight color when hovering over navbar links
+$navbar-bg: $denim; // navbar
+$navbar-fg: $powderblue; // navbar foreground elements
+$navbar-hl: $greenery; // highlight color when hovering over navbar links
 $body-bg: $milk; // page background 
 $body-color: $navy; // page text 
 $footer-bg: $milk; // footer 
 $link-color: $pink; // hyperlinks 
+
+// Code blocks
+$code-block-bg: white;
 
 // fonts
 
@@ -98,37 +106,36 @@ h4 {
   font-weight: 500; 
 }
 
+/* Content width */
+.left {
+  text-align: left;
+  padding-left: 1em;
+}
+.right {
+  text-align: right;
+  padding-right: 1em;
+}
+
+
+.navbar {
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-color: $denim;
+}  
+
+.dropdown-menu .dropdown-item {
+  background-color: $denim;
+  font-size: 12px;
+}
+
+.dropdown-menu a {
+  color: $morningmist;
+  background-color: $denim;
+}
+
+
 .callout.callout-style-default .callout-body {
   font-size: 0.75rem;
 }
 
-.note {
-  margin: 1em 0;
-  border: 2px solid gray;
-  border-left: 10px solid teal; 
-  border-radius: 10px;
-}
 
-.note-header {
-  margin-left: 0em;
-  padding-left:  60px;
-  padding-top:  5px;
-  padding-bottom: 0.1em;
-  color: black;
-  background-color: $violet;
-  border-top-right-radius: 10px;
-  font-size: 1em;
-  font-weight: bold;
-  background-size: 40px;
-  background-repeat: no-repeat;
-  background-position: 15px center;
-  background-image: "images/lightning.png";
-}
-
-.note-container {
-  padding-top: 5px;
-  padding-left: 10px;
-  color: black;
-  background-color: white;
-  border-bottom-right-radius: 10px;
-}

@@ -1,1 +1,9 @@
 /* css styles */
+
+/* Navbar Logo */
+.navbar-brand > img {
+  max-height: 30px;
+}
+
+/* Custom callout boxes */
+

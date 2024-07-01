@@ -3,8 +3,8 @@ project:
 
 website:
   title: "kale's geospatial analytics tales"
-  image: "images/globe.png"
-  favicon: "Images/icon.png"
+  image: "images/icon.png"
+  favicon: "images/icon.png"
   navbar:
     logo: "images/pusheen-fly.gif"
     title: false

@@ -1,9 +1,7 @@
 ---
-title: "About"
+title: ""
 ---
 
-About this site
+![](images/about.PNG){fig-align="center" width="100%"}
 
-```{r}
-1 + 1
-```
+[![](images/valink.png){fig-align="center" width="130"}](https://akalestale.netlify.app/)

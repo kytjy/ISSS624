@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "About"
 ---
 
 ![](images/about.PNG){fig-align="center" width="100%"}
